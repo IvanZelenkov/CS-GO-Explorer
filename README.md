@@ -14,7 +14,7 @@
                 - Students.java
 
 ### Description
-The goal of this project is to gain practical experience with building an end-to-end application using AWS. 
+The goal of this project is to build an end-to-end application using AWS. 
 It uses 5 AWS services: Amazon Lex, Amazon Lambda, Amazon DynamoDB, Amazon SNS, and Amazon S3. The user will 
 be able to use a chatbot in order to manage Students database table easier. The chatbot provides 4 functions: 
 get, update, insert, and remove a student.
