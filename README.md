@@ -1,6 +1,8 @@
 # Cloud Computing
 
-## Assignment 3
+## DatabaseBotManagerLambda
+
+![DatabaseBotManagerSolutionArchitecture](https://user-images.githubusercontent.com/64171964/204121621-16d21c9f-d225-428e-a3f2-edf932c15a54.png)
 
 ### Content
 - DatabaseBotManagerLambda
