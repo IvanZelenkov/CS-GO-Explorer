@@ -1,2 +1,5 @@
 handler/Students.class
+handler/services/DynamoDB.class
+handler/services/S3.class
+handler/services/SNS.class
 handler/BotHandler.class
