@@ -1,9 +1,11 @@
 package services;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -23,19 +25,30 @@ import handler.BotLogic;
 
 public class SNS {
 
+    private final String SNS_TOPIC_NAME = "DynamoStudentsDBTableChanges";
+    private final List<String> subscribersList;
+
+    public SNS() {
+        this.subscribersList = new ArrayList<>();
+    }
+
     public SnsClient authenticateSNS() {
+        AwsBasicCredentials awsCredentials = AwsBasicCredentials
+                .create(System.getenv("ACCESS_KEY_ID"),
+                        System.getenv("SECRET_ACCESS_KEY"));
+
         return SnsClient
                 .builder()
-                .credentialsProvider(ProfileCredentialsProvider.create())
+                .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
                 .region(Region.of(System.getenv("AWS_REGION")))
                 .build();
     }
 
-    public static String createSNSTopic(SnsClient snsClient) {
+    public String createSNSTopic(SnsClient snsClient) {
         CreateTopicResponse result;
         try {
             CreateTopicRequest request = CreateTopicRequest.builder()
-                    .name("DynamoStudentsDBTableChanges")
+                    .name(SNS_TOPIC_NAME)
                     .build();
 
             result = snsClient.createTopic(request);
@@ -80,7 +93,11 @@ public class SNS {
     public void publishMessage(SnsClient snsClient, List<String> messages, String mainMessage, String type) {
         try {
             String topicArn = createSNSTopic(snsClient);
-            emailSubscriber(snsClient, topicArn, "itproger.ivan@gmail.com");
+            subscribersList.add("itproger.ivan@gmail.com");
+            // TODO may add subscriber feature to the chatbot
+            for (String subscriber : subscribersList)
+                emailSubscriber(snsClient, topicArn, subscriber);
+
             PublishRequest request = PublishRequest.builder()
                     .message(mainMessage)
                     .topicArn(topicArn)
@@ -107,7 +124,7 @@ public class SNS {
         System.out.print("BUCKET: " + createBucketResponse);
         PutObjectRequest objectRequest = PutObjectRequest
                 .builder()
-                .bucket(System.getenv("S3_BUCKET_NAME"))
+                .bucket(s3.getS3_BUCKET_NAME())
                 .key(type + "-" + UUID.randomUUID() + ".txt")
                 .build();
         s3Client.putObject(objectRequest, RequestBody.fromString(mainMessage));

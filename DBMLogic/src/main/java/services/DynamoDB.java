@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import handler.BotLogic;
-import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
@@ -17,14 +17,21 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
 import software.amazon.awssdk.services.sns.SnsClient;
 
+import handler.BotLogic;
 import handler.Students;
 
 public class DynamoDB {
 
+    private final String DYNAMO_DB_TABLE_NAME = "Students";
+
     public DynamoDbClient authenticateDynamoDB() {
+        AwsBasicCredentials awsCredentials = AwsBasicCredentials
+                .create(System.getenv("ACCESS_KEY_ID"),
+                        System.getenv("SECRET_ACCESS_KEY"));
+
         return DynamoDbClient
                 .builder()
-                .credentialsProvider(ProfileCredentialsProvider.create())
+                .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
                 .region(Region.of(System.getenv("AWS_REGION")))
                 .build();
     }
@@ -33,7 +40,7 @@ public class DynamoDB {
         DynamoDbClient ddb = authenticateDynamoDB();
         ListTablesResponse listTables = ddb.listTables();
         for (String table : listTables.tableNames()) {
-            if (table.equals("Students")) {
+            if (table.equals(DYNAMO_DB_TABLE_NAME)) {
                 return table + " table already exists.";
             }
         }
@@ -60,7 +67,7 @@ public class DynamoDB {
             System.err.println(error.getMessage());
             System.exit(1);
         }
-        return "Table " + System.getenv("DYNAMO_DB_TABLE_NAME") + " created.";
+        return "Table " + DYNAMO_DB_TABLE_NAME + " created.";
     }
 
     public void getRecord(DynamoDbClient dynamoDbClient, String keyName, String keyValue) throws IOException {
@@ -71,7 +78,7 @@ public class DynamoDB {
 
         GetItemRequest request = GetItemRequest.builder()
                 .key(keyToGet)
-                .tableName(System.getenv("DYNAMO_DB_TABLE_NAME"))
+                .tableName(DYNAMO_DB_TABLE_NAME)
                 .build();
 
         try {
@@ -105,8 +112,7 @@ public class DynamoDB {
         Students studentRecord = new Students();
         try {
             DynamoDbTable<Students> table = enhancedClient.table(
-                    System.getenv("DYNAMO_DB_TABLE_NAME"),
-                    TableSchema.fromBean(Students.class));
+                    DYNAMO_DB_TABLE_NAME, TableSchema.fromBean(Students.class));
 
             // Populate the Table.
             studentRecord.setStudentID(Integer.parseInt(BotLogic.getSlotValue("StudentID")));
@@ -138,7 +144,7 @@ public class DynamoDB {
         keyToGet.put(keyName, AttributeValue.builder().n(keyValue).build());
 
         DeleteItemRequest deleteRequest = DeleteItemRequest.builder()
-                .tableName(System.getenv("DYNAMO_DB_TABLE_NAME"))
+                .tableName(DYNAMO_DB_TABLE_NAME)
                 .key(keyToGet)
                 .build();
         try {
@@ -170,7 +176,7 @@ public class DynamoDB {
                 .build());
 
         UpdateItemRequest request = UpdateItemRequest.builder()
-                .tableName(System.getenv("DYNAMO_DB_TABLE_NAME"))
+                .tableName(DYNAMO_DB_TABLE_NAME)
                 .key(itemKey)
                 .attributeUpdates(updatedValues)
                 .build();

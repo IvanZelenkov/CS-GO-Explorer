@@ -1,9 +1,9 @@
 # Cloud Computing
 
-## Assignment 3
+## DBMLogic
 
 ### Content
-- DatabaseBotManagerLambda
+- DBMLogic
     - Assignment3.pdf
     - DBMSolutionArchitecture.png
     - pom.xml
@@ -11,7 +11,7 @@
         - main
             - java
                - handler
-                  - BotHandler.java
+                  - BotLogic.java
                   - Students.java
                - services
                   - DynamoDB.java
@@ -19,9 +19,8 @@
                   - SNS.java
 
 ### Description
-The goal of this assignment is to gain practical experience with building an end-to-end application using AWS.
-It uses 5 AWS services: Amazon Lex, Amazon Lambda, Amazon DynamoDB, Amazon SNS, and Amazon S3. The user will
-be able to use a chatbot in order to manage Students database table easier. The chatbot provides 4 functions:
+The logic of the chatbot is implemented in BotLogic.java and services DynamoDB, S3, and SNS are implemented in the services folder. 
+The user will be able to use a chatbot in order to manage Students database table easier. The chatbot provides 4 functions: 
 get, update, insert, and remove a student.
 
 ### Communication between services
