@@ -82,7 +82,7 @@
     8. There can be an issue when you will run this command (IAM policy may not be attached when creating lambda function call will happen). 
    The following message can be displayed: ```The role defined for the function cannot be assumed by Lambda```.
 
-    9. If that happens, remove the role, and permissions policy that you named, and rerun the command.
+    9. If that happens, remove the role, and permissions policy that you named, and rerun the command. You may have to do this several times if it continues failing.
 
 4. Set up an Amazon Lex chatbot.
    1. Initial Configuration
