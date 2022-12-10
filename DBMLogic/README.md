@@ -1,5 +1,3 @@
-# Cloud Computing
-
 ## DBMLogic
 
 ### Content
@@ -17,6 +15,8 @@
                   - DynamoDB.java
                   - S3.java
                   - SNS.java
+    - target
+      - DBMLogic-1.0.0.jar
 
 ### Description
 The logic of the chatbot is implemented in BotLogic.java and services DynamoDB, S3, and SNS are implemented in the services folder. 
