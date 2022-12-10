@@ -31,7 +31,7 @@ The chatbot will return all the attributes of the student item including first n
 (freshman, sophomore, junior, or senior), and email. After this action completes successfully, Lambda will call the Amazon SNS
 service to email all subscribers of the topic about the action that was taken on the Students table.
 
-Of course, the user may not remember all changes were made within a day and even a week. Therefore, it was decided to log all
+The user may not remember all changes were made within a day and even a week. Therefore, it was decided to log all
 actions in the S3 bucket. It is very easy to distinguish between the files that are saved in a bucket because each of them
 contains a unique name with an additional class name (GET, INSERT, REMOVE, or UPDATE), and the date it was created.
 This feature should help a database administrator to know what happened and at what time with a table.
