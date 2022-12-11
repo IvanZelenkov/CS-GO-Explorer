@@ -3,6 +3,7 @@ package handler;
 import java.util.List;
 import java.io.FileReader;
 
+import com.amazonaws.retry.PredefinedRetryPolicies;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -19,11 +20,12 @@ public class IAM {
             CreateRoleRequest request = CreateRoleRequest.builder()
                     .roleName(roleName)
                     .assumeRolePolicyDocument(jsonObject.toJSONString())
-                    .description("Database Bot Manager Policy")
+                    .description("Database Bot Manager Trust Policy")
                     .build();
 
             CreateRoleResponse response = iamClient.createRole(request);
 
+            // Wait until the role is created.
             GetRoleRequest roleRequest = GetRoleRequest.builder()
                     .roleName(response.role().roleName())
                     .build();
@@ -85,12 +87,12 @@ public class IAM {
                 }
             }
 
-            AttachRolePolicyRequest attachRequest = AttachRolePolicyRequest.builder()
+            AttachRolePolicyRequest attachPolicyRequest = AttachRolePolicyRequest.builder()
                     .roleName(roleName)
                     .policyArn(permissionsPolicyArn)
                     .build();
 
-            iamClient.attachRolePolicy(attachRequest);
+            iamClient.attachRolePolicy(attachPolicyRequest);
         } catch (IamException error) {
             System.err.println(error.awsErrorDetails().errorMessage());
             System.exit(1);

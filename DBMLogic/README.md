@@ -8,19 +8,19 @@
     - src
         - main
             - java
-               - handler
-                  - BotLogic.java
-                  - Students.java
-               - services
-                  - DynamoDB.java
-                  - S3.java
-                  - SNS.java
+                - handler
+                    - BotLogic.java
+                    - Students.java
+                - services
+                    - DynamoDB.java
+                    - S3.java
+                    - SNS.java
     - target
-      - DBMLogic-1.0.0.jar
+        - DBMLogic-1.0.0.jar
 
 ### Description
-The logic of the chatbot is implemented in BotLogic.java and services DynamoDB, S3, and SNS are implemented in the services folder. 
-The user will be able to use a chatbot in order to manage Students database table easier. The chatbot provides 4 functions: 
+The logic of the chatbot is implemented in BotLogic.java and services DynamoDB, S3, and SNS are implemented in the services folder.
+The user will be able to use a chatbot in order to manage Students database table easier. The chatbot provides 4 functions:
 get, update, insert, and remove a student.
 
 ### Communication between services
