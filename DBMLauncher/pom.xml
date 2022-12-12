@@ -21,13 +21,28 @@
         </dependency>
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
+            <artifactId>iam</artifactId>
+            <version>2.18.31</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
             <artifactId>lambda</artifactId>
             <version>2.18.28</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
-            <artifactId>iam</artifactId>
+            <artifactId>lexruntimev2</artifactId>
             <version>2.18.31</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>lexmodelsv2</artifactId>
+            <version>2.18.31</version>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-lex</artifactId>
+            <version>1.12.362</version>
         </dependency>
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>
