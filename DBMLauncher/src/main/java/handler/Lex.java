@@ -74,6 +74,7 @@ public class Lex {
                 true,
                 false
         );
+        
         createSlot(lexModelsV2Client,
                 createBotResponse,
                 getStudentIntentResponse,
@@ -92,6 +93,7 @@ public class Lex {
                 true,
                 false
         );
+        
         createSlot(lexModelsV2Client,
                 createBotResponse,
                 removeStudentIntentResponse,
@@ -120,6 +122,7 @@ public class Lex {
                 true,
                 false
         );
+        
         CreateSlotResponse updateStudentIntentStudentIdSlot = createSlot(lexModelsV2Client,
                 createBotResponse,
                 updateStudentIntentResponse,
@@ -128,6 +131,7 @@ public class Lex {
                 "Please enter a student ID to find a person.",
                 "AMAZON.Number"
         );
+        
         CreateSlotResponse updateStudentIntentAttributeNameSlot = createSlot(lexModelsV2Client,
                 createBotResponse,
                 updateStudentIntentResponse,
@@ -136,6 +140,7 @@ public class Lex {
                 "Which student attribute do you need to update?",
                 "AMAZON.FreeFormInput"
         );
+        
         CreateSlotResponse updateStudentIntentNewAttributeValueSlot = createSlot(lexModelsV2Client,
                 createBotResponse,
                 updateStudentIntentResponse,
@@ -144,6 +149,7 @@ public class Lex {
                 "Enter a new attribute value.",
                 "AMAZON.FreeFormInput"
         );
+        
         List<CreateSlotResponse> updateStudentIntentSlotResponsesList = new ArrayList<>();
         updateStudentIntentSlotResponsesList.add(updateStudentIntentStudentIdSlot);
         updateStudentIntentSlotResponsesList.add(updateStudentIntentAttributeNameSlot);
@@ -152,19 +158,110 @@ public class Lex {
         updateStudentIntentSlotPrioritiesList.add(1);
         updateStudentIntentSlotPrioritiesList.add(2);
         updateStudentIntentSlotPrioritiesList.add(3);
-        slotPriorities(lexModelsV2Client, updateStudentIntentSlotResponsesList, updateStudentIntentSlotPrioritiesList);
+
+        UpdateIntentResponse updateIntentResponse = updateIntent(lexModelsV2Client,
+                createBotResponse,
+                updateStudentIntentResponse,
+                updateStudentIntentSlotResponsesList,
+                updateStudentIntentSlotPrioritiesList,
+                "UpdateStudent",
+                "UPDATE student data",
+                getUpdateStudentIntentSampleUtterances(),
+                true,
+                false);
     }
 
-    public void slotPriorities(LexModelsV2Client lexModelsV2Client,
-                               List<CreateSlotResponse> intentSlotResponsesList,
-                               List<Integer> intentSlotPrioritiesList) {
+    public List<SlotPriority> slotPriorities(List<CreateSlotResponse> intentSlotResponsesList, List<Integer> intentSlotPrioritiesList) {
+        List<SlotPriority> slotPriorityList = new ArrayList<>();
+
         for (int i = 0; i < intentSlotResponsesList.size(); i++) {
             SlotPriority slotPriority = SlotPriority
                     .builder()
                     .slotId(intentSlotResponsesList.get(i).slotId())
                     .priority(intentSlotPrioritiesList.get(i))
                     .build();
+            slotPriorityList.add(slotPriority);
         }
+        return slotPriorityList;
+    }
+
+    public UpdateIntentResponse updateIntent(LexModelsV2Client lexModelsV2Client,
+                                             CreateBotResponse createBotResponse,
+                                             CreateIntentResponse createIntentResponse,
+                                             List<CreateSlotResponse> updateStudentIntentSlotResponsesList,
+                                             List<Integer> updateStudentIntentSlotPrioritiesList,
+                                             String intentName,
+                                             String intentDescription,
+                                             List<String> sampleUtterances,
+                                             boolean isFulfillmentCodeHook,
+                                             boolean isDialogCodeHook) {
+        UpdateIntentRequest updateIntentRequest;
+        
+        if (isFulfillmentCodeHook && !isDialogCodeHook) {
+            FulfillmentCodeHookSettings fulfillmentCodeHookSettings = FulfillmentCodeHookSettings
+                    .builder()
+                    .enabled(true)
+                    .build();
+
+            updateIntentRequest = UpdateIntentRequest
+                    .builder()
+                    .botId(createBotResponse.botId())
+                    .botVersion("DRAFT")
+                    .localeId("en_US")
+                    .intentId(createIntentResponse.intentId())
+                    .intentName(intentName)
+                    .description(intentDescription)
+                    .sampleUtterances(createSampleUtterances(sampleUtterances))
+                    .slotPriorities(slotPriorities(updateStudentIntentSlotResponsesList, updateStudentIntentSlotPrioritiesList))
+                    .fulfillmentCodeHook(fulfillmentCodeHookSettings)
+                    .build();
+        } else if (!isFulfillmentCodeHook && isDialogCodeHook) {
+            DialogCodeHookSettings dialogCodeHookSettings = DialogCodeHookSettings
+                    .builder()
+                    .enabled(true)
+                    .build();
+
+            updateIntentRequest = UpdateIntentRequest
+                    .builder()
+                    .botId(createBotResponse.botId())
+                    .botVersion("DRAFT")
+                    .localeId("en_US")
+                    .intentId(createIntentResponse.intentId())
+                    .intentName(intentName)
+                    .description(intentDescription)
+                    .sampleUtterances(createSampleUtterances(sampleUtterances))
+                    .slotPriorities(slotPriorities(updateStudentIntentSlotResponsesList, updateStudentIntentSlotPrioritiesList))
+                    .dialogCodeHook(dialogCodeHookSettings)
+                    .build();
+        } else {
+            FulfillmentCodeHookSettings fulfillmentCodeHookSettings = FulfillmentCodeHookSettings
+                    .builder()
+                    .enabled(true)
+                    .build();
+            
+            DialogCodeHookSettings dialogCodeHookSettings = DialogCodeHookSettings
+                    .builder()
+                    .enabled(true)
+                    .build();
+
+            updateIntentRequest = UpdateIntentRequest
+                    .builder()
+                    .botId(createBotResponse.botId())
+                    .botVersion("DRAFT")
+                    .localeId("en_US")
+                    .intentId(createIntentResponse.intentId())
+                    .intentName(intentName)
+                    .description(intentDescription)
+                    .sampleUtterances(createSampleUtterances(sampleUtterances))
+                    .slotPriorities(slotPriorities(updateStudentIntentSlotResponsesList, updateStudentIntentSlotPrioritiesList))
+                    .dialogCodeHook(dialogCodeHookSettings)
+                    .fulfillmentCodeHook(fulfillmentCodeHookSettings)
+                    .dialogCodeHook(dialogCodeHookSettings)
+                    .build();
+        }
+
+        UpdateIntentResponse updateIntentResponse = lexModelsV2Client.updateIntent(updateIntentRequest);
+        return updateIntentResponse;
     }
 
     public CreateIntentResponse createIntent(LexModelsV2Client lexModelsV2Client,
@@ -268,7 +365,6 @@ public class Lex {
                            String promptMessage,
                            String slotType
     ) {
-
         PlainTextMessage plainTextMessage = PlainTextMessage
                 .builder()
                 .value(promptMessage)
@@ -289,6 +385,11 @@ public class Lex {
                 .messageGroups(messageGroup)
                 .maxRetries(2)
                 .build();
+
+//        SlotCaptureSetting slotCaptureSetting = SlotCaptureSetting
+//                .builder()
+//                .
+
 
         SlotValueElicitationSetting slotValueElicitationSetting = SlotValueElicitationSetting
                 .builder()
@@ -318,6 +419,8 @@ public class Lex {
                 .build();
 
         CreateSlotResponse createSlotResponse = lexModelsV2Client.createSlot(createSlotRequest);
+
+
         return createSlotResponse;
     }
 
