@@ -82,12 +82,6 @@ public class Launcher {
 
         Region appRegion = Region.US_EAST_1;
 
-        LexRuntimeV2Client lexV2Client = LexRuntimeV2Client
-                .builder()
-                .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
-                .region(appRegion)
-                .build();
-
         LexModelsV2Client lexModelsV2Client = LexModelsV2Client
                 .builder()
                 .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
@@ -95,7 +89,8 @@ public class Launcher {
                 .build();
 
         Lex lex = new Lex();
-        lex.createLexBot(lexModelsV2Client);
-        lexV2Client.close();
+        String roleArn = "arn:aws:iam::981684844178:role/database-bot-manager-lambda-role";
+        lex.botSetUp(lexModelsV2Client, roleArn);
+        lexModelsV2Client .close();
     }
 }
