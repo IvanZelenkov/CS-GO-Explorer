@@ -13,7 +13,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 
 public class Lambda {
-    public void createLambdaFunction(LambdaClient lambdaClient, String functionName, String filePath,
+    public String createLambdaFunction(LambdaClient lambdaClient, String functionName, String filePath,
                                      String roleArn, String handler, String adminName,
                                      String accessKey, String secretAccessKey) {
         try {
@@ -26,7 +26,7 @@ public class Lambda {
                     .build();
 
             Environment environment = Environment.builder().variables(new HashMap<>(){{
-                put("ADMIN_NAME", adminName);
+                put("ADMIN_USERNAME", adminName);
                 put("ACCESS_KEY_ID", accessKey);
                 put("SECRET_ACCESS_KEY", secretAccessKey);
             }}).build();
@@ -52,9 +52,11 @@ public class Lambda {
             waiterResponse.matched().response().ifPresent(System.out::println);
 
             System.out.println("Successfully created lambda function.");
+            return functionResponse.functionArn();
         } catch (LambdaException | FileNotFoundException error) {
             System.err.println(error.getMessage());
             System.exit(1);
         }
+        return "";
     }
 }

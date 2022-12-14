@@ -10,18 +10,20 @@ import java.util.List;
 import java.util.Map;
 
 public class Lex {
-    public void botSetUp(LexModelsV2Client lexModelsV2Client, String roleArn, String lambdaArn) {
+    public void botSetUp(LexModelsV2Client lexModelsV2Client, String lexRoleArn, String lambdaArn) {
         String botName = "DBM";
         String botDescription = "Database Bot Manager";
         String botVersion = "DRAFT";
         String botAliasName = "DatabaseBotManager";
         String localeId = "en_US";
         String voiceId = "Salli";
+        String testBotAliasId = "TSTALIASID";
+        String testBotAliasName = "TestBotAlias";
 
         // Create bot
         CreateBotResponse createBotResponse = createBot(
                 lexModelsV2Client,
-                roleArn,
+                lexRoleArn,
                 botName,
                 botDescription
         );
@@ -371,6 +373,14 @@ public class Lex {
                 true
         );
 
+        // Build bot
+        BuildBotLocaleResponse buildBotLocaleResponse = buildBot(
+                lexModelsV2Client,
+                createBotResponse,
+                localeId,
+                botVersion
+        );
+
         // Create bot version
         CreateBotVersionResponse createVersion1BotResponse = createBotVersion(
                 lexModelsV2Client,
@@ -394,9 +404,15 @@ public class Lex {
                 createBotResponse,
                 lambdaArn,
                 localeId,
-                "DRAFT",
-                "TestBotAlias"
+                botVersion,
+                testBotAliasId,
+                testBotAliasName
         );
+
+//        CreateResourcePolicyRequest createResourcePolicyRequest = CreateResourcePolicyRequest
+//                .builder()
+//                .resourceArn(roleArn)
+//                .policy()
     }
 
     private CreateBotResponse createBot(LexModelsV2Client lexModelsV2Client,
@@ -428,6 +444,32 @@ public class Lex {
         waitUntilBotAvailable.matched().response().ifPresent(System.out::println);
 
         return createBotResponse;
+    }
+
+    private BuildBotLocaleResponse buildBot(LexModelsV2Client lexModelsV2Client,
+                                            CreateBotResponse createBotResponse,
+                                            String localeId,
+                                            String botVersion) {
+        BuildBotLocaleRequest buildBotLocaleRequest = BuildBotLocaleRequest
+                .builder()
+                .botId(createBotResponse.botId())
+                .botVersion(botVersion)
+                .localeId(localeId)
+                .build();
+
+        BuildBotLocaleResponse buildBotLocaleResponse = lexModelsV2Client.buildBotLocale(buildBotLocaleRequest);
+
+        DescribeBotLocaleRequest describeBotLocaleRequest = DescribeBotLocaleRequest
+                .builder()
+                .botId(buildBotLocaleResponse.botId())
+                .botVersion(buildBotLocaleResponse.botVersion())
+                .localeId(buildBotLocaleResponse.localeId())
+                .build();
+
+        WaiterResponse<DescribeBotLocaleResponse> waitUntilBotLocaleBuilt = lexModelsV2Client.waiter().waitUntilBotLocaleBuilt(describeBotLocaleRequest);
+        waitUntilBotLocaleBuilt.matched().response().ifPresent(System.out::println);
+
+        return buildBotLocaleResponse;
     }
 
     private CreateBotLocaleResponse createBotLocale(LexModelsV2Client lexModelsV2Client,
@@ -532,7 +574,7 @@ public class Lex {
                 .botId(createBotResponse.botId())
                 .botAliasName(botAliasName)
                 .botVersion(createBotVersionResponse.botVersion())
-                .description("Lambda function fires on user input (DBM).")
+                .description("database bot manager alias")
                 .build();
 
         CreateBotAliasResponse createBotAliasResponse = lexModelsV2Client.createBotAlias(createBotAliasRequest);
@@ -554,6 +596,7 @@ public class Lex {
                                                   String lambdaArn,
                                                   String localeId,
                                                   String botVersion,
+                                                  String botAliasId,
                                                   String botAliasName) {
         Map<String, BotAliasLocaleSettings> botAliasLocaleSettingsMap = new HashMap<>();
 
@@ -580,10 +623,10 @@ public class Lex {
                 .builder()
                 .botAliasLocaleSettings(botAliasLocaleSettingsMap)
                 .botId(createBotResponse.botId())
+                .botAliasId(botAliasId)
                 .botAliasName(botAliasName)
                 .botVersion(botVersion)
-                .botAliasId("TSTALIASID")
-                .description("Lambda function fires on user input (TestBotAlias).")
+                .description("test bot alias")
                 .build();
 
         UpdateBotAliasResponse updateBotAliasResponse = lexModelsV2Client.updateBotAlias(updateBotAliasRequest);

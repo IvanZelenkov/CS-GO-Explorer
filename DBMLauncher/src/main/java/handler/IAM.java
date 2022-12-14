@@ -3,7 +3,6 @@ package handler;
 import java.util.List;
 import java.io.FileReader;
 
-import com.amazonaws.retry.PredefinedRetryPolicies;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -39,6 +38,30 @@ public class IAM {
             System.exit(1);
         }
         return "";
+    }
+
+    public static String createServiceLinkedRole(IamClient iamClient,
+                                                 String awsServiceName,
+                                                 String customSuffix,
+                                                 String description) {
+        CreateServiceLinkedRoleRequest createServiceLinkedRoleRequest = CreateServiceLinkedRoleRequest
+                .builder()
+                .awsServiceName(awsServiceName)
+                .customSuffix(customSuffix)
+                .description(description)
+                .build();
+
+        CreateServiceLinkedRoleResponse createServiceLinkedRoleResponse =
+                iamClient.createServiceLinkedRole(createServiceLinkedRoleRequest);
+
+        GetRoleRequest getRoleRequest = GetRoleRequest
+                .builder()
+                .roleName("AWSServiceRoleForLexV2Bots")
+                .build();
+
+        GetRoleResponse getRoleResponse = iamClient.getRole(getRoleRequest);
+
+        return getRoleResponse.role().arn();
     }
 
     public static String createIAMPermissionsPolicy(IamClient iamClient, String policyName, String fileLocation) throws Exception {
