@@ -1,0 +1,5 @@
+handler/services/Lex.class
+handler/services/Lambda.class
+handler/services/Lambda$1.class
+handler/Launcher.class
+handler/services/IAM.class
