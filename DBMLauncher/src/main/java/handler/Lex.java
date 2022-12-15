@@ -37,72 +37,17 @@ public class Lex {
                 voiceId
         );
 
-        List<String> stringSampleValuesDatabaseActionList = new ArrayList<>();
-        stringSampleValuesDatabaseActionList.add("Get");
-        stringSampleValuesDatabaseActionList.add("Update");
-        stringSampleValuesDatabaseActionList.add("Insert");
-        stringSampleValuesDatabaseActionList.add("Remove");
-
-        // Create "DatabaseOperation" custom slot type
-        CreateSlotTypeResponse createDatabaseOperationSlotTypeResponse = createCustomSlotType(
-                lexModelsV2Client,
-                createBotResponse,
-                localeId,
-                botVersion,
-                "DatabaseOperation",
-                "Database actions that can be used on Students table",
-                getSlotTypeValues(stringSampleValuesDatabaseActionList)
-        );
-
         // Create "Greeting" intent
-        CreateIntentResponse greetingIntentResponse = createGreetingIntent(
+        CreateIntentResponse greetingIntentResponse = createIntent(
                 lexModelsV2Client,
                 createBotResponse,
                 localeId,
                 botVersion,
                 "Greeting",
                 "Bot greeting",
-                "Hello, Admin. What action do you want to perform on the \"Students\" table?",
-                getDatabaseOperationImageResponseCardButtons(),
-                getGreetingIntentSampleUtterances()
-        );
-
-        // Create "DatabaseOperation" slot of "Greeting" intent
-        CreateSlotResponse greetingIntentDatabaseOperationSlotResponse = createSlotWithImageResponseCard(
-                lexModelsV2Client,
-                createBotResponse,
-                greetingIntentResponse,
-                localeId,
-                botVersion,
-                createDatabaseOperationSlotTypeResponse.slotTypeName(),
-                "DESCRIPTION TODO.",
-                "Database Operations",
-                getDatabaseOperationImageResponseCardButtons(),
-                createDatabaseOperationSlotTypeResponse.slotTypeId()
-        );
-
-        // Prioritize the slots of "InsertStudent" intent in the order they created
-        List<CreateSlotResponse> greetingStudentIntentSlotResponsesList = new ArrayList<>();
-        greetingStudentIntentSlotResponsesList.add(greetingIntentDatabaseOperationSlotResponse);
-        List<Integer> greetingStudentIntentSlotPrioritiesList = new ArrayList<>();
-        greetingStudentIntentSlotPrioritiesList.add(0);
-
-        // InsertStudent intent should be updated because the slotPriorities method is missing at CreateIntentRequest in the AWS Java SDK.
-        // I assume that adding this method was forgotten by the developers.
-        // Intent file structure: https://docs.aws.amazon.com/lexv2/latest/dg/import-export-format.html#json-intent
-        UpdateIntentResponse greetingStudentIntentResponse = updateGreetingIntent(
-                lexModelsV2Client,
-                createBotResponse,
-                greetingIntentResponse,
-                greetingStudentIntentSlotResponsesList,
-                greetingStudentIntentSlotPrioritiesList,
-                localeId,
-                botVersion,
-                "Greeting",
-                "Bot greeting",
-                "Hello, Admin. What action do you want to perform on the \"Students\" table?",
-                getDatabaseOperationImageResponseCardButtons(),
-                getGreetingIntentSampleUtterances()
+                getGreetingIntentSampleUtterances(),
+                true,
+                false
         );
 
         // Create "GetStudent" intent
@@ -520,15 +465,15 @@ public class Lex {
 
         BuildBotLocaleResponse buildBotLocaleResponse = lexModelsV2Client.buildBotLocale(buildBotLocaleRequest);
 
-//        DescribeBotLocaleRequest describeBotLocaleRequest = DescribeBotLocaleRequest
-//                .builder()
-//                .botId(buildBotLocaleResponse.botId())
-//                .botVersion(buildBotLocaleResponse.botVersion())
-//                .localeId(buildBotLocaleResponse.localeId())
-//                .build();
-//
-//        WaiterResponse<DescribeBotLocaleResponse> waitUntilBotLocaleBuilt = lexModelsV2Client.waiter().waitUntilBotLocaleBuilt(describeBotLocaleRequest);
-//        waitUntilBotLocaleBuilt.matched().response().ifPresent(System.out::println);
+        DescribeBotLocaleRequest describeBotLocaleRequest = DescribeBotLocaleRequest
+                .builder()
+                .botId(buildBotLocaleResponse.botId())
+                .botVersion(buildBotLocaleResponse.botVersion())
+                .localeId(buildBotLocaleResponse.localeId())
+                .build();
+
+        WaiterResponse<DescribeBotLocaleResponse> waitUntilBotLocaleBuilt = lexModelsV2Client.waiter().waitUntilBotLocaleBuilt(describeBotLocaleRequest);
+        waitUntilBotLocaleBuilt.matched().response().ifPresent(System.out::println);
 
         return buildBotLocaleResponse;
     }
@@ -612,8 +557,8 @@ public class Lex {
 
         LambdaCodeHook lambdaCodeHook = LambdaCodeHook
                 .builder()
-                .lambdaARN(lambdaArn)
                 .codeHookInterfaceVersion("1.0")
+                .lambdaARN(lambdaArn)
                 .build();
 
         CodeHookSpecification codeHookSpecification = CodeHookSpecification
@@ -716,190 +661,6 @@ public class Lex {
             slotPriorityList.add(slotPriority);
         }
         return slotPriorityList;
-    }
-
-    private UpdateIntentResponse updateGreetingIntent(LexModelsV2Client lexModelsV2Client,
-                                                      CreateBotResponse createBotResponse,
-                                                      CreateIntentResponse createIntentResponse,
-                                                      List<CreateSlotResponse> intentSlotResponsesList,
-                                                      List<Integer> updateIntentSlotPrioritiesList,
-                                                      String localeId,
-                                                      String botVersion,
-                                                      String intentName,
-                                                      String intentDescription,
-                                                      String textMessage,
-                                                      List<Button> buttons,
-                                                      List<String> sampleUtterances) {
-        ImageResponseCard imageResponseCard = ImageResponseCard
-                .builder()
-                .title(" ")
-                .buttons(buttons)
-                .build();
-
-        PlainTextMessage plainTextMessage = PlainTextMessage
-                .builder()
-                .value(textMessage)
-                .build();
-
-        Message message1 = Message
-                .builder()
-                .plainTextMessage(plainTextMessage)
-                .build();
-
-        Message message2 = Message
-                .builder()
-                .imageResponseCard(imageResponseCard)
-                .build();
-
-        MessageGroup messageGroup1 = MessageGroup
-                .builder()
-                .message(message1)
-                .build();
-
-        MessageGroup messageGroup2 = MessageGroup
-                .builder()
-                .message(message2)
-                .build();
-
-        List<MessageGroup> messageGroupsList = new ArrayList<>();
-        messageGroupsList.add(messageGroup1);
-        messageGroupsList.add(messageGroup2);
-
-        ResponseSpecification responseSpecification = ResponseSpecification
-                .builder()
-                .messageGroups(messageGroupsList)
-                .build();
-
-        DialogActionType dialogActionType = DialogActionType
-                .END_CONVERSATION;
-
-        DialogAction dialogAction = DialogAction
-                .builder()
-                .type(dialogActionType)
-                .build();
-
-        DialogState dialogState = DialogState
-                .builder()
-                .dialogAction(dialogAction)
-                .build();
-
-        InitialResponseSetting initialResponseSetting = InitialResponseSetting
-                .builder()
-                .initialResponse(responseSpecification)
-                .nextStep(dialogState)
-                .build();
-
-        FulfillmentCodeHookSettings fulfillmentCodeHookSettings = FulfillmentCodeHookSettings
-                .builder()
-                .active(true)
-                .enabled(true)
-                .build();
-
-        UpdateIntentRequest updateIntentRequest = UpdateIntentRequest
-                .builder()
-                .botId(createBotResponse.botId())
-                .botVersion(botVersion)
-                .localeId(localeId)
-                .intentId(createIntentResponse.intentId())
-                .intentName(intentName)
-                .description(intentDescription)
-                .sampleUtterances(createSampleUtterances(sampleUtterances))
-                .fulfillmentCodeHook(fulfillmentCodeHookSettings)
-                .initialResponseSetting(initialResponseSetting)
-                .slotPriorities(slotPriorities(intentSlotResponsesList, updateIntentSlotPrioritiesList))
-                .build();
-
-        UpdateIntentResponse updateIntentResponse = lexModelsV2Client.updateIntent(updateIntentRequest);
-        return updateIntentResponse;
-    }
-
-    private CreateIntentResponse createGreetingIntent(LexModelsV2Client lexModelsV2Client,
-                                                      CreateBotResponse createBotResponse,
-                                                      String localeId,
-                                                      String botVersion,
-                                                      String intentName,
-                                                      String intentDescription,
-                                                      String textMessage,
-                                                      List<Button> buttons,
-                                                      List<String> sampleUtterances) {
-        ImageResponseCard imageResponseCard = ImageResponseCard
-                .builder()
-                .title(" ")
-                .buttons(buttons)
-                .build();
-
-        PlainTextMessage plainTextMessage = PlainTextMessage
-                .builder()
-                .value(textMessage)
-                .build();
-
-        Message message1 = Message
-                .builder()
-                .plainTextMessage(plainTextMessage)
-                .build();
-
-        Message message2 = Message
-                .builder()
-                .imageResponseCard(imageResponseCard)
-                .build();
-
-        MessageGroup messageGroup1 = MessageGroup
-                .builder()
-                .message(message1)
-                .build();
-
-        MessageGroup messageGroup2 = MessageGroup
-                .builder()
-                .message(message2)
-                .build();
-
-        List<MessageGroup> messageGroupsList = new ArrayList<>();
-        messageGroupsList.add(messageGroup1);
-        messageGroupsList.add(messageGroup2);
-
-        ResponseSpecification responseSpecification = ResponseSpecification
-                .builder()
-                .messageGroups(messageGroupsList)
-                .build();
-
-        PostDialogCodeHookInvocationSpecification postDialogCodeHookInvocationSpecification = PostDialogCodeHookInvocationSpecification
-                .builder()
-                .failureResponse(responseSpecification)
-                .build();
-
-        DialogCodeHookInvocationSetting dialogCodeHookInvocationSetting = DialogCodeHookInvocationSetting
-                .builder()
-                .active(true)
-                .enableCodeHookInvocation(true)
-                .postCodeHookSpecification(postDialogCodeHookInvocationSpecification)
-                .build();
-
-        InitialResponseSetting initialResponseSetting = InitialResponseSetting
-                .builder()
-//                .initialResponse(responseSpecification)
-                .codeHook(dialogCodeHookInvocationSetting)
-                .build();
-
-        FulfillmentCodeHookSettings fulfillmentCodeHookSettings = FulfillmentCodeHookSettings
-                .builder()
-                .active(true)
-                .enabled(true)
-                .build();
-
-        CreateIntentRequest createIntentRequest = CreateIntentRequest
-                .builder()
-                .botId(createBotResponse.botId())
-                .botVersion(botVersion)
-                .localeId(localeId)
-                .intentName(intentName)
-                .description(intentDescription)
-                .sampleUtterances(createSampleUtterances(sampleUtterances))
-                .fulfillmentCodeHook(fulfillmentCodeHookSettings)
-                .initialResponseSetting(initialResponseSetting)
-                .build();
-
-        CreateIntentResponse createIntentResponse = lexModelsV2Client.createIntent(createIntentRequest);
-        return createIntentResponse;
     }
 
     private CreateIntentResponse createIntent(LexModelsV2Client lexModelsV2Client,
@@ -1285,27 +1046,6 @@ public class Lex {
             slotTypeValuesList.add(slotTypeValue);
         }
         return slotTypeValuesList;
-    }
-
-    private List<Button> getDatabaseOperationImageResponseCardButtons() {
-        List<String> buttonNamesList = new ArrayList<>();
-        List<Button> buttonList = new ArrayList<>();
-
-        buttonNamesList.add("Get");
-        buttonNamesList.add("Update");
-        buttonNamesList.add("Insert");
-        buttonNamesList.add("Remove");
-
-        for (String buttonName: buttonNamesList) {
-            Button button = Button
-                    .builder()
-                    .text(buttonName)
-                    .value(buttonName)
-                    .build();
-
-            buttonList.add(button);
-        }
-        return buttonList;
     }
 
     private List<Button> getClassificationImageResponseCardButtons() {
