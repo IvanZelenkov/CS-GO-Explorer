@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Lex {
-    public void botSetUp(LexModelsV2Client lexModelsV2Client, String lexRoleArn, String lambdaArn) {
+    public void botSetUp(LexModelsV2Client lexModelsV2Client, String lexRoleArn, String lambdaArn) throws InterruptedException {
         String botName = "DBM";
         String botDescription = "Database Bot Manager";
         String botVersion = "DRAFT";
@@ -37,17 +37,73 @@ public class Lex {
                 voiceId
         );
 
+        List<String> stringSampleValuesDatabaseActionList = new ArrayList<>();
+        stringSampleValuesDatabaseActionList.add("Get");
+        stringSampleValuesDatabaseActionList.add("Update");
+        stringSampleValuesDatabaseActionList.add("Insert");
+        stringSampleValuesDatabaseActionList.add("Remove");
+
+        // Create "DatabaseAction" custom slot type
+        CreateSlotTypeResponse createDatabaseActionSlotTypeResponse = createCustomSlotType(
+                lexModelsV2Client,
+                createBotResponse,
+                localeId,
+                botVersion,
+                "DatabaseAction",
+                "Database actions that can be used on Students table",
+                getSlotTypeValues(stringSampleValuesDatabaseActionList)
+        );
+
         // Create "Greeting" intent
-        CreateIntentResponse greetingIntentResponse = createIntent(
+        CreateIntentResponse greetingIntentResponse = createGreetingIntent(
                 lexModelsV2Client,
                 createBotResponse,
                 localeId,
                 botVersion,
                 "Greeting",
                 "Bot greeting",
+                "Hello, Admin. What action do you want to perform on the \"Students\" table?",
+                getGreetingImageResponseCardButtons(),
                 getGreetingIntentSampleUtterances(),
-                true,
-                false
+                lambdaArn
+        );
+
+        // Create "DatabaseAction" slot of "InsertStudent" intent
+        CreateSlotResponse greetingIntentDatabaseActionSlotResponse = createSlotWithImageResponseCard(
+                lexModelsV2Client,
+                createBotResponse,
+                greetingIntentResponse,
+                localeId,
+                botVersion,
+                createDatabaseActionSlotTypeResponse.slotTypeName(),
+                "Classification is a required attribute that needs to be inserted into the Students table.",
+                "Student Classification",
+                getClassificationImageResponseCardButtons(),
+                createDatabaseActionSlotTypeResponse.slotTypeId()
+        );
+
+        // Prioritize the slots of "InsertStudent" intent in the order they created
+        List<CreateSlotResponse> greetingStudentIntentSlotResponsesList = new ArrayList<>();
+        greetingStudentIntentSlotResponsesList.add(greetingIntentDatabaseActionSlotResponse);
+        List<Integer> greetingStudentIntentSlotPrioritiesList = new ArrayList<>();
+        greetingStudentIntentSlotPrioritiesList.add(0);
+
+        // InsertStudent intent should be updated because the slotPriorities method is missing at CreateIntentRequest in the AWS Java SDK.
+        // I assume that adding this method was forgotten by the developers.
+        // Intent file structure: https://docs.aws.amazon.com/lexv2/latest/dg/import-export-format.html#json-intent
+        UpdateIntentResponse greetingStudentIntentResponse = updateGreetingIntent(
+                lexModelsV2Client,
+                createBotResponse,
+                greetingIntentResponse,
+                greetingStudentIntentSlotResponsesList,
+                greetingStudentIntentSlotPrioritiesList,
+                localeId,
+                botVersion,
+                "Greeting",
+                "Bot greeting",
+                "Hello, Admin. What action do you want to perform on the \"Students\" table?",
+                getGreetingImageResponseCardButtons(),
+                getGreetingIntentSampleUtterances()
         );
 
         // Create "GetStudent" intent
@@ -70,7 +126,7 @@ public class Lex {
                 localeId,
                 botVersion,
                 "StudentID",
-                "The student ID slot is required to search for and retrieve student data.",
+                "StudentID slot is required to search for and retrieve student data.",
                 "Please enter a student ID to search.",
                 "AMAZON.Number"
         );
@@ -96,7 +152,8 @@ public class Lex {
                 "GET student data",
                 getGetStudentIntentSampleUtterances(),
                 true,
-                false);
+                false
+        );
 
         // Create "RemoveStudent" intent
         CreateIntentResponse removeStudentIntentResponse = createIntent(
@@ -118,7 +175,7 @@ public class Lex {
                 localeId,
                 botVersion,
                 "StudentID",
-                "The student ID slot is required to search and remove a student.",
+                "StudentID slot is required to search and remove a student.",
                 "Please enter a student ID.",
                 "AMAZON.Number"
         );
@@ -144,7 +201,8 @@ public class Lex {
                 "REMOVE student data",
                 getRemoveStudentIntentSampleUtterances(),
                 true,
-                false);
+                false
+        );
 
         // Create "UpdateStudent" intent
         CreateIntentResponse updateStudentIntentResponse = createIntent(
@@ -167,7 +225,7 @@ public class Lex {
                 localeId,
                 botVersion,
                 "StudentID",
-                "The student ID slot is required to search for a student.",
+                "StudentID slot is required to search for a student.",
                 "Please enter a student ID to find a person.",
                 "AMAZON.Number"
         );
@@ -225,15 +283,21 @@ public class Lex {
                 true,
                 false);
 
-        // Create "Classification" custom slot
-        CreateSlotTypeResponse createSlotTypeResponse = createCustomSlotType(
+        List<String> stringSampleValuesClassificationList = new ArrayList<>();
+        stringSampleValuesClassificationList.add("Freshman");
+        stringSampleValuesClassificationList.add("Sophomore");
+        stringSampleValuesClassificationList.add("Junior");
+        stringSampleValuesClassificationList.add("Senior");
+
+        // Create "Classification" custom slot type
+        CreateSlotTypeResponse createClassificationSlotTypeResponse = createCustomSlotType(
                 lexModelsV2Client,
                 createBotResponse,
                 localeId,
                 botVersion,
                 "Classification",
                 "Classification level of the student at the university",
-                getClassificationSlotTypeValues()
+                getSlotTypeValues(stringSampleValuesClassificationList)
         );
 
         // Create "InsertStudent" intent
@@ -262,7 +326,7 @@ public class Lex {
                 "AMAZON.Number"
         );
 
-        // Create "StudentID" slot of "InsertStudent" intent
+        // Create "FirstName" slot of "InsertStudent" intent
         CreateSlotResponse insertStudentIntentFirstNameSlotResponse = createSlotWithPlainTextPrompt(
                 lexModelsV2Client,
                 createBotResponse,
@@ -275,7 +339,7 @@ public class Lex {
                 "AMAZON.FirstName"
         );
 
-        // Create "StudentID" slot of "InsertStudent" intent
+        // Create "LastName" slot of "InsertStudent" intent
         CreateSlotResponse insertStudentIntentLastNameSlotResponse = createSlotWithPlainTextPrompt(
                 lexModelsV2Client,
                 createBotResponse,
@@ -288,7 +352,7 @@ public class Lex {
                 "AMAZON.LastName"
         );
 
-        // Create "StudentID" slot of "InsertStudent" intent
+        // Create "DateOfBirth" slot of "InsertStudent" intent
         CreateSlotResponse insertStudentIntentDateOfBirthSlotResponse = createSlotWithPlainTextPrompt(
                 lexModelsV2Client,
                 createBotResponse,
@@ -301,21 +365,21 @@ public class Lex {
                 "AMAZON.Date"
         );
 
-        // Create "StudentID" slot of "InsertStudent" intent
+        // Create "Classification" slot of "InsertStudent" intent
         CreateSlotResponse insertStudentIntentClassificationSlotResponse = createSlotWithImageResponseCard(
                 lexModelsV2Client,
                 createBotResponse,
                 insertStudentIntentResponse,
                 localeId,
                 botVersion,
-                createSlotTypeResponse.slotTypeName(),
+                createClassificationSlotTypeResponse.slotTypeName(),
                 "Classification is a required attribute that needs to be inserted into the Students table.",
                 "Student Classification",
                 getClassificationImageResponseCardButtons(),
-                createSlotTypeResponse.slotTypeId()
+                createClassificationSlotTypeResponse.slotTypeId()
         );
 
-        // Create "StudentID" slot of "InsertStudent" intent
+        // Create "Email" slot of "InsertStudent" intent
         CreateSlotResponse insertStudentIntentEmailSlotResponse = createSlotWithPlainTextPrompt(
                 lexModelsV2Client,
                 createBotResponse,
@@ -359,22 +423,35 @@ public class Lex {
                 "INSERT student data",
                 getInsertStudentIntentSampleUtterances(),
                 true,
-                false);
+                false
+        );
 
-        // AnotherActionRejected intent
-        CreateIntentResponse anotherActionRejectedIntentResponse = createIntent(lexModelsV2Client,
+        // EndOfConversation intent
+        CreateIntentResponse endOfConversationIntentResponse = createIntent(
+                lexModelsV2Client,
                 createBotResponse,
                 localeId,
                 botVersion,
-                "AnotherActionRejected",
+                "EndOfConversation",
                 "End the conversation if the user no longer wants to manage the database",
-                getAnotherActionRejectedIntentSampleUtterances(),
+                getEndOfConversationIntentSampleUtterances(),
                 false,
                 true
         );
 
+        // Update TestBotAlias by enabling the lambda hook
+        UpdateBotAliasResponse updateBotAliasResponse = updateBotAlias(
+                lexModelsV2Client,
+                createBotResponse,
+                lambdaArn,
+                localeId,
+                botVersion,
+                testBotAliasId,
+                testBotAliasName
+        );
+
         // Build bot
-        BuildBotLocaleResponse buildBotLocaleResponse = buildBot(
+        BuildBotLocaleResponse buildBotLocaleResponse = buildBotLocale(
                 lexModelsV2Client,
                 createBotResponse,
                 localeId,
@@ -398,21 +475,6 @@ public class Lex {
                 createVersion1BotResponse,
                 botAliasName
         );
-
-        UpdateBotAliasResponse updateBotAliasResponse = updateBotAlias(
-                lexModelsV2Client,
-                createBotResponse,
-                lambdaArn,
-                localeId,
-                botVersion,
-                testBotAliasId,
-                testBotAliasName
-        );
-
-//        CreateResourcePolicyRequest createResourcePolicyRequest = CreateResourcePolicyRequest
-//                .builder()
-//                .resourceArn(roleArn)
-//                .policy()
     }
 
     private CreateBotResponse createBot(LexModelsV2Client lexModelsV2Client,
@@ -446,10 +508,10 @@ public class Lex {
         return createBotResponse;
     }
 
-    private BuildBotLocaleResponse buildBot(LexModelsV2Client lexModelsV2Client,
-                                            CreateBotResponse createBotResponse,
-                                            String localeId,
-                                            String botVersion) {
+    private BuildBotLocaleResponse buildBotLocale(LexModelsV2Client lexModelsV2Client,
+                                                  CreateBotResponse createBotResponse,
+                                                  String localeId,
+                                                  String botVersion) {
         BuildBotLocaleRequest buildBotLocaleRequest = BuildBotLocaleRequest
                 .builder()
                 .botId(createBotResponse.botId())
@@ -459,15 +521,15 @@ public class Lex {
 
         BuildBotLocaleResponse buildBotLocaleResponse = lexModelsV2Client.buildBotLocale(buildBotLocaleRequest);
 
-        DescribeBotLocaleRequest describeBotLocaleRequest = DescribeBotLocaleRequest
-                .builder()
-                .botId(buildBotLocaleResponse.botId())
-                .botVersion(buildBotLocaleResponse.botVersion())
-                .localeId(buildBotLocaleResponse.localeId())
-                .build();
-
-        WaiterResponse<DescribeBotLocaleResponse> waitUntilBotLocaleBuilt = lexModelsV2Client.waiter().waitUntilBotLocaleBuilt(describeBotLocaleRequest);
-        waitUntilBotLocaleBuilt.matched().response().ifPresent(System.out::println);
+//        DescribeBotLocaleRequest describeBotLocaleRequest = DescribeBotLocaleRequest
+//                .builder()
+//                .botId(buildBotLocaleResponse.botId())
+//                .botVersion(buildBotLocaleResponse.botVersion())
+//                .localeId(buildBotLocaleResponse.localeId())
+//                .build();
+//
+//        WaiterResponse<DescribeBotLocaleResponse> waitUntilBotLocaleBuilt = lexModelsV2Client.waiter().waitUntilBotLocaleBuilt(describeBotLocaleRequest);
+//        waitUntilBotLocaleBuilt.matched().response().ifPresent(System.out::println);
 
         return buildBotLocaleResponse;
     }
@@ -479,8 +541,8 @@ public class Lex {
                                                     String voiceId) {
         VoiceSettings voiceSettings = VoiceSettings
                 .builder()
-                .voiceId(voiceId)
                 .engine("standard")
+                .voiceId(voiceId)
                 .build();
 
         CreateBotLocaleRequest createBotLocaleRequest = CreateBotLocaleRequest
@@ -489,7 +551,7 @@ public class Lex {
                 .botVersion(botVersion)
                 .localeId(localeId)
                 .voiceSettings(voiceSettings)
-                .nluIntentConfidenceThreshold(0.4)
+                .nluIntentConfidenceThreshold(0.5)
                 .build();
 
         CreateBotLocaleResponse createBotLocaleResponse = lexModelsV2Client.createBotLocale(createBotLocaleRequest);
@@ -524,7 +586,7 @@ public class Lex {
                 .builder()
                 .botId(createBotResponse.botId())
                 .botVersionLocaleSpecification(botVersionLocaleDetailsMap)
-                .description("Main version")
+                .description("Release version")
                 .build();
 
         CreateBotVersionResponse createBotVersionResponse = lexModelsV2Client.createBotVersion(createBotVersionRequest);
@@ -562,8 +624,8 @@ public class Lex {
 
         BotAliasLocaleSettings botAliasLocaleSettings = BotAliasLocaleSettings
                 .builder()
-                .enabled(true)
                 .codeHookSpecification(codeHookSpecification)
+                .enabled(true)
                 .build();
 
         botAliasLocaleSettingsMap.put(localeId, botAliasLocaleSettings);
@@ -613,8 +675,8 @@ public class Lex {
 
         BotAliasLocaleSettings botAliasLocaleSettings = BotAliasLocaleSettings
                 .builder()
-                .enabled(true)
                 .codeHookSpecification(codeHookSpecification)
+                .enabled(true)
                 .build();
 
         botAliasLocaleSettingsMap.put(localeId, botAliasLocaleSettings);
@@ -657,6 +719,190 @@ public class Lex {
         return slotPriorityList;
     }
 
+    private UpdateIntentResponse updateGreetingIntent(LexModelsV2Client lexModelsV2Client,
+                                                      CreateBotResponse createBotResponse,
+                                                      CreateIntentResponse createIntentResponse,
+                                                      List<CreateSlotResponse> intentSlotResponsesList,
+                                                      List<Integer> updateIntentSlotPrioritiesList,
+                                                      String localeId,
+                                                      String botVersion,
+                                                      String intentName,
+                                                      String intentDescription,
+                                                      String textMessage,
+                                                      List<Button> buttons,
+                                                      List<String> sampleUtterances) {
+        ImageResponseCard imageResponseCard = ImageResponseCard
+                .builder()
+                .title(" ")
+                .buttons(buttons)
+                .build();
+
+        PlainTextMessage plainTextMessage = PlainTextMessage
+                .builder()
+                .value(textMessage)
+                .build();
+
+        Message message1 = Message
+                .builder()
+                .plainTextMessage(plainTextMessage)
+                .build();
+
+        Message message2 = Message
+                .builder()
+                .imageResponseCard(imageResponseCard)
+                .build();
+
+        MessageGroup messageGroup1 = MessageGroup
+                .builder()
+                .message(message1)
+                .build();
+
+        MessageGroup messageGroup2 = MessageGroup
+                .builder()
+                .message(message2)
+                .build();
+
+        List<MessageGroup> messageGroupsList = new ArrayList<>();
+        messageGroupsList.add(messageGroup1);
+        messageGroupsList.add(messageGroup2);
+
+        ResponseSpecification responseSpecification = ResponseSpecification
+                .builder()
+                .messageGroups(messageGroupsList)
+                .build();
+
+        PostDialogCodeHookInvocationSpecification postDialogCodeHookInvocationSpecification = PostDialogCodeHookInvocationSpecification
+                .builder()
+                .failureResponse(responseSpecification)
+                .build();
+
+        DialogCodeHookInvocationSetting dialogCodeHookInvocationSetting = DialogCodeHookInvocationSetting
+                .builder()
+                .active(true)
+                .enableCodeHookInvocation(true)
+                .postCodeHookSpecification(postDialogCodeHookInvocationSpecification)
+                .build();
+
+        InitialResponseSetting initialResponseSetting = InitialResponseSetting
+                .builder()
+//                .initialResponse(responseSpecification)
+                .codeHook(dialogCodeHookInvocationSetting)
+                .build();
+
+        FulfillmentCodeHookSettings fulfillmentCodeHookSettings = FulfillmentCodeHookSettings
+                .builder()
+                .active(true)
+                .enabled(true)
+                .build();
+
+        UpdateIntentRequest updateIntentRequest = UpdateIntentRequest
+                .builder()
+                .botId(createBotResponse.botId())
+                .botVersion(botVersion)
+                .localeId(localeId)
+                .intentId(createBotResponse.botId())
+                .intentName(intentName)
+                .description(intentDescription)
+                .sampleUtterances(createSampleUtterances(sampleUtterances))
+                .fulfillmentCodeHook(fulfillmentCodeHookSettings)
+                .initialResponseSetting(initialResponseSetting)
+                .slotPriorities(slotPriorities(intentSlotResponsesList, updateIntentSlotPrioritiesList))
+                .build();
+
+        UpdateIntentResponse updateIntentResponse = lexModelsV2Client.updateIntent(updateIntentRequest);
+        return updateIntentResponse;
+    }
+
+    private CreateIntentResponse createGreetingIntent(LexModelsV2Client lexModelsV2Client,
+                                                      CreateBotResponse createBotResponse,
+                                                      String localeId,
+                                                      String botVersion,
+                                                      String intentName,
+                                                      String intentDescription,
+                                                      String textMessage,
+                                                      List<Button> buttons,
+                                                      List<String> sampleUtterances,
+                                                      String lambdaArn) {
+        ImageResponseCard imageResponseCard = ImageResponseCard
+                .builder()
+                .title(" ")
+                .buttons(buttons)
+                .build();
+
+        PlainTextMessage plainTextMessage = PlainTextMessage
+                .builder()
+                .value(textMessage)
+                .build();
+
+        Message message1 = Message
+                .builder()
+                .plainTextMessage(plainTextMessage)
+                .build();
+
+        Message message2 = Message
+                .builder()
+                .imageResponseCard(imageResponseCard)
+                .build();
+
+        MessageGroup messageGroup1 = MessageGroup
+                .builder()
+                .message(message1)
+                .build();
+
+        MessageGroup messageGroup2 = MessageGroup
+                .builder()
+                .message(message2)
+                .build();
+
+        List<MessageGroup> messageGroupsList = new ArrayList<>();
+        messageGroupsList.add(messageGroup1);
+        messageGroupsList.add(messageGroup2);
+
+        ResponseSpecification responseSpecification = ResponseSpecification
+                .builder()
+                .messageGroups(messageGroupsList)
+                .build();
+
+        PostDialogCodeHookInvocationSpecification postDialogCodeHookInvocationSpecification = PostDialogCodeHookInvocationSpecification
+                .builder()
+                .failureResponse(responseSpecification)
+                .build();
+
+        DialogCodeHookInvocationSetting dialogCodeHookInvocationSetting = DialogCodeHookInvocationSetting
+                .builder()
+                .active(true)
+                .enableCodeHookInvocation(true)
+                .postCodeHookSpecification(postDialogCodeHookInvocationSpecification)
+                .build();
+
+        InitialResponseSetting initialResponseSetting = InitialResponseSetting
+                .builder()
+//                .initialResponse(responseSpecification)
+                .codeHook(dialogCodeHookInvocationSetting)
+                .build();
+
+        FulfillmentCodeHookSettings fulfillmentCodeHookSettings = FulfillmentCodeHookSettings
+                .builder()
+                .active(true)
+                .enabled(true)
+                .build();
+
+        CreateIntentRequest createIntentRequest = CreateIntentRequest
+                .builder()
+                .botId(createBotResponse.botId())
+                .botVersion(botVersion)
+                .localeId(localeId)
+                .intentName(intentName)
+                .description(intentDescription)
+                .sampleUtterances(createSampleUtterances(sampleUtterances))
+                .fulfillmentCodeHook(fulfillmentCodeHookSettings)
+                .initialResponseSetting(initialResponseSetting)
+                .build();
+
+        CreateIntentResponse createIntentResponse = lexModelsV2Client.createIntent(createIntentRequest);
+        return createIntentResponse;
+    }
+
     private CreateIntentResponse createIntent(LexModelsV2Client lexModelsV2Client,
                                               CreateBotResponse createBotResponse,
                                               String localeId,
@@ -671,15 +917,16 @@ public class Lex {
         if (isFulfillmentCodeHook && !isDialogCodeHook) {
             FulfillmentCodeHookSettings fulfillmentCodeHookSettings = FulfillmentCodeHookSettings
                     .builder()
+                    .active(true)
                     .enabled(true)
                     .build();
 
             createIntentRequest = CreateIntentRequest
                     .builder()
-                    .intentName(intentName)
                     .botId(createBotResponse.botId())
                     .botVersion(botVersion)
                     .localeId(localeId)
+                    .intentName(intentName)
                     .description(intentDescription)
                     .sampleUtterances(createSampleUtterances(sampleUtterances))
                     .fulfillmentCodeHook(fulfillmentCodeHookSettings)
@@ -703,6 +950,7 @@ public class Lex {
         } else if (isFulfillmentCodeHook && isDialogCodeHook) {
             FulfillmentCodeHookSettings fulfillmentCodeHookSettings = FulfillmentCodeHookSettings
                     .builder()
+                    .active(true)
                     .enabled(true)
                     .build();
 
@@ -735,6 +983,7 @@ public class Lex {
                     .build();
         }
         CreateIntentResponse createIntentResponse = lexModelsV2Client.createIntent(createIntentRequest);
+
         return createIntentResponse;
     }
 
@@ -755,6 +1004,7 @@ public class Lex {
         if (isFulfillmentCodeHook && !isDialogCodeHook) {
             FulfillmentCodeHookSettings fulfillmentCodeHookSettings = FulfillmentCodeHookSettings
                     .builder()
+                    .active(true)
                     .enabled(true)
                     .build();
 
@@ -791,6 +1041,7 @@ public class Lex {
         } else {
             FulfillmentCodeHookSettings fulfillmentCodeHookSettings = FulfillmentCodeHookSettings
                     .builder()
+                    .active(true)
                     .enabled(true)
                     .build();
 
@@ -809,7 +1060,6 @@ public class Lex {
                     .description(intentDescription)
                     .sampleUtterances(createSampleUtterances(sampleUtterances))
                     .slotPriorities(slotPriorities(updateStudentIntentSlotResponsesList, updateStudentIntentSlotPrioritiesList))
-                    .dialogCodeHook(dialogCodeHookSettings)
                     .fulfillmentCodeHook(fulfillmentCodeHookSettings)
                     .dialogCodeHook(dialogCodeHookSettings)
                     .build();
@@ -818,7 +1068,7 @@ public class Lex {
         return updateIntentResponse;
     }
 
-    private List<SampleUtterance> createSampleUtterances(List<String> sampleUtterances) {
+    public static List<SampleUtterance> createSampleUtterances(List<String> sampleUtterances) {
         List<SampleUtterance> sampleUtterancesListObjects = new ArrayList<>();
 
         for (String utterance : sampleUtterances) {
@@ -970,7 +1220,7 @@ public class Lex {
         return createSlotTypeResponse;
     }
 
-    private List<String> getGreetingIntentSampleUtterances() {
+    public static List<String> getGreetingIntentSampleUtterances() {
         List<String> sampleUtterances = new ArrayList<>();
         sampleUtterances.add("Hi");
         sampleUtterances.add("Hello");
@@ -1011,7 +1261,7 @@ public class Lex {
         return sampleUtterances;
     }
 
-    private List<String> getAnotherActionRejectedIntentSampleUtterances() {
+    private List<String> getEndOfConversationIntentSampleUtterances() {
         List<String> sampleUtterances = new ArrayList<>();
         sampleUtterances.add("No");
         sampleUtterances.add("No action");
@@ -1020,14 +1270,8 @@ public class Lex {
         return sampleUtterances;
     }
 
-    private List<SlotTypeValue> getClassificationSlotTypeValues() {
-        List<String> stringSampleValuesList = new ArrayList<>();
+    private List<SlotTypeValue> getSlotTypeValues(List<String> stringSampleValuesList) {
         List<SlotTypeValue> slotTypeValuesList = new ArrayList<>();
-
-        stringSampleValuesList.add("Freshman");
-        stringSampleValuesList.add("Sophomore");
-        stringSampleValuesList.add("Junior");
-        stringSampleValuesList.add("Senior");
 
         for (String stringSampleValue : stringSampleValuesList) {
             SampleValue sampleValue = SampleValue.builder()
@@ -1042,6 +1286,27 @@ public class Lex {
             slotTypeValuesList.add(slotTypeValue);
         }
         return slotTypeValuesList;
+    }
+
+    private List<Button> getGreetingImageResponseCardButtons() {
+        List<String> buttonNamesList = new ArrayList<>();
+        List<Button> buttonList = new ArrayList<>();
+
+        buttonNamesList.add("Get");
+        buttonNamesList.add("Update");
+        buttonNamesList.add("Insert");
+        buttonNamesList.add("Remove");
+
+        for (String buttonName: buttonNamesList) {
+            Button button = Button
+                    .builder()
+                    .text(buttonName)
+                    .value(buttonName)
+                    .build();
+
+            buttonList.add(button);
+        }
+        return buttonList;
     }
 
     private List<Button> getClassificationImageResponseCardButtons() {
