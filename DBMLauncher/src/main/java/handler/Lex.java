@@ -43,13 +43,13 @@ public class Lex {
         stringSampleValuesDatabaseActionList.add("Insert");
         stringSampleValuesDatabaseActionList.add("Remove");
 
-        // Create "DatabaseAction" custom slot type
-        CreateSlotTypeResponse createDatabaseActionSlotTypeResponse = createCustomSlotType(
+        // Create "DatabaseOperation" custom slot type
+        CreateSlotTypeResponse createDatabaseOperationSlotTypeResponse = createCustomSlotType(
                 lexModelsV2Client,
                 createBotResponse,
                 localeId,
                 botVersion,
-                "DatabaseAction",
+                "DatabaseOperation",
                 "Database actions that can be used on Students table",
                 getSlotTypeValues(stringSampleValuesDatabaseActionList)
         );
@@ -63,28 +63,27 @@ public class Lex {
                 "Greeting",
                 "Bot greeting",
                 "Hello, Admin. What action do you want to perform on the \"Students\" table?",
-                getGreetingImageResponseCardButtons(),
-                getGreetingIntentSampleUtterances(),
-                lambdaArn
+                getDatabaseOperationImageResponseCardButtons(),
+                getGreetingIntentSampleUtterances()
         );
 
-        // Create "DatabaseAction" slot of "InsertStudent" intent
-        CreateSlotResponse greetingIntentDatabaseActionSlotResponse = createSlotWithImageResponseCard(
+        // Create "DatabaseOperation" slot of "Greeting" intent
+        CreateSlotResponse greetingIntentDatabaseOperationSlotResponse = createSlotWithImageResponseCard(
                 lexModelsV2Client,
                 createBotResponse,
                 greetingIntentResponse,
                 localeId,
                 botVersion,
-                createDatabaseActionSlotTypeResponse.slotTypeName(),
-                "Classification is a required attribute that needs to be inserted into the Students table.",
-                "Student Classification",
-                getClassificationImageResponseCardButtons(),
-                createDatabaseActionSlotTypeResponse.slotTypeId()
+                createDatabaseOperationSlotTypeResponse.slotTypeName(),
+                "DESCRIPTION TODO.",
+                "Database Operations",
+                getDatabaseOperationImageResponseCardButtons(),
+                createDatabaseOperationSlotTypeResponse.slotTypeId()
         );
 
         // Prioritize the slots of "InsertStudent" intent in the order they created
         List<CreateSlotResponse> greetingStudentIntentSlotResponsesList = new ArrayList<>();
-        greetingStudentIntentSlotResponsesList.add(greetingIntentDatabaseActionSlotResponse);
+        greetingStudentIntentSlotResponsesList.add(greetingIntentDatabaseOperationSlotResponse);
         List<Integer> greetingStudentIntentSlotPrioritiesList = new ArrayList<>();
         greetingStudentIntentSlotPrioritiesList.add(0);
 
@@ -102,7 +101,7 @@ public class Lex {
                 "Greeting",
                 "Bot greeting",
                 "Hello, Admin. What action do you want to perform on the \"Students\" table?",
-                getGreetingImageResponseCardButtons(),
+                getDatabaseOperationImageResponseCardButtons(),
                 getGreetingIntentSampleUtterances()
         );
 
@@ -771,22 +770,23 @@ public class Lex {
                 .messageGroups(messageGroupsList)
                 .build();
 
-        PostDialogCodeHookInvocationSpecification postDialogCodeHookInvocationSpecification = PostDialogCodeHookInvocationSpecification
+        DialogActionType dialogActionType = DialogActionType
+                .END_CONVERSATION;
+
+        DialogAction dialogAction = DialogAction
                 .builder()
-                .failureResponse(responseSpecification)
+                .type(dialogActionType)
                 .build();
 
-        DialogCodeHookInvocationSetting dialogCodeHookInvocationSetting = DialogCodeHookInvocationSetting
+        DialogState dialogState = DialogState
                 .builder()
-                .active(true)
-                .enableCodeHookInvocation(true)
-                .postCodeHookSpecification(postDialogCodeHookInvocationSpecification)
+                .dialogAction(dialogAction)
                 .build();
 
         InitialResponseSetting initialResponseSetting = InitialResponseSetting
                 .builder()
-//                .initialResponse(responseSpecification)
-                .codeHook(dialogCodeHookInvocationSetting)
+                .initialResponse(responseSpecification)
+                .nextStep(dialogState)
                 .build();
 
         FulfillmentCodeHookSettings fulfillmentCodeHookSettings = FulfillmentCodeHookSettings
@@ -800,7 +800,7 @@ public class Lex {
                 .botId(createBotResponse.botId())
                 .botVersion(botVersion)
                 .localeId(localeId)
-                .intentId(createBotResponse.botId())
+                .intentId(createIntentResponse.intentId())
                 .intentName(intentName)
                 .description(intentDescription)
                 .sampleUtterances(createSampleUtterances(sampleUtterances))
@@ -821,8 +821,7 @@ public class Lex {
                                                       String intentDescription,
                                                       String textMessage,
                                                       List<Button> buttons,
-                                                      List<String> sampleUtterances,
-                                                      String lambdaArn) {
+                                                      List<String> sampleUtterances) {
         ImageResponseCard imageResponseCard = ImageResponseCard
                 .builder()
                 .title(" ")
@@ -1288,7 +1287,7 @@ public class Lex {
         return slotTypeValuesList;
     }
 
-    private List<Button> getGreetingImageResponseCardButtons() {
+    private List<Button> getDatabaseOperationImageResponseCardButtons() {
         List<String> buttonNamesList = new ArrayList<>();
         List<Button> buttonList = new ArrayList<>();
 
