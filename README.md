@@ -88,7 +88,8 @@ This feature should help a database administrator to know what happened and at w
     9. At this point a new profile entry is created in your local AWS CLI credentials and config files.
 
 2. Deploy Database Bot Manager Application
-    Open a command line and enter the command in the following format:
+   
+   Open a command line and enter the command in the following format:
     ```java -jar <accessKey> <secretAccessKey> <awsAppDeploymentRegion> <adminEmail>```
 
     ```accessKey``` - used to sign programmatic requests that you make to AWS.
