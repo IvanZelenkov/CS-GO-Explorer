@@ -1,5 +1,0 @@
-handler/Students.class
-services/SNS.class
-services/S3.class
-services/DynamoDB.class
-handler/BotLogic.class
