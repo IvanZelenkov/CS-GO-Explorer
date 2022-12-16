@@ -1,5 +1,7 @@
 # Database Bot Manager
 
+![DBMSolutionArchitecture](https://user-images.githubusercontent.com/64171964/208028293-644c8275-3cc7-464c-9b5d-fa73e5d95e6b.png)
+
 ### DBMLogic content
 - DBMLogic
     - Assignment3.pdf
