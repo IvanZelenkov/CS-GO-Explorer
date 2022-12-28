@@ -2,7 +2,7 @@
 
 ![DBMSolutionArchitecture](https://user-images.githubusercontent.com/64171964/208028293-644c8275-3cc7-464c-9b5d-fa73e5d95e6b.png)
 
-**NEW UPDATE: A web interface has been created, so the application is currently available online at the following link: https://dy98y34hu2srm.cloudfront.net/index.html**
+**NEW UPDATE: A web interface has been created, so the application is currently available online at the following link: https://dy98y34hu2srm.cloudfront.net/index.html and the form of the parent page that will be improved in the future: https://dy98y34hu2srm.cloudfront.net/parent.html**
 
 ## DBMLauncher
 
