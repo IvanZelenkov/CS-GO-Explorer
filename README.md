@@ -2,9 +2,9 @@
 
 ![DBMSolutionArchitecture](https://user-images.githubusercontent.com/64171964/208028293-644c8275-3cc7-464c-9b5d-fa73e5d95e6b.png)
 
-**A Bot web interface has been created, so the application is currently available online at the following link: https://dev9055.dqufhvl8gk5wp.amplifyapp.com 
+**A Bot web interface has been created, so the application is currently available online at the following link: https://dev9055.dqufhvl8gk5wp.amplifyapp.com**
 
-A Beta version of the website UI has been created and is currently available online at the following link: https://dev9690.d15pld12asamta.amplifyapp.com**
+**A Beta version of the website UI has been created and is currently available online at the following link: https://dev9690.d15pld12asamta.amplifyapp.com**
 
 ## DBMLauncher
 
