@@ -10,7 +10,9 @@ import java.io.IOException;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 import services.database.DynamoDB;
@@ -36,12 +38,14 @@ public class BotLogic implements RequestHandler<Map<String, Object>, Object> {
      */
     @Override
     public Object handleRequest(Map<String, Object> event, Context context) {
+        DynamoDbClient dynamoDbClient = DynamoDB.authenticateDynamoDB(getAwsBasicCredentials(), Region.of(System.getenv("AWS_REGION")));
+        if (event.containsKey("GET_TABLE_DATA")) {
+            return DynamoDB.scanTable(dynamoDbClient);
+        }
         currentEvent = event;
         String intentName = getIntentName(event);
         String studentIDValue;
-        DynamoDB dynamoDB = new DynamoDB();
-        DynamoDbClient dynamoDbClient = dynamoDB.authenticateDynamoDB();
-        String createTableResponse = dynamoDB.createTable(System.getenv("DYNAMO_DB_TABLE_NAME"), "studentID");
+        String createTableResponse = DynamoDB.createTable(dynamoDbClient, "Students", "studentID");
         System.out.print("TABLE: " + createTableResponse);
         switch (intentName) {
             case "Greeting":
@@ -63,7 +67,7 @@ public class BotLogic implements RequestHandler<Map<String, Object>, Object> {
                 dialogAction("ElicitIntent");
                 studentIDValue = getSlotValue("StudentID");
                 try {
-                    dynamoDB.getRecord(dynamoDbClient, "studentID", studentIDValue);
+                    DynamoDB.getRecord(dynamoDbClient, "studentID", studentIDValue);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -76,7 +80,7 @@ public class BotLogic implements RequestHandler<Map<String, Object>, Object> {
                         .build();
                 dialogAction("ElicitIntent");
                 try {
-                    dynamoDB.putRecord(enhancedClient);
+                    DynamoDB.putRecord(enhancedClient);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -86,7 +90,7 @@ public class BotLogic implements RequestHandler<Map<String, Object>, Object> {
                 dialogAction("ElicitIntent");
                 studentIDValue = getSlotValue("StudentID");
                 try {
-                    dynamoDB.removeRecord(dynamoDbClient, "studentID", studentIDValue);
+                    DynamoDB.removeRecord(dynamoDbClient, "studentID", studentIDValue);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -98,7 +102,7 @@ public class BotLogic implements RequestHandler<Map<String, Object>, Object> {
                 String attributeName = getSlotValue("AttributeName");
                 String newAttributeValue = getSlotValue("NewAttributeValue");
                 try {
-                    dynamoDB.updateRecord(dynamoDbClient, "studentID", studentIDValue, attributeName, newAttributeValue);
+                    DynamoDB.updateRecord(dynamoDbClient, "studentID", studentIDValue, attributeName, newAttributeValue);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -108,8 +112,15 @@ public class BotLogic implements RequestHandler<Map<String, Object>, Object> {
                 dialogAction("ElicitIntent");
                 messages("Okay, see you next time!", "PlainText");
                 return response;
+
         }
         return event;
+    }
+
+    public static AwsBasicCredentials getAwsBasicCredentials() {
+        return AwsBasicCredentials.create(
+                System.getenv("ACCESS_KEY_ID"),
+                System.getenv("SECRET_ACCESS_KEY"));
     }
 
     /**

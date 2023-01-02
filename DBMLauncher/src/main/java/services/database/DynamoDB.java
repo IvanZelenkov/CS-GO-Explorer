@@ -7,38 +7,39 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import services.SNS;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.waiters.WaiterResponse;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
+import software.amazon.awssdk.services.dynamodb.paginators.ScanIterable;
+import software.amazon.awssdk.services.dynamodb.waiters.DynamoDbWaiter;
 import software.amazon.awssdk.services.sns.SnsClient;
 
 import handler.BotLogic;
 
 public class DynamoDB {
 
-    private final String DYNAMO_DB_TABLE_NAME = "Students";
+    private static final String DYNAMO_DB_TABLE_NAME = "Students";
 
-    public DynamoDbClient authenticateDynamoDB() {
-        AwsBasicCredentials awsCredentials = AwsBasicCredentials
-                .create(System.getenv("ACCESS_KEY_ID"),
-                        System.getenv("SECRET_ACCESS_KEY"));
-
+    public static DynamoDbClient authenticateDynamoDB(AwsBasicCredentials awsBasicCredentials, Region appRegion) {
         return DynamoDbClient
                 .builder()
-                .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
-                .region(Region.of(System.getenv("AWS_REGION")))
+                .credentialsProvider(StaticCredentialsProvider.create(awsBasicCredentials))
+                .region(appRegion)
                 .build();
     }
 
-    public String createTable(String tableName, String key) {
-        DynamoDbClient ddb = authenticateDynamoDB();
-        ListTablesResponse listTables = ddb.listTables();
+    public static String createTable(DynamoDbClient dynamoDbClient, String tableName, String key) {
+        ListTablesResponse listTables = dynamoDbClient.listTables();
         for (String table : listTables.tableNames()) {
             if (table.equals(DYNAMO_DB_TABLE_NAME)) {
                 return table + " table already exists.";
@@ -46,6 +47,7 @@ public class DynamoDB {
         }
 
         try {
+            DynamoDbWaiter dbWaiter = dynamoDbClient.waiter();
             CreateTableRequest request = CreateTableRequest.builder()
                     .attributeDefinitions(AttributeDefinition.builder()
                             .attributeName(key)
@@ -62,7 +64,15 @@ public class DynamoDB {
                     .tableName(tableName)
                     .build();
 
-            ddb.createTable(request);
+            CreateTableResponse createTableResponse = dynamoDbClient.createTable(request);
+
+            DescribeTableRequest tableRequest = DescribeTableRequest.builder()
+                    .tableName(createTableResponse.tableDescription().tableName())
+                    .build();
+
+            // Wait until the Amazon DynamoDB table is created
+            WaiterResponse<DescribeTableResponse> waiterResponse =  dbWaiter.waitUntilTableExists(tableRequest);
+            waiterResponse.matched().response().ifPresent(System.out::println);
         } catch (DynamoDbException error) {
             System.err.println(error.getMessage());
             System.exit(1);
@@ -70,7 +80,7 @@ public class DynamoDB {
         return "Table " + DYNAMO_DB_TABLE_NAME + " created.";
     }
 
-    public void getRecord(DynamoDbClient dynamoDbClient, String keyName, String keyValue) throws IOException {
+    public static void getRecord(DynamoDbClient dynamoDbClient, String keyName, String keyValue) throws IOException {
         Map<String,AttributeValue> keyToGet = new HashMap<>();
         List<String> messages = new ArrayList<>();
 
@@ -104,11 +114,11 @@ public class DynamoDB {
         BotLogic.multipleMessages(messages, "PlainText");
 
         SNS sns = new SNS();
-        SnsClient snsClient = sns.authenticateSNS();
+        SnsClient snsClient = sns.authenticateSNS(BotLogic.getAwsBasicCredentials());
         sns.publishMessage(snsClient, messages, mainMessage, "GET");
     }
 
-    public void putRecord(DynamoDbEnhancedClient enhancedClient) throws IOException {
+    public static void putRecord(DynamoDbEnhancedClient enhancedClient) throws IOException {
         Students studentRecord = new Students();
         try {
             DynamoDbTable<Students> table = enhancedClient.table(
@@ -135,11 +145,11 @@ public class DynamoDB {
         BotLogic.multipleMessages(messages, "PlainText");
 
         SNS sns = new SNS();
-        SnsClient snsClient = sns.authenticateSNS();
+        SnsClient snsClient = sns.authenticateSNS(BotLogic.getAwsBasicCredentials());
         sns.publishMessage(snsClient, messages, mainMessage, "INSERT");
     }
 
-    public void removeRecord(DynamoDbClient dynamoDbClient, String keyName, String keyValue) throws IOException {
+    public static void removeRecord(DynamoDbClient dynamoDbClient, String keyName, String keyValue) throws IOException {
         Map<String, AttributeValue> keyToGet = new HashMap<>();
         keyToGet.put(keyName, AttributeValue.builder().n(keyValue).build());
 
@@ -160,11 +170,11 @@ public class DynamoDB {
         BotLogic.multipleMessages(messages, "PlainText");
 
         SNS sns = new SNS();
-        SnsClient snsClient = sns.authenticateSNS();
+        SnsClient snsClient = sns.authenticateSNS(BotLogic.getAwsBasicCredentials());
         sns.publishMessage(snsClient, messages, mainMessage, "REMOVE");
     }
 
-    public void updateRecord(DynamoDbClient dynamoDbClient, String keyName, String keyValue, String nameOfRecordToUpdate, String newValue) throws IOException {
+    public static void updateRecord(DynamoDbClient dynamoDbClient, String keyName, String keyValue, String nameOfRecordToUpdate, String newValue) throws IOException {
         Map<String,AttributeValue> itemKey = new HashMap<>();
         itemKey.put(keyName, AttributeValue.builder().n(keyValue).build());
         Map<String, AttributeValueUpdate> updatedValues = new HashMap<>();
@@ -194,7 +204,36 @@ public class DynamoDB {
         BotLogic.multipleMessages(messages, "PlainText");
 
         SNS sns = new SNS();
-        SnsClient snsClient = sns.authenticateSNS();
+        SnsClient snsClient = sns.authenticateSNS(BotLogic.getAwsBasicCredentials());
         sns.publishMessage(snsClient, messages, mainMessage, "UPDATE");
+    }
+
+    public static String scanTable(DynamoDbClient dynamoDbClient) {
+        ScanRequest scanRequest = ScanRequest.builder()
+                .tableName("Students")
+                .consistentRead(false)
+                .attributesToGet("studentID", "classification", "dateOfBirth", "email", "firstName", "lastName")
+                .limit(Integer.MAX_VALUE)
+                .build();
+
+        ScanIterable response = dynamoDbClient.scanPaginator(scanRequest);
+        JSONArray jsonArray = new JSONArray();
+        for (ScanResponse page : response) {
+            for (Map<String, AttributeValue> item : page.items()) {
+                JSONObject jsonObject = new JSONObject();
+                for (Map.Entry<String, AttributeValue> attribute : item.entrySet()) {
+                    if (attribute.getValue().type().equals(AttributeValue.Type.N)) {
+                        jsonObject.put(attribute.getKey(), attribute.getValue().n());
+                    } else if (attribute.getValue().type().equals(AttributeValue.Type.S)) {
+                        jsonObject.put(attribute.getKey(), attribute.getValue().s());
+                    }
+                }
+                jsonArray.add(jsonObject);
+            }
+        }
+        JSONObject resultJsonObject = new JSONObject();
+        resultJsonObject.put("students", jsonArray);
+
+        return resultJsonObject.toJSONString();
     }
 }

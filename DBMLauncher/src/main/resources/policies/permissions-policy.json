@@ -47,7 +47,8 @@
                 "logs:CreateLogStream",
                 "logs:PutLogEvents",
                 "sns:*",
-                "lexv2:*"
+                "lexv2:*",
+                "apigateway:*"
             ],
             "Resource": "*"
         },

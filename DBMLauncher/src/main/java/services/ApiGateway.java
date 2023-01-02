@@ -6,6 +6,9 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.apigateway.ApiGatewayClient;
 import software.amazon.awssdk.services.apigateway.model.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ApiGateway {
 
     /**
@@ -83,7 +86,10 @@ public class ApiGateway {
      * @param resourceId The Resource identifier for the new Method resource.
      * @return The method request's HTTP method type.
      */
-    public static String createMethod(ApiGatewayClient apiGatewayClient, String apiId, String resourceId, String httpMethod) {
+    public static String createMethodRequest(ApiGatewayClient apiGatewayClient,
+                                             String apiId,
+                                             String resourceId,
+                                             String httpMethod) {
         PutMethodRequest putMethodRequest = PutMethodRequest
                 .builder()
                 .restApiId(apiId)
@@ -93,17 +99,83 @@ public class ApiGateway {
                 .build();
 
         PutMethodResponse putMethodResponse = apiGatewayClient.putMethod(putMethodRequest);
+        return putMethodResponse.toString();
+    }
 
+    public static String createIntegrationRequest(ApiGatewayClient apiGatewayClient,
+                                                  String restApiId,
+                                                  String resourceId,
+                                                  String httpMethod,
+                                                  String roleArn,
+                                                  String uri,
+                                                  String integrationHttpMethod) {
+        // Lambda function can only be invoked via POST.
         PutIntegrationRequest putIntegrationRequest = PutIntegrationRequest
                 .builder()
-                .restApiId(apiId)
+                .restApiId(restApiId)
                 .resourceId(resourceId)
-                .httpMethod("HTTP")
+                .httpMethod(httpMethod)
+                .credentials(roleArn)
                 .type(IntegrationType.AWS)
+                .uri(uri)
+                .integrationHttpMethod(integrationHttpMethod)
                 .build();
 
         PutIntegrationResponse putIntegrationResponse = apiGatewayClient.putIntegration(putIntegrationRequest);
+        return putIntegrationResponse.toString();
+    }
 
-        return putMethodResponse.httpMethod();
+    public static String createIntegrationResponse(ApiGatewayClient apiGatewayClient,
+                                                   String restApiId,
+                                                   String resourceId,
+                                                   String httpMethod,
+                                                   String statusCode) {
+        PutIntegrationResponseRequest putIntegrationResponseRequest = PutIntegrationResponseRequest
+                .builder()
+                .restApiId(restApiId)
+                .resourceId(resourceId)
+                .httpMethod(httpMethod)
+                .statusCode(statusCode)
+                .build();
+
+        PutIntegrationResponseResponse putIntegrationResponseResponse = apiGatewayClient.putIntegrationResponse(putIntegrationResponseRequest);
+        return putIntegrationResponseResponse.toString();
+    }
+
+    public static String createMethodResponse(ApiGatewayClient apiGatewayClient,
+                                              String restApiId,
+                                              String resourceId,
+                                              String httpMethod,
+                                              String statusCode,
+                                              Map<String, String> responseModels) {
+        PutMethodResponseRequest putMethodResponseRequest = PutMethodResponseRequest
+                .builder()
+                .restApiId(restApiId)
+                .resourceId(resourceId)
+                .httpMethod(httpMethod)
+                .statusCode(statusCode)
+                .responseModels(responseModels)
+                .build();
+
+        PutMethodResponseResponse putMethodResponseResponse = apiGatewayClient.putMethodResponse(putMethodResponseRequest);
+        return putMethodResponseResponse.toString();
+    }
+
+    public static String createNewDeployment(ApiGatewayClient apiGateway, String restApiId, String stageName) {
+        try {
+            CreateDeploymentRequest request = CreateDeploymentRequest.builder()
+                    .restApiId(restApiId)
+                    .description("Created using the AWS API Gateway Java API")
+                    .stageName(stageName)
+                    .stageDescription("Test Deployment")
+                    .build();
+
+            CreateDeploymentResponse response = apiGateway.createDeployment(request);
+            return response.id();
+        } catch (ApiGatewayException e) {
+            System.err.println(e.awsErrorDetails().errorMessage());
+            System.exit(1);
+        }
+        return "";
     }
 }

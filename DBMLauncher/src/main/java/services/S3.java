@@ -17,14 +17,10 @@ public class S3 {
         return S3_BUCKET_NAME;
     }
 
-    public S3Client authenticateS3() {
-        AwsBasicCredentials awsCredentials = AwsBasicCredentials
-                .create(System.getenv("ACCESS_KEY_ID"),
-                        System.getenv("SECRET_ACCESS_KEY"));
-
+    public S3Client authenticateS3(AwsBasicCredentials awsBasicCredentials) {
         return S3Client
                 .builder()
-                .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
+                .credentialsProvider(StaticCredentialsProvider.create(awsBasicCredentials))
                 .region(Region.of(System.getenv("AWS_REGION")))
                 .build();
     }

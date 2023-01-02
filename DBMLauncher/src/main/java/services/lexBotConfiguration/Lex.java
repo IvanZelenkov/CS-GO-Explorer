@@ -3,7 +3,10 @@ package services.lexBotConfiguration;
 import java.util.ArrayList;
 import java.util.List;
 
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.waiters.WaiterResponse;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.lexmodelsv2.LexModelsV2Client;
 import software.amazon.awssdk.services.lexmodelsv2.model.*;
 
@@ -12,6 +15,19 @@ import software.amazon.awssdk.services.lexmodelsv2.model.*;
  * language models to design, build, test, and deploy conversational interfaces in applications.
  */
 public class Lex {
+
+    /**
+     * Authenticate to the Lex v2 client using the AWS user's credentials.
+     * @param awsCredentials The AWS Access Key ID and Secret Access Key are credentials that are used to securely sign requests to AWS services.
+     * @return Service client for accessing AWS Lex V2.
+     */
+    public static LexModelsV2Client authenticateLexV2(AwsBasicCredentials awsCredentials, Region appRegion) {
+        return LexModelsV2Client
+                .builder()
+                .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
+                .region(appRegion)
+                .build();
+    }
 
     /**
      * Configure the Lex bot creating a DRAFT version for testing and the release version that is used in the application.

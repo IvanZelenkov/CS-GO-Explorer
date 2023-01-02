@@ -1,10 +1,14 @@
 package launcher;
 
+import java.util.HashMap;
 import java.util.Random;
 
+import services.ApiGateway;
+import services.database.DynamoDB;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.apigateway.ApiGatewayClient;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.iam.IamClient;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.lexmodelsv2.LexModelsV2Client;
@@ -48,14 +52,11 @@ public class BotLauncher {
         Region iamRegion = Region.AWS_GLOBAL;
         Region appRegion = Region.of(awsAppDeploymentRegion);
 
-        // Authenticate in AWS account using user input credentials
-        AwsBasicCredentials awsCredentials = AwsBasicCredentials.create(accessKey, secretAccessKey);
+        // Create an AWS account credentials instance
+        AwsBasicCredentials awsBasicCredentials = AwsBasicCredentials.create(accessKey, secretAccessKey);
 
-        // Create IAM client
-        IamClient iamClient = IamClient.builder()
-                .region(iamRegion)
-                .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
-                .build();
+        // Authenticate and create an IAM client
+        IamClient iamClient = IAM.authenticateIAM(awsBasicCredentials, iamRegion);
 
         // Create an IAM Lex V2 role
         String lexRoleArn = IAM.createServiceLinkedRole(
@@ -82,15 +83,11 @@ public class BotLauncher {
         // 10 seconds delay avoids a race condition between attaching the IAM permissions policy and creating a Lambda function.
         Thread.sleep(10000);
 
-        // Create Lambda client
-        LambdaClient lambdaClient = LambdaClient
-                .builder()
-                .region(appRegion)
-                .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
-                .build();
+        // Authenticate and create a Lambda client
+        LambdaClient lambdaClient = Lambda.authenticateLambda(awsBasicCredentials, appRegion);
 
         // Create a lambda function and attach a role
-        String lambdaArn = Lambda.createLambdaFunction(lambdaClient, lambdaFunctionName, roleArn, adminEmail, accessKey, secretAccessKey);
+        String lambdaArn = Lambda.createLambdaFunction(lambdaClient, lambdaFunctionName, roleArn, accessKey, secretAccessKey, adminEmail, appRegion);
         System.out.println("Successfully created lambda function: " + lambdaArn);
 
         // Create a resource policy and add a resource-based policy statement
@@ -99,18 +96,63 @@ public class BotLauncher {
         // Close Lambda client
         lambdaClient.close();
 
-        // Create LexV2 client
-        LexModelsV2Client lexModelsV2Client = LexModelsV2Client
-                .builder()
-                .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
-                .region(appRegion)
-                .build();
+        // Authenticate and create a Lex V2 client
+        LexModelsV2Client lexModelsV2Client = Lex.authenticateLexV2(awsBasicCredentials, appRegion);
 
         String botId = Lex.botConfiguration(lexModelsV2Client, lexRoleArn, lambdaArn);
         System.out.println("Successfully created lex bot with ID: " + lambdaArn);
 
-        // Close Lambda V2 client
+        // Close Lex V2 client
         lexModelsV2Client.close();
+
+        DynamoDbClient dynamoDbClient = DynamoDB.authenticateDynamoDB(awsBasicCredentials, appRegion);
+
+        String createTableResponse = DynamoDB.createTable(dynamoDbClient, "Students", "studentID");
+        System.out.println(createTableResponse);
+
+        // Authenticate and create an API Gateway client
+        ApiGatewayClient apiGatewayClient = ApiGateway.authenticateApiGateway(awsBasicCredentials, appRegion);
+
+        String restApiId = ApiGateway.createAPI(apiGatewayClient);
+        System.out.println("Successfully created api with id: " + restApiId);
+
+        String resourceId = ApiGateway.createResource(apiGatewayClient, restApiId, 0);
+
+        String methodRequest = ApiGateway.createMethodRequest(apiGatewayClient, restApiId, resourceId, "POST");
+        System.out.println("Successfully created API method request: " + methodRequest);
+
+        String integrationRequest = ApiGateway.createIntegrationRequest(
+                apiGatewayClient,
+                restApiId,
+                resourceId,
+                "POST",
+                roleArn,
+                "arn:aws:apigateway:" + awsAppDeploymentRegion + ":lambda:path/2015-03-31/functions/" + lambdaArn + "/invocations",
+                "POST"
+        );
+        System.out.println("Successfully created API integration request: " + integrationRequest);
+
+        String integrationResponse = ApiGateway.createIntegrationResponse(
+                apiGatewayClient,
+                restApiId,
+                resourceId,
+                "POST",
+                "200"
+        );
+        System.out.println("Successfully created API integration response: " + integrationResponse);
+
+        String methodResponse = ApiGateway.createMethodResponse(
+                apiGatewayClient,
+                restApiId,
+                resourceId,
+                "POST",
+                "200",
+                new HashMap<>(){{put("application/json", "Empty");}}
+        );
+        System.out.println("Successfully created API method response: " + methodResponse);
+
+        String id = ApiGateway.createNewDeployment(apiGatewayClient, restApiId, "Test");
+        System.out.println("The id of the REST API deployment: " + id);
     }
 
     /**

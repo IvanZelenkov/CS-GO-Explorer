@@ -6,7 +6,8 @@
             "Principal": {
                 "Service": [
                     "lambda.amazonaws.com",
-                    "lexv2.amazonaws.com"
+                    "lexv2.amazonaws.com",
+                    "apigateway.amazonaws.com"
                 ]
             },
             "Action": "sts:AssumeRole"

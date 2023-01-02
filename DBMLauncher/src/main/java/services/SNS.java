@@ -32,14 +32,10 @@ public class SNS {
         this.subscribersList = new ArrayList<>();
     }
 
-    public SnsClient authenticateSNS() {
-        AwsBasicCredentials awsCredentials = AwsBasicCredentials
-                .create(System.getenv("ACCESS_KEY_ID"),
-                        System.getenv("SECRET_ACCESS_KEY"));
-
+    public SnsClient authenticateSNS(AwsBasicCredentials awsBasicCredentials) {
         return SnsClient
                 .builder()
-                .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
+                .credentialsProvider(StaticCredentialsProvider.create(awsBasicCredentials))
                 .region(Region.of(System.getenv("AWS_REGION")))
                 .build();
     }
@@ -70,7 +66,7 @@ public class SNS {
                     .build();
 
             SubscribeResponse result = snsClient.subscribe(request);
-            System.out.println("Subscription ARN is " + result.subscriptionArn() + "\n\n Status is " + result.sdkHttpResponse().statusCode());
+            System.out.println("Subscription ARN is " + result.subscriptionArn() + "\n\nStatus is " + result.sdkHttpResponse().statusCode());
         } catch (SnsException error) {
             System.err.println(error.awsErrorDetails().errorMessage());
             System.exit(1);
@@ -119,7 +115,7 @@ public class SNS {
         BotLogic.multipleMessages(messages, "PlainText");
 
         S3 s3 = new S3();
-        S3Client s3Client = s3.authenticateS3();
+        S3Client s3Client = s3.authenticateS3(BotLogic.getAwsBasicCredentials());
         String createBucketResponse = s3.createBucket(s3Client);
         System.out.print("BUCKET: " + createBucketResponse);
         PutObjectRequest objectRequest = PutObjectRequest

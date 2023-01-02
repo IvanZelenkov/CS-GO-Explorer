@@ -1,11 +1,13 @@
 services/database/Students.class
 services/lexBotConfiguration/Lex.class
+services/ApiGateway.class
 services/Lambda$1.class
 services/IAM.class
 services/lexBotConfiguration/Slot.class
 services/database/DynamoDB.class
 services/lexBotConfiguration/BotLocale.class
 services/lexBotConfiguration/Utterance.class
+launcher/BotLauncher$1.class
 services/S3.class
 services/Lambda.class
 services/lexBotConfiguration/BotAlias.class

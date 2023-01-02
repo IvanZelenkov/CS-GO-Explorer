@@ -11,7 +11,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.waiters.WaiterResponse;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.iam.IamClient;
 import software.amazon.awssdk.services.iam.model.*;
 import software.amazon.awssdk.services.iam.waiters.IamWaiter;
@@ -23,6 +26,19 @@ import software.amazon.awssdk.services.iam.waiters.IamWaiter;
 public class IAM {
 
     /**
+     * Authenticate to the IAM client using the AWS user's credentials.
+     * @param awsCredentials The AWS Access Key ID and Secret Access Key are credentials that are used to securely sign requests to AWS services.
+     * @return Service client for accessing IAM.
+     */
+    public static IamClient authenticateIAM(AwsBasicCredentials awsCredentials, Region iamRegion) {
+        return IamClient
+                .builder()
+                .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
+                .region(iamRegion)
+                .build();
+    }
+
+    /**
      * Creates an IAM role that will be used across the entire application in AWS.
      * @param iamClient Service client for accessing IAM.
      * @param roleName IAM role name.
@@ -32,28 +48,26 @@ public class IAM {
         try {
             IamWaiter iamWaiter = iamClient.waiter();
             JSONObject jsonObject = (JSONObject) readJsonFromFile("trust-policy");
-            CreateRoleRequest request = CreateRoleRequest.builder()
+            CreateRoleRequest createRoleRequest = CreateRoleRequest.builder()
                     .roleName(roleName)
                     .assumeRolePolicyDocument(jsonObject.toJSONString())
                     .description("Database Bot Manager Trust Policy")
                     .build();
 
-            CreateRoleResponse response = iamClient.createRole(request);
+            CreateRoleResponse createRoleResponse = iamClient.createRole(createRoleRequest);
 
             // Wait until the role is created.
             GetRoleRequest roleRequest = GetRoleRequest.builder()
-                    .roleName(response.role().roleName())
+                    .roleName(createRoleResponse.role().roleName())
                     .build();
 
             WaiterResponse<GetRoleResponse> waitUntilRoleExists = iamWaiter.waitUntilRoleExists(roleRequest);
             waitUntilRoleExists.matched().response().ifPresent(System.out::println);
 
-            return response.role().arn();
-        } catch (IamException error) {
-            System.err.println(error.awsErrorDetails().errorMessage());
+            return createRoleResponse.role().arn();
+        } catch (IamException | IOException | ParseException error) {
+            System.err.println(error.getMessage());
             System.exit(1);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return "";
     }

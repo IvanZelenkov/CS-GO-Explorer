@@ -8,8 +8,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.core.waiters.WaiterResponse;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.lambda.model.*;
 import software.amazon.awssdk.services.lambda.model.Runtime;
@@ -20,6 +23,19 @@ import software.amazon.awssdk.services.lambda.waiters.LambdaWaiter;
  * virtually any type of application or backend service without provisioning or managing servers.
  */
 public class Lambda {
+
+    /**
+     * Authenticate to the Lambda client using the AWS user's credentials.
+     * @param awsCredentials The AWS Access Key ID and Secret Access Key are credentials that are used to securely sign requests to AWS services.
+     * @return Service client for accessing AWS Lambda.
+     */
+    public static LambdaClient authenticateLambda(AwsBasicCredentials awsCredentials, Region appRegion) {
+        return LambdaClient
+                .builder()
+                .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
+                .region(appRegion)
+                .build();
+    }
 
     /**
      * Creates lambda function.
@@ -33,9 +49,10 @@ public class Lambda {
     public static String createLambdaFunction(LambdaClient lambdaClient,
                                               String functionName,
                                               String roleArn,
-                                              String adminEmail,
                                               String accessKey,
-                                              String secretAccessKey) {
+                                              String secretAccessKey,
+                                              String adminEmail,
+                                              Region appRegion) {
         try {
             LambdaWaiter lambdaWaiter = lambdaClient.waiter();
             Path path = Paths.get("");
@@ -49,9 +66,10 @@ public class Lambda {
 
             // Configure environment variables, so they can be accessible from function code during execution
             Environment environment = Environment.builder().variables(new HashMap<>(){{
-                put("ADMIN_EMAIL", adminEmail);
                 put("ACCESS_KEY_ID", accessKey);
                 put("SECRET_ACCESS_KEY", secretAccessKey);
+                put("ADMIN_EMAIL", adminEmail);
+                put("AWS_APP_REGION", appRegion.toString());
             }}).build();
 
             CreateFunctionRequest functionRequest = CreateFunctionRequest.builder()
