@@ -1,6 +1,6 @@
 # Database Bot Manager
 
-![DBMSolutionArchitecture](https://user-images.githubusercontent.com/64171964/208028293-644c8275-3cc7-464c-9b5d-fa73e5d95e6b.png)
+![DBMSolutionArchitecture](https://user-images.githubusercontent.com/64171964/210310610-8b2afb97-d976-4927-a2e7-0639d60928a7.png)
 ![904A673D-0B1F-4918-9B4A-2C627122C379_1_201_a](https://user-images.githubusercontent.com/64171964/210121954-f9c953c9-43a2-4d0e-a03e-3dd67dcad189.jpeg)
 ![E9E9401C-F0F4-4F9E-9A90-44599DE00192_1_201_a](https://user-images.githubusercontent.com/64171964/210121955-f5ea18cf-9dff-47a5-86e5-2e67b982d36d.jpeg)
 ![Screenshot 2022-12-30 at 20 02 40](https://user-images.githubusercontent.com/64171964/210121890-3f5c1193-b8a9-4cb6-ade2-e162f5e46271.png)
