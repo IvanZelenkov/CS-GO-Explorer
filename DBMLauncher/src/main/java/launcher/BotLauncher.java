@@ -8,6 +8,7 @@ import services.database.DynamoDB;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.apigateway.ApiGatewayClient;
+import software.amazon.awssdk.services.apigateway.model.IntegrationType;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.iam.IamClient;
 import software.amazon.awssdk.services.lambda.LambdaClient;
@@ -83,11 +84,17 @@ public class BotLauncher {
         // 10 seconds delay avoids a race condition between attaching the IAM permissions policy and creating a Lambda function.
         Thread.sleep(10000);
 
+        // Authenticate and create an API Gateway client
+        ApiGatewayClient apiGatewayClient = ApiGateway.authenticateApiGateway(awsBasicCredentials, appRegion);
+
+        String restApiId = ApiGateway.createAPI(apiGatewayClient);
+        System.out.println("Successfully created api with id: " + restApiId);
+
         // Authenticate and create a Lambda client
         LambdaClient lambdaClient = Lambda.authenticateLambda(awsBasicCredentials, appRegion);
 
         // Create a lambda function and attach a role
-        String lambdaArn = Lambda.createLambdaFunction(lambdaClient, lambdaFunctionName, roleArn, accessKey, secretAccessKey, adminEmail, appRegion);
+        String lambdaArn = Lambda.createLambdaFunction(lambdaClient, lambdaFunctionName, roleArn, accessKey, secretAccessKey, adminEmail, appRegion, restApiId);
         System.out.println("Successfully created lambda function: " + lambdaArn);
 
         // Create a resource policy and add a resource-based policy statement
@@ -110,38 +117,58 @@ public class BotLauncher {
         String createTableResponse = DynamoDB.createTable(dynamoDbClient, "Students", "studentID");
         System.out.println(createTableResponse);
 
-        // Authenticate and create an API Gateway client
-        ApiGatewayClient apiGatewayClient = ApiGateway.authenticateApiGateway(awsBasicCredentials, appRegion);
+        // TODO
+        String resourceId = ApiGateway.createResource(apiGatewayClient, restApiId, 0, "get-all-table-items");
 
-        String restApiId = ApiGateway.createAPI(apiGatewayClient);
-        System.out.println("Successfully created api with id: " + restApiId);
+        String methodRequestPOST = ApiGateway.createMethodRequest(apiGatewayClient, restApiId, resourceId, "POST", "NONE");
+        System.out.println("Successfully created API method request: " + methodRequestPOST);
 
-        String resourceId = ApiGateway.createResource(apiGatewayClient, restApiId, 0);
+        String methodRequestOPTIONS = ApiGateway.createMethodRequest(apiGatewayClient, restApiId, resourceId, "OPTIONS", "NONE");
+        System.out.println("Successfully created API method request: " + methodRequestOPTIONS);
 
-        String methodRequest = ApiGateway.createMethodRequest(apiGatewayClient, restApiId, resourceId, "POST");
-        System.out.println("Successfully created API method request: " + methodRequest);
-
-        String integrationRequest = ApiGateway.createIntegrationRequest(
+        String integrationRequestPOST = ApiGateway.createIntegrationRequest(
                 apiGatewayClient,
                 restApiId,
                 resourceId,
                 "POST",
                 roleArn,
                 "arn:aws:apigateway:" + awsAppDeploymentRegion + ":lambda:path/2015-03-31/functions/" + lambdaArn + "/invocations",
+                IntegrationType.AWS,
                 "POST"
         );
-        System.out.println("Successfully created API integration request: " + integrationRequest);
+        System.out.println("Successfully created API integration request: " + integrationRequestPOST);
 
-        String integrationResponse = ApiGateway.createIntegrationResponse(
+        String integrationRequestOPTIONS = ApiGateway.createIntegrationRequest(
+                apiGatewayClient,
+                restApiId,
+                resourceId,
+                "OPTIONS",
+                roleArn,
+                "arn:aws:apigateway:" + awsAppDeploymentRegion + ":lambda:path/2015-03-31/functions/" + lambdaArn + "/invocations",
+                IntegrationType.AWS,
+                "OPTIONS"
+        );
+        System.out.println("Successfully created API integration request: " + integrationRequestOPTIONS);
+
+        String integrationResponsePOST = ApiGateway.createIntegrationResponse(
                 apiGatewayClient,
                 restApiId,
                 resourceId,
                 "POST",
                 "200"
         );
-        System.out.println("Successfully created API integration response: " + integrationResponse);
+        System.out.println("Successfully created API integration response: " + integrationResponsePOST);
 
-        String methodResponse = ApiGateway.createMethodResponse(
+        String integrationResponseOPTIONS = ApiGateway.createIntegrationResponse(
+                apiGatewayClient,
+                restApiId,
+                resourceId,
+                "OPTIONS",
+                "200"
+        );
+        System.out.println("Successfully created API integration response: " + integrationResponseOPTIONS);
+
+        String methodResponsePOST = ApiGateway.createMethodResponse(
                 apiGatewayClient,
                 restApiId,
                 resourceId,
@@ -149,7 +176,17 @@ public class BotLauncher {
                 "200",
                 new HashMap<>(){{put("application/json", "Empty");}}
         );
-        System.out.println("Successfully created API method response: " + methodResponse);
+        System.out.println("Successfully created API method response: " + methodResponsePOST);
+
+        String methodResponseOPTIONS = ApiGateway.createMethodResponse(
+                apiGatewayClient,
+                restApiId,
+                resourceId,
+                "OPTIONS",
+                "200",
+                new HashMap<>(){{put("application/json", "Empty");}}
+        );
+        System.out.println("Successfully created API method response: " + methodResponseOPTIONS);
 
         String id = ApiGateway.createNewDeployment(apiGatewayClient, restApiId, "Test");
         System.out.println("The id of the REST API deployment: " + id);

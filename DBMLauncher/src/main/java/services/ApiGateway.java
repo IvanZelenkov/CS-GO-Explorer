@@ -6,7 +6,6 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.apigateway.ApiGatewayClient;
 import software.amazon.awssdk.services.apigateway.model.*;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class ApiGateway {
@@ -60,7 +59,10 @@ public class ApiGateway {
      * @param apiId The string identifier of the associated RestApi.
      * @return The parent resource's identifier.
      */
-    public static String createResource(ApiGatewayClient apiGatewayClient, String apiId, int parentResourceIndex) {
+    public static String createResource(ApiGatewayClient apiGatewayClient,
+                                        String apiId,
+                                        int parentResourceIndex,
+                                        String pathPart) {
         GetResourcesRequest getResourcesRequest = GetResourcesRequest
                 .builder()
                 .restApiId(apiId)
@@ -70,9 +72,9 @@ public class ApiGateway {
 
         CreateResourceRequest createResourceRequest = CreateResourceRequest
                 .builder()
-                .parentId(getResourcesResponse.items().get(parentResourceIndex).id())
                 .restApiId(apiId)
-                .pathPart("get-all-table-items")
+                .parentId(getResourcesResponse.items().get(parentResourceIndex).id())
+                .pathPart(pathPart)
                 .build();
 
         CreateResourceResponse createResourceResponse = apiGatewayClient.createResource(createResourceRequest);
@@ -89,13 +91,14 @@ public class ApiGateway {
     public static String createMethodRequest(ApiGatewayClient apiGatewayClient,
                                              String apiId,
                                              String resourceId,
-                                             String httpMethod) {
+                                             String httpMethod,
+                                             String authorizationType) {
         PutMethodRequest putMethodRequest = PutMethodRequest
                 .builder()
                 .restApiId(apiId)
                 .resourceId(resourceId)
                 .httpMethod(httpMethod)
-                .authorizationType("NONE")
+                .authorizationType(authorizationType)
                 .build();
 
         PutMethodResponse putMethodResponse = apiGatewayClient.putMethod(putMethodRequest);
@@ -108,6 +111,7 @@ public class ApiGateway {
                                                   String httpMethod,
                                                   String roleArn,
                                                   String uri,
+                                                  IntegrationType integrationType,
                                                   String integrationHttpMethod) {
         // Lambda function can only be invoked via POST.
         PutIntegrationRequest putIntegrationRequest = PutIntegrationRequest
@@ -116,7 +120,7 @@ public class ApiGateway {
                 .resourceId(resourceId)
                 .httpMethod(httpMethod)
                 .credentials(roleArn)
-                .type(IntegrationType.AWS)
+                .type(integrationType)
                 .uri(uri)
                 .integrationHttpMethod(integrationHttpMethod)
                 .build();

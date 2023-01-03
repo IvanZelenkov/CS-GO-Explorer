@@ -7,6 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.LambdaLogger;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -208,7 +214,14 @@ public class DynamoDB {
         sns.publishMessage(snsClient, messages, mainMessage, "UPDATE");
     }
 
-    public static String scanTable(DynamoDbClient dynamoDbClient) {
+    public static Object scanTable(DynamoDbClient dynamoDbClient, Map<String, Object> event, Context context) {
+        LambdaLogger logger = context.getLogger();
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        logger.log(gson.toJson(event));
+
+        Map<String, Object> response = new HashMap<>();
+
         ScanRequest scanRequest = ScanRequest.builder()
                 .tableName("Students")
                 .consistentRead(false)
@@ -216,9 +229,9 @@ public class DynamoDB {
                 .limit(Integer.MAX_VALUE)
                 .build();
 
-        ScanIterable response = dynamoDbClient.scanPaginator(scanRequest);
+        ScanIterable scanIterable = dynamoDbClient.scanPaginator(scanRequest);
         JSONArray jsonArray = new JSONArray();
-        for (ScanResponse page : response) {
+        for (ScanResponse page : scanIterable) {
             for (Map<String, AttributeValue> item : page.items()) {
                 JSONObject jsonObject = new JSONObject();
                 for (Map.Entry<String, AttributeValue> attribute : item.entrySet()) {
@@ -231,9 +244,21 @@ public class DynamoDB {
                 jsonArray.add(jsonObject);
             }
         }
-        JSONObject resultJsonObject = new JSONObject();
-        resultJsonObject.put("students", jsonArray);
+        JSONObject responseBody = new JSONObject();
+        responseBody.put("students", jsonArray);
 
-        return resultJsonObject.toJSONString();
+        // Response headers.
+        Map<String, Object> headers = new HashMap<>();
+        headers.put("Access-Control-Allow-Headers", "Content-Type");
+        headers.put("Access-Control-Allow-Origin", "https://" + System.getenv("REST_API_ID") + ".execute-api.us-east-1.amazonaws.com");
+        headers.put("Access-Control-Allow-Methods", "OPTIONS, POST");
+        headers.put("Access-Control-Allow-Credentials", "true");
+
+        // Response
+        response.put("statusCode", 200);
+        response.put("headers", headers);
+        response.put("body", responseBody);
+
+        return response;
     }
 }

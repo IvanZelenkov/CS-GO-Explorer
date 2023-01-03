@@ -96,7 +96,7 @@ const Sidebar = () => {
 									alt="profile-user"
 									width="100px"
 									height="100px"
-									src={`https://i.pinimg.com/736x/b3/c9/1b/b3c91b05208c00c0763d95d21f70db50.jpg`}
+									src={`https://img.freepik.com/free-vector/security-shield-vector-cyber-security-technology_53876-112196.jpg?w=2000`}
 									style={{ cursor: "pointer", borderRadius: "50%" }}
 								/>
 							</Box>

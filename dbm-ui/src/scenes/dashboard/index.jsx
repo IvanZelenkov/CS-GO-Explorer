@@ -12,10 +12,22 @@ import GeographyChart from "../../components/GeographyChart";
 import BarChart from "../../components/BarChart";
 import StatBox from "../../components/StatBox";
 import ProgressCircle from "../../components/ProgressCircle";
+import axios from "axios";
 
 const Dashboard = () => {
 	const theme = useTheme();
 	const colors = tokens(theme.palette.mode);
+
+	const sendRequest = () => {
+		axios.post(
+			"https://0i1nd0337a.execute-api.us-east-1.amazonaws.com/Test/get-all-table-items",
+			JSON.stringify({"ENTIRE_TABLE": "EmptyBody"})
+		).then(function (response) {
+			console.log(response.data.body.students.map(item => item.studentID));
+		}).catch(function (error) {
+			console.log(error);
+		});
+	};
 
 	return (
 		<Box m="20px">
@@ -33,7 +45,8 @@ const Dashboard = () => {
 							padding: "10px 20px",
 						}}
 						onClick={() => {
-							alert('Download Reports')
+							sendRequest();
+							alert('Download Reports');
 						}}
 					>
 						<DownloadOutlinedIcon sx={{ mr: "10px" }}/>

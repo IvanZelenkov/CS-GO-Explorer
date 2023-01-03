@@ -6,9 +6,9 @@
 ![Screenshot 2022-12-30 at 20 02 40](https://user-images.githubusercontent.com/64171964/210121890-3f5c1193-b8a9-4cb6-ade2-e162f5e46271.png)
 
 
-**A Bot web interface has been created, so the application is currently available online at the following link: https://dev9055.dqufhvl8gk5wp.amplifyapp.com**
+**A Bot web interface has been created, so the application is currently available online at the following link: https://dy98y34hu2srm.cloudfront.net/index.html**
 
-**A Beta version of the website UI has been created and is currently available online at the following link: https://dev9690.d15pld12asamta.amplifyapp.com**
+**Dev version of the website UI has been created and is currently available online at the following link: https://dev.d1fj5jf9tc05mg.amplifyapp.com**
 
 ## DBMLauncher
 

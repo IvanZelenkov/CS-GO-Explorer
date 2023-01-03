@@ -39,8 +39,8 @@ public class BotLogic implements RequestHandler<Map<String, Object>, Object> {
     @Override
     public Object handleRequest(Map<String, Object> event, Context context) {
         DynamoDbClient dynamoDbClient = DynamoDB.authenticateDynamoDB(getAwsBasicCredentials(), Region.of(System.getenv("AWS_REGION")));
-        if (event.containsKey("GET_TABLE_DATA")) {
-            return DynamoDB.scanTable(dynamoDbClient);
+        if (event.containsKey("ENTIRE_TABLE")) {
+            return DynamoDB.scanTable(dynamoDbClient, event, context);
         }
         currentEvent = event;
         String intentName = getIntentName(event);

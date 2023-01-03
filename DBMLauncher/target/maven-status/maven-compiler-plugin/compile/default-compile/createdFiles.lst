@@ -12,6 +12,7 @@ services/S3.class
 services/Lambda.class
 services/lexBotConfiguration/BotAlias.class
 services/lexBotConfiguration/Buttons.class
+launcher/BotLauncher$2.class
 services/SNS.class
 services/lexBotConfiguration/Intent.class
 handler/BotLogic.class

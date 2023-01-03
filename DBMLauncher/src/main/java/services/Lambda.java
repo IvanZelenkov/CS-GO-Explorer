@@ -52,7 +52,8 @@ public class Lambda {
                                               String accessKey,
                                               String secretAccessKey,
                                               String adminEmail,
-                                              Region appRegion) {
+                                              Region appRegion,
+                                              String restApiId) {
         try {
             LambdaWaiter lambdaWaiter = lambdaClient.waiter();
             Path path = Paths.get("");
@@ -70,6 +71,7 @@ public class Lambda {
                 put("SECRET_ACCESS_KEY", secretAccessKey);
                 put("ADMIN_EMAIL", adminEmail);
                 put("AWS_APP_REGION", appRegion.toString());
+                put("REST_API_ID", restApiId);
             }}).build();
 
             CreateFunctionRequest functionRequest = CreateFunctionRequest.builder()
