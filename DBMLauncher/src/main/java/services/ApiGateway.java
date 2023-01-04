@@ -6,6 +6,7 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.apigateway.ApiGatewayClient;
 import software.amazon.awssdk.services.apigateway.model.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class ApiGateway {
@@ -28,23 +29,22 @@ public class ApiGateway {
      * @param apiGatewayClient Client for accessing Amazon API Gateway.
      * @return The API's identifier.
      */
-    public static String createAPI(ApiGatewayClient apiGatewayClient) {
-        EndpointType endpointType = EndpointType.REGIONAL;
-
+    public static String createAPI(ApiGatewayClient apiGatewayClient,
+                                   String restApiName,
+                                   String restApiDescription) {
         EndpointConfiguration endpointConfiguration = EndpointConfiguration
                 .builder()
-                .types(endpointType)
+                .types(EndpointType.REGIONAL)
                 .build();
 
         try {
             CreateRestApiRequest request = CreateRestApiRequest.builder()
-                    .name("database-manager-rest-api")
-                    .description("Created using the Gateway Java API")
+                    .name(restApiName)
+                    .description(restApiDescription)
                     .endpointConfiguration(endpointConfiguration)
                     .build();
 
             CreateRestApiResponse response = apiGatewayClient.createRestApi(request);
-            System.out.println("The id of the new api is " + response.id());
             return response.id();
         } catch (ApiGatewayException e) {
             System.err.println(e.awsErrorDetails().errorMessage());
@@ -92,13 +92,15 @@ public class ApiGateway {
                                              String apiId,
                                              String resourceId,
                                              String httpMethod,
-                                             String authorizationType) {
+                                             String authorizationType,
+                                             boolean isApiKeyRequired) {
         PutMethodRequest putMethodRequest = PutMethodRequest
                 .builder()
                 .restApiId(apiId)
                 .resourceId(resourceId)
                 .httpMethod(httpMethod)
                 .authorizationType(authorizationType)
+                .apiKeyRequired(isApiKeyRequired)
                 .build();
 
         PutMethodResponse putMethodResponse = apiGatewayClient.putMethod(putMethodRequest);
@@ -165,13 +167,17 @@ public class ApiGateway {
         return putMethodResponseResponse.toString();
     }
 
-    public static String createNewDeployment(ApiGatewayClient apiGateway, String restApiId, String stageName) {
+    public static String createNewDeployment(ApiGatewayClient apiGateway,
+                                             String restApiId,
+                                             String restApiDescription,
+                                             String stageName,
+                                             String stageDescription) {
         try {
             CreateDeploymentRequest request = CreateDeploymentRequest.builder()
                     .restApiId(restApiId)
-                    .description("Created using the AWS API Gateway Java API")
+                    .description(restApiDescription)
                     .stageName(stageName)
-                    .stageDescription("Test Deployment")
+                    .stageDescription(stageDescription)
                     .build();
 
             CreateDeploymentResponse response = apiGateway.createDeployment(request);
@@ -181,5 +187,87 @@ public class ApiGateway {
             System.exit(1);
         }
         return "";
+    }
+
+    public static String createUsagePlan(ApiGatewayClient apiGatewayClient,
+                                         Double throttleRateLimit,
+                                         int throttleBurstLimit,
+                                         String quotaPeriod,
+                                         int quotaLimit,
+                                         String restApiId,
+                                         String stageName,
+                                         String usagePlanName,
+                                         String usagePlanDescription) {
+        try {
+            ThrottleSettings throttleSettings = ThrottleSettings
+                    .builder()
+                    .rateLimit(throttleRateLimit)
+                    .burstLimit(throttleBurstLimit)
+                    .build();
+
+            QuotaSettings quotaSettings = QuotaSettings
+                    .builder()
+                    .period(quotaPeriod)
+                    .limit(quotaLimit)
+                    .build();
+
+            ApiStage apiStage = ApiStage
+                    .builder()
+                    .apiId(restApiId)
+                    .stage(stageName)
+                    .throttle(new HashMap<>(){{
+                        put("/get-all-table-items/OPTIONS", throttleSettings);
+                        put("/get-all-table-items/POST", throttleSettings);
+                    }})
+                    .build();
+
+             CreateUsagePlanRequest createUsagePlanRequest = CreateUsagePlanRequest
+                     .builder()
+                     .name(usagePlanName)
+                     .description(usagePlanDescription)
+                     .throttle(throttleSettings)
+                     .quota(quotaSettings)
+                     .apiStages(apiStage)
+                     .build();
+
+             CreateUsagePlanResponse createUsagePlanResponse = apiGatewayClient.createUsagePlan(createUsagePlanRequest);
+             return createUsagePlanResponse.id();
+        } catch (ApiGatewayException error) {
+            System.out.println(error.awsErrorDetails().errorMessage());
+            System.exit(1);
+        }
+        return "";
+    }
+
+    public static void createApiKey(ApiGatewayClient apiGatewayClient,
+                                      String keyName,
+                                      String description,
+                                      boolean isEnabled,
+                                      boolean isGenerateDistinctId,
+                                      String usagePlanId,
+                                      String keyType) {
+        try {
+            CreateApiKeyRequest createApiKeyRequest = CreateApiKeyRequest.builder()
+                    .name(keyName)
+                    .description(description)
+                    .enabled(isEnabled)
+                    .generateDistinctId(isGenerateDistinctId)
+                    .build();
+
+            // Creating a api key
+            CreateApiKeyResponse createApiKeyResponse = apiGatewayClient.createApiKey(createApiKeyRequest);
+
+            // If we have a plan for the api keys, we can set it for the created api key.
+            CreateUsagePlanKeyRequest createUsagePlanKeyRequest = CreateUsagePlanKeyRequest.builder()
+                    .usagePlanId(usagePlanId)
+                    .keyId(createApiKeyResponse.id())
+                    .keyType(keyType)
+                    .build();
+
+            apiGatewayClient.createUsagePlanKey(createUsagePlanKeyRequest);
+        } catch (ApiGatewayException e) {
+            System.err.println(e.awsErrorDetails().errorMessage());
+            System.exit(1);
+        }
     }
 }

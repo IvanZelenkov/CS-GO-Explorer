@@ -87,7 +87,12 @@ public class BotLauncher {
         // Authenticate and create an API Gateway client
         ApiGatewayClient apiGatewayClient = ApiGateway.authenticateApiGateway(awsBasicCredentials, appRegion);
 
-        String restApiId = ApiGateway.createAPI(apiGatewayClient);
+        String restApiId = ApiGateway.createAPI(
+                apiGatewayClient,
+                "database-manager-rest-api",
+                "Created using Java AWS SDK"
+        );
+
         System.out.println("Successfully created api with id: " + restApiId);
 
         // Authenticate and create a Lambda client
@@ -117,13 +122,12 @@ public class BotLauncher {
         String createTableResponse = DynamoDB.createTable(dynamoDbClient, "Students", "studentID");
         System.out.println(createTableResponse);
 
-        // TODO
         String resourceId = ApiGateway.createResource(apiGatewayClient, restApiId, 0, "get-all-table-items");
 
-        String methodRequestPOST = ApiGateway.createMethodRequest(apiGatewayClient, restApiId, resourceId, "POST", "NONE");
+        String methodRequestPOST = ApiGateway.createMethodRequest(apiGatewayClient, restApiId, resourceId, "POST", "NONE", true);
         System.out.println("Successfully created API method request: " + methodRequestPOST);
 
-        String methodRequestOPTIONS = ApiGateway.createMethodRequest(apiGatewayClient, restApiId, resourceId, "OPTIONS", "NONE");
+        String methodRequestOPTIONS = ApiGateway.createMethodRequest(apiGatewayClient, restApiId, resourceId, "OPTIONS", "NONE", true);
         System.out.println("Successfully created API method request: " + methodRequestOPTIONS);
 
         String integrationRequestPOST = ApiGateway.createIntegrationRequest(
@@ -133,7 +137,7 @@ public class BotLauncher {
                 "POST",
                 roleArn,
                 "arn:aws:apigateway:" + awsAppDeploymentRegion + ":lambda:path/2015-03-31/functions/" + lambdaArn + "/invocations",
-                IntegrationType.AWS,
+                IntegrationType.AWS_PROXY,
                 "POST"
         );
         System.out.println("Successfully created API integration request: " + integrationRequestPOST);
@@ -145,7 +149,7 @@ public class BotLauncher {
                 "OPTIONS",
                 roleArn,
                 "arn:aws:apigateway:" + awsAppDeploymentRegion + ":lambda:path/2015-03-31/functions/" + lambdaArn + "/invocations",
-                IntegrationType.AWS,
+                IntegrationType.AWS_PROXY,
                 "OPTIONS"
         );
         System.out.println("Successfully created API integration request: " + integrationRequestOPTIONS);
@@ -188,8 +192,40 @@ public class BotLauncher {
         );
         System.out.println("Successfully created API method response: " + methodResponseOPTIONS);
 
-        String id = ApiGateway.createNewDeployment(apiGatewayClient, restApiId, "Test");
+        String stageName = "Test";
+        String id = ApiGateway.createNewDeployment(
+                apiGatewayClient,
+                restApiId,
+                "Created using Java AWS SDK",
+                stageName,
+                "Test Deployment"
+        );
+
         System.out.println("The id of the REST API deployment: " + id);
+
+        String usagePlanId = ApiGateway.createUsagePlan(
+                apiGatewayClient,
+                100.0,
+                100,
+                "DAY",
+                1200,
+                restApiId,
+                stageName,
+                "test-plan",
+                "DBM test usage plan"
+        );
+
+        ApiGateway.createApiKey(
+                apiGatewayClient,
+                "DBM_key",
+                "Test key",
+                true,
+                true,
+                usagePlanId,
+                "API_KEY"
+        );
+
+        apiGatewayClient.close();
     }
 
     /**

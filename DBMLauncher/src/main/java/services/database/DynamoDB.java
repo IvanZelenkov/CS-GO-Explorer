@@ -1,28 +1,25 @@
 package services.database;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.LambdaLogger;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import services.SNS;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.Response;
 import software.amazon.awssdk.core.waiters.WaiterResponse;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.http.AbortableInputStream;
+import software.amazon.awssdk.http.SdkHttpFullResponse;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
@@ -215,13 +212,6 @@ public class DynamoDB {
     }
 
     public static Object scanTable(DynamoDbClient dynamoDbClient, Map<String, Object> event, Context context) {
-        LambdaLogger logger = context.getLogger();
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
-        logger.log(gson.toJson(event));
-
-        Map<String, Object> response = new HashMap<>();
-
         ScanRequest scanRequest = ScanRequest.builder()
                 .tableName("Students")
                 .consistentRead(false)
@@ -248,17 +238,29 @@ public class DynamoDB {
         responseBody.put("students", jsonArray);
 
         // Response headers.
-        Map<String, Object> headers = new HashMap<>();
-        headers.put("Access-Control-Allow-Headers", "Content-Type");
-        headers.put("Access-Control-Allow-Origin", "https://" + System.getenv("REST_API_ID") + ".execute-api.us-east-1.amazonaws.com");
-        headers.put("Access-Control-Allow-Methods", "OPTIONS, POST");
-        headers.put("Access-Control-Allow-Credentials", "true");
+        Map<String, List<String>> headers = new HashMap<>();
+        headers.put("Access-Control-Allow-Headers", new ArrayList<>(){{add("Content-Type");}});
+        headers.put("Access-Control-Allow-Origin", new ArrayList<>(){{add("https://" + System.getenv("REST_API_ID") + ".execute-api.us-east-1.amazonaws.com");}});
+        headers.put("Access-Control-Allow-Methods", new ArrayList<>(){{add("OPTIONS, POST");}});
+        headers.put("Access-Control-Allow-Credentials", new ArrayList<>(){{add("true");}});
 
-        // Response
-        response.put("statusCode", 200);
-        response.put("headers", headers);
-        response.put("body", responseBody);
+        InputStream inputStream = new ByteArrayInputStream(responseBody.toJSONString().getBytes(StandardCharsets.UTF_8));
+        AbortableInputStream abortableInputStream = AbortableInputStream.create(inputStream);
 
-        return response;
+        SdkHttpFullResponse sdkHttpFullResponse = SdkHttpFullResponse
+                .builder()
+                .headers(headers)
+                .statusCode(200)
+                .content(abortableInputStream)
+                .build();
+
+        Response response = Response
+                .builder()
+                .httpResponse(sdkHttpFullResponse)
+                .build();
+
+        // HAVE TO BE MODIFIED (INCORRECT)
+
+        return response.response();
     }
 }

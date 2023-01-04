@@ -20,8 +20,14 @@ const Dashboard = () => {
 
 	const sendRequest = () => {
 		axios.post(
-			"https://0i1nd0337a.execute-api.us-east-1.amazonaws.com/Test/get-all-table-items",
+			"https://skz97wtxaa.execute-api.us-east-1.amazonaws.com/Test/get-all-table-items",
 			JSON.stringify({"ENTIRE_TABLE": "EmptyBody"})
+			// {
+			// 	headers: {
+			// 		"X-API-KEY": "oanHLTIIG67I1m7nCbhf18gNi4dOTFkUaQgadWdH"
+			// 	},
+			// 	withCredentials: true
+			// }
 		).then(function (response) {
 			console.log(response.data.body.students.map(item => item.studentID));
 		}).catch(function (error) {
