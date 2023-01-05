@@ -1,9 +1,10 @@
-/Users/ivanzelenkov/IdeaProjects/Database-Bot-Manager/DBMLauncher/src/main/java/services/ApiGateway.java
 /Users/ivanzelenkov/IdeaProjects/Database-Bot-Manager/DBMLauncher/src/main/java/services/lexBotConfiguration/BotVersion.java
+/Users/ivanzelenkov/IdeaProjects/Database-Bot-Manager/DBMLauncher/src/main/java/services/api/ApiGateway.java
 /Users/ivanzelenkov/IdeaProjects/Database-Bot-Manager/DBMLauncher/src/main/java/services/Lambda.java
 /Users/ivanzelenkov/IdeaProjects/Database-Bot-Manager/DBMLauncher/src/main/java/services/lexBotConfiguration/Slot.java
 /Users/ivanzelenkov/IdeaProjects/Database-Bot-Manager/DBMLauncher/src/main/java/services/lexBotConfiguration/BotLocale.java
 /Users/ivanzelenkov/IdeaProjects/Database-Bot-Manager/DBMLauncher/src/main/java/services/database/DynamoDB.java
+/Users/ivanzelenkov/IdeaProjects/Database-Bot-Manager/DBMLauncher/src/main/java/services/api/ApiGatewayProxyResponse.java
 /Users/ivanzelenkov/IdeaProjects/Database-Bot-Manager/DBMLauncher/src/main/java/services/database/Students.java
 /Users/ivanzelenkov/IdeaProjects/Database-Bot-Manager/DBMLauncher/src/main/java/services/lexBotConfiguration/Buttons.java
 /Users/ivanzelenkov/IdeaProjects/Database-Bot-Manager/DBMLauncher/src/main/java/services/lexBotConfiguration/Intent.java
@@ -12,6 +13,7 @@
 /Users/ivanzelenkov/IdeaProjects/Database-Bot-Manager/DBMLauncher/src/main/java/services/lexBotConfiguration/Lex.java
 /Users/ivanzelenkov/IdeaProjects/Database-Bot-Manager/DBMLauncher/src/main/java/services/lexBotConfiguration/Utterance.java
 /Users/ivanzelenkov/IdeaProjects/Database-Bot-Manager/DBMLauncher/src/main/java/services/S3.java
+/Users/ivanzelenkov/IdeaProjects/Database-Bot-Manager/DBMLauncher/src/main/java/services/api/ApiGatewayProxyRequest.java
 /Users/ivanzelenkov/IdeaProjects/Database-Bot-Manager/DBMLauncher/src/main/java/services/IAM.java
 /Users/ivanzelenkov/IdeaProjects/Database-Bot-Manager/DBMLauncher/src/main/java/launcher/BotLauncher.java
 /Users/ivanzelenkov/IdeaProjects/Database-Bot-Manager/DBMLauncher/src/main/java/services/lexBotConfiguration/BotAlias.java

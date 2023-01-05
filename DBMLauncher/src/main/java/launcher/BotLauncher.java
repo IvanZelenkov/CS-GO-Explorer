@@ -3,7 +3,7 @@ package launcher;
 import java.util.HashMap;
 import java.util.Random;
 
-import services.ApiGateway;
+import services.api.ApiGateway;
 import services.database.DynamoDB;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.regions.Region;
@@ -150,7 +150,7 @@ public class BotLauncher {
                 roleArn,
                 "arn:aws:apigateway:" + awsAppDeploymentRegion + ":lambda:path/2015-03-31/functions/" + lambdaArn + "/invocations",
                 IntegrationType.AWS_PROXY,
-                "OPTIONS"
+                "POST"
         );
         System.out.println("Successfully created API integration request: " + integrationRequestOPTIONS);
 

@@ -1,11 +1,11 @@
 {
   "swagger" : "2.0",
   "info" : {
-    "description" : "Created using the Gateway Java API",
-    "version" : "2023-01-03T05:19:38Z",
+    "description" : "Created using Java AWS SDK",
+    "version" : "2023-01-05T08:15:32Z",
     "title" : "database-manager-rest-api"
   },
-  "host" : "0i1nd0337a.execute-api.us-east-1.amazonaws.com",
+  "host" : "faxsgozzti.execute-api.us-east-1.amazonaws.com",
   "basePath" : "/Test",
   "schemes" : [ "https" ],
   "paths" : {
@@ -17,28 +17,23 @@
             "description" : "200 response",
             "schema" : {
               "$ref" : "#/definitions/Empty"
-            },
-            "headers" : {
-              "Access-Control-Allow-Origin" : {
-                "type" : "string"
-              }
             }
           }
         },
+        "security" : [ {
+          "api_key" : [ ]
+        } ],
         "x-amazon-apigateway-integration" : {
           "credentials" : "arn:aws:iam::981684844178:role/DatabaseBotManagerRole",
           "httpMethod" : "POST",
           "uri" : "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:981684844178:function:database-bot-manager-lambda/invocations",
           "responses" : {
             "default" : {
-              "statusCode" : "200",
-              "responseParameters" : {
-                "method.response.header.Access-Control-Allow-Origin" : "'*'"
-              }
+              "statusCode" : "200"
             }
           },
           "passthroughBehavior" : "when_no_match",
-          "type" : "aws"
+          "type" : "aws_proxy"
         }
       },
       "options" : {
@@ -48,38 +43,32 @@
             "description" : "200 response",
             "schema" : {
               "$ref" : "#/definitions/Empty"
-            },
-            "headers" : {
-              "Access-Control-Allow-Origin" : {
-                "type" : "string"
-              },
-              "Access-Control-Allow-Methods" : {
-                "type" : "string"
-              },
-              "Access-Control-Allow-Headers" : {
-                "type" : "string"
-              }
             }
           }
         },
+        "security" : [ {
+          "api_key" : [ ]
+        } ],
         "x-amazon-apigateway-integration" : {
           "credentials" : "arn:aws:iam::981684844178:role/DatabaseBotManagerRole",
-          "httpMethod" : "OPTIONS",
+          "httpMethod" : "POST",
           "uri" : "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:981684844178:function:database-bot-manager-lambda/invocations",
           "responses" : {
             "default" : {
-              "statusCode" : "200",
-              "responseParameters" : {
-                "method.response.header.Access-Control-Allow-Methods" : "'OPTIONS,POST'",
-                "method.response.header.Access-Control-Allow-Headers" : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-                "method.response.header.Access-Control-Allow-Origin" : "'*'"
-              }
+              "statusCode" : "200"
             }
           },
           "passthroughBehavior" : "when_no_match",
-          "type" : "aws"
+          "type" : "aws_proxy"
         }
       }
+    }
+  },
+  "securityDefinitions" : {
+    "api_key" : {
+      "type" : "apiKey",
+      "name" : "x-api-key",
+      "in" : "header"
     }
   },
   "definitions" : {

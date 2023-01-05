@@ -1,9 +1,6 @@
 package services.database;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import com.amazonaws.services.lambda.runtime.Context;
@@ -11,15 +8,13 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import services.SNS;
+import services.api.ApiGatewayProxyResponse;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.core.Response;
 import software.amazon.awssdk.core.waiters.WaiterResponse;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
-import software.amazon.awssdk.http.AbortableInputStream;
-import software.amazon.awssdk.http.SdkHttpFullResponse;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
@@ -28,6 +23,8 @@ import software.amazon.awssdk.services.dynamodb.waiters.DynamoDbWaiter;
 import software.amazon.awssdk.services.sns.SnsClient;
 
 import handler.BotLogic;
+
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 
 public class DynamoDB {
 
@@ -211,7 +208,28 @@ public class DynamoDB {
         sns.publishMessage(snsClient, messages, mainMessage, "UPDATE");
     }
 
-    public static Object scanTable(DynamoDbClient dynamoDbClient, Map<String, Object> event, Context context) {
+    public static Object scanTable(DynamoDbClient dynamoDbClient, Map<String, Object> event) {
+        // Handles CORS preflight request
+        if (event.get("httpMethod").equals("OPTIONS")) {
+            // Response headers
+            JSONObject responseHeaders = new JSONObject();
+            responseHeaders.put("Access-Control-Allow-Headers", "Content-Type, X-API-KEY");
+            responseHeaders.put("Access-Control-Allow-Origin", "http://localhost:3000");
+            responseHeaders.put("Access-Control-Allow-Methods", "OPTIONS, POST");
+            responseHeaders.put("Access-Control-Allow-Credentials", "true");
+            responseHeaders.put("X-API-KEY", "");
+
+            // Response
+            ApiGatewayProxyResponse apiGatewayProxyOptionsResponse = new ApiGatewayProxyResponse.ApiGatewayProxyResponseBuilder()
+                    .withStatusCode(200)
+                    .withHeaders(responseHeaders)
+                    .withBody("CORS preflight request")
+                    .withBase64Encoded(true)
+                    .build();
+
+            return apiGatewayProxyOptionsResponse;
+        }
+
         ScanRequest scanRequest = ScanRequest.builder()
                 .tableName("Students")
                 .consistentRead(false)
@@ -234,33 +252,26 @@ public class DynamoDB {
                 jsonArray.add(jsonObject);
             }
         }
+
+        // Response body
         JSONObject responseBody = new JSONObject();
         responseBody.put("students", jsonArray);
 
-        // Response headers.
-        Map<String, List<String>> headers = new HashMap<>();
-        headers.put("Access-Control-Allow-Headers", new ArrayList<>(){{add("Content-Type");}});
-        headers.put("Access-Control-Allow-Origin", new ArrayList<>(){{add("https://" + System.getenv("REST_API_ID") + ".execute-api.us-east-1.amazonaws.com");}});
-        headers.put("Access-Control-Allow-Methods", new ArrayList<>(){{add("OPTIONS, POST");}});
-        headers.put("Access-Control-Allow-Credentials", new ArrayList<>(){{add("true");}});
+        // Response headers
+        JSONObject responseHeaders = new JSONObject();
+        responseHeaders.put("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        responseHeaders.put("Access-Control-Allow-Origin", "*");
+        responseHeaders.put("Access-Control-Allow-Methods", "OPTIONS, POST");
+        responseHeaders.put("Access-Control-Allow-Credentials", "true");
+        responseHeaders.put("X-API-KEY", "");
 
-        InputStream inputStream = new ByteArrayInputStream(responseBody.toJSONString().getBytes(StandardCharsets.UTF_8));
-        AbortableInputStream abortableInputStream = AbortableInputStream.create(inputStream);
-
-        SdkHttpFullResponse sdkHttpFullResponse = SdkHttpFullResponse
-                .builder()
-                .headers(headers)
-                .statusCode(200)
-                .content(abortableInputStream)
+        ApiGatewayProxyResponse apiGatewayProxyPostResponse = new ApiGatewayProxyResponse.ApiGatewayProxyResponseBuilder()
+                .withStatusCode(200)
+                .withHeaders(responseHeaders)
+                .withBody(responseBody.toJSONString())
+                .withBase64Encoded(true)
                 .build();
 
-        Response response = Response
-                .builder()
-                .httpResponse(sdkHttpFullResponse)
-                .build();
-
-        // HAVE TO BE MODIFIED (INCORRECT)
-
-        return response.response();
+        return apiGatewayProxyPostResponse;
     }
 }
