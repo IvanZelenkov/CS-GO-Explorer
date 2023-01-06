@@ -32,7 +32,8 @@ public class ApiGateway {
      */
     public static String createAPI(ApiGatewayClient apiGatewayClient,
                                    String restApiName,
-                                   String restApiDescription) {
+                                   String restApiDescription,
+                                   ApiKeySourceType apiKeySourceType) {
         EndpointConfiguration endpointConfiguration = EndpointConfiguration
                 .builder()
                 .types(EndpointType.REGIONAL)
@@ -43,6 +44,7 @@ public class ApiGateway {
                     .name(restApiName)
                     .description(restApiDescription)
                     .endpointConfiguration(endpointConfiguration)
+                    .apiKeySource(apiKeySourceType)
                     .build();
 
             CreateRestApiResponse response = apiGatewayClient.createRestApi(request);
@@ -244,7 +246,6 @@ public class ApiGateway {
                                       String keyName,
                                       String description,
                                       boolean isEnabled,
-                                      boolean isGenerateDistinctId,
                                       String usagePlanId,
                                       String keyType) {
         try {

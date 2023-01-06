@@ -3,7 +3,6 @@ package services.database;
 import java.io.IOException;
 import java.util.*;
 
-import com.amazonaws.services.lambda.runtime.Context;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -23,8 +22,6 @@ import software.amazon.awssdk.services.dynamodb.waiters.DynamoDbWaiter;
 import software.amazon.awssdk.services.sns.SnsClient;
 
 import handler.BotLogic;
-
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 
 public class DynamoDB {
 
@@ -213,11 +210,10 @@ public class DynamoDB {
         if (event.get("httpMethod").equals("OPTIONS")) {
             // Response headers
             JSONObject responseHeaders = new JSONObject();
-            responseHeaders.put("Access-Control-Allow-Headers", "Content-Type, X-API-KEY");
+            responseHeaders.put("Access-Control-Allow-Headers", "Content-Type");
             responseHeaders.put("Access-Control-Allow-Origin", "http://localhost:3000");
             responseHeaders.put("Access-Control-Allow-Methods", "OPTIONS, POST");
             responseHeaders.put("Access-Control-Allow-Credentials", "true");
-            responseHeaders.put("X-API-KEY", "");
 
             // Response
             ApiGatewayProxyResponse apiGatewayProxyOptionsResponse = new ApiGatewayProxyResponse.ApiGatewayProxyResponseBuilder()
@@ -259,11 +255,10 @@ public class DynamoDB {
 
         // Response headers
         JSONObject responseHeaders = new JSONObject();
-        responseHeaders.put("Access-Control-Allow-Headers", "Content-Type, Authorization");
-        responseHeaders.put("Access-Control-Allow-Origin", "*");
+        responseHeaders.put("Access-Control-Allow-Headers", "Content-Type");
+        responseHeaders.put("Access-Control-Allow-Origin", "http://localhost:3000");
         responseHeaders.put("Access-Control-Allow-Methods", "OPTIONS, POST");
         responseHeaders.put("Access-Control-Allow-Credentials", "true");
-        responseHeaders.put("X-API-KEY", "");
 
         ApiGatewayProxyResponse apiGatewayProxyPostResponse = new ApiGatewayProxyResponse.ApiGatewayProxyResponseBuilder()
                 .withStatusCode(200)

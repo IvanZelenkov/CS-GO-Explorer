@@ -12,28 +12,10 @@ import GeographyChart from "../../components/GeographyChart";
 import BarChart from "../../components/BarChart";
 import StatBox from "../../components/StatBox";
 import ProgressCircle from "../../components/ProgressCircle";
-import axios from "axios";
 
 const Dashboard = () => {
 	const theme = useTheme();
 	const colors = tokens(theme.palette.mode);
-
-	const sendRequest = () => {
-		axios.post(
-			"https://skz97wtxaa.execute-api.us-east-1.amazonaws.com/Test/get-all-table-items",
-			JSON.stringify({"ENTIRE_TABLE": "EmptyBody"})
-			// {
-			// 	headers: {
-			// 		"X-API-KEY": "oanHLTIIG67I1m7nCbhf18gNi4dOTFkUaQgadWdH"
-			// 	},
-			// 	withCredentials: true
-			// }
-		).then(function (response) {
-			console.log(response.data.body.students.map(item => item.studentID));
-		}).catch(function (error) {
-			console.log(error);
-		});
-	};
 
 	return (
 		<Box m="20px">
@@ -51,7 +33,6 @@ const Dashboard = () => {
 							padding: "10px 20px",
 						}}
 						onClick={() => {
-							sendRequest();
 							alert('Download Reports');
 						}}
 					>

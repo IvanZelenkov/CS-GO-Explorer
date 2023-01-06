@@ -1,55 +1,71 @@
-import { Box } from "@mui/material";
+import {Box, Button} from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import { mockDataContacts } from "../../data/mockData";
 import Header from "../../components/Header";
 import { useTheme } from "@mui/material";
+import axios from "axios";
+import Refresh from "@mui/icons-material/Refresh";
+import {useEffect, useState} from "react";
 
 const Contacts = () => {
 	const theme = useTheme();
 	const colors = tokens(theme.palette.mode);
+	const [data, setData] = useState([]);
+
+	const sendRequest = () => {
+		axios.post(
+			"https://v693cjptg0.execute-api.us-east-1.amazonaws.com/Test/get-all-table-items",
+			JSON.stringify({"ENTIRE_TABLE": "EmptyBody"})
+		).then(function (response) {
+			console.log(response.data.students);
+			setData(response.data.students);
+		}).catch(function (error) {
+			console.log(error);
+		});
+	};
+
+	useEffect(() => {
+		sendRequest();
+	}, [])
 
 	const columns = [
-		{ field: "id", headerName: "ID", flex: 0.5 },
-		{ field: "registrarId", headerName: "Registrar ID" },
 		{
-			field: "name",
-			headerName: "Name",
+			field: "studentID",
+			headerName: "Student ID",
+			type: "number",
+			flex: 0.5,
+			headerAlign: "left",
+			align: "left"
+		},
+		{
+			field: "firstName",
+			headerName: "First Name",
+			flex: 1,
+			cellClassName: "name-column--cell"
+		},
+		{
+			field: "lastName",
+			headerName: "Last Name",
+			flex: 1,
+			cellClassName: "name-column--cell"
+		},
+		{
+			field: "classification",
+			headerName: "Classification",
+			flex: 1
+		},
+		{
+			field: "dateOfBirth",
+			headerName: "Date of Birth",
 			flex: 1,
 			cellClassName: "name-column--cell",
-		},
-		{
-			field: "age",
-			headerName: "Age",
-			type: "number",
-			headerAlign: "left",
-			align: "left",
-		},
-		{
-			field: "phone",
-			headerName: "Phone Number",
-			flex: 1,
 		},
 		{
 			field: "email",
 			headerName: "Email",
 			flex: 1,
-		},
-		{
-			field: "address",
-			headerName: "Address",
-			flex: 1,
-		},
-		{
-			field: "city",
-			headerName: "City",
-			flex: 1,
-		},
-		{
-			field: "zipCode",
-			headerName: "Zip Code",
-			flex: 1,
-		},
+		}
 	];
 
 	return (
@@ -58,6 +74,26 @@ const Contacts = () => {
 				title="CONTACTS"
 				subtitle="List of Contacts for Future Reference"
 			/>
+			{/* REFRESH BUTTON */}
+			<Box display="flex" justifyContent="space-between" alignItems="center">
+				<Box>
+					<Button
+						sx={{
+							backgroundColor: colors.blueAccent[700],
+							color: colors.grey[100],
+							fontSize: "14px",
+							fontWeight: "bold",
+							padding: "10px 20px",
+						}}
+						onClick={() => {
+							sendRequest();
+						}}
+					>
+						<Refresh sx={{ mr: "10px" }}/>
+						Refresh
+					</Button>
+				</Box>
+			</Box>
 			<Box
 				m="40px 0 0 0"
 				height="75vh"
@@ -91,7 +127,8 @@ const Contacts = () => {
 				}}
 			>
 				<DataGrid
-					rows={mockDataContacts}
+					rows={data}
+					getRowId={(row) => row?.studentID}
 					columns={columns}
 					components={{ Toolbar: GridToolbar }}
 				/>

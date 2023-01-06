@@ -7,6 +7,7 @@ services/api/ApiGateway$1.class
 services/S3.class
 services/api/ApiGatewayProxyResponse$ApiGatewayProxyResponseBuilder.class
 services/lexBotConfiguration/Buttons.class
+services/Amplify.class
 services/SNS.class
 services/lexBotConfiguration/Intent.class
 handler/BotLogic.class
@@ -17,6 +18,7 @@ services/api/ApiGateway.class
 services/lexBotConfiguration/BotLocale.class
 services/api/ApiGatewayProxyResponse.class
 services/lexBotConfiguration/Utterance.class
+services/CodeCommit.class
 services/Lambda.class
 services/lexBotConfiguration/BotAlias.class
 launcher/BotLauncher$2.class

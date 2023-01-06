@@ -3,12 +3,15 @@ package launcher;
 import java.util.HashMap;
 import java.util.Random;
 
-import services.api.ApiGateway;
-import services.database.DynamoDB;
+import services.CodeCommit;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.amplify.AmplifyClient;
+import software.amazon.awssdk.services.amplify.model.Platform;
 import software.amazon.awssdk.services.apigateway.ApiGatewayClient;
+import software.amazon.awssdk.services.apigateway.model.ApiKeySourceType;
 import software.amazon.awssdk.services.apigateway.model.IntegrationType;
+import software.amazon.awssdk.services.codecommit.CodeCommitClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.iam.IamClient;
 import software.amazon.awssdk.services.lambda.LambdaClient;
@@ -17,6 +20,9 @@ import software.amazon.awssdk.services.lexmodelsv2.LexModelsV2Client;
 import services.IAM;
 import services.Lambda;
 import services.lexBotConfiguration.Lex;
+import services.Amplify;
+import services.api.ApiGateway;
+import services.database.DynamoDB;
 
 /**
  * Launches Database Bot Manager application to the user's AWS account using a single command.
@@ -90,7 +96,8 @@ public class BotLauncher {
         String restApiId = ApiGateway.createAPI(
                 apiGatewayClient,
                 "database-manager-rest-api",
-                "Created using Java AWS SDK"
+                "REST API for DBM application",
+                ApiKeySourceType.AUTHORIZER
         );
 
         System.out.println("Successfully created api with id: " + restApiId);
@@ -124,10 +131,24 @@ public class BotLauncher {
 
         String resourceId = ApiGateway.createResource(apiGatewayClient, restApiId, 0, "get-all-table-items");
 
-        String methodRequestPOST = ApiGateway.createMethodRequest(apiGatewayClient, restApiId, resourceId, "POST", "NONE", true);
+        String methodRequestPOST = ApiGateway.createMethodRequest(
+                apiGatewayClient,
+                restApiId,
+                resourceId,
+                "POST",
+                "NONE",
+                false
+        );
         System.out.println("Successfully created API method request: " + methodRequestPOST);
 
-        String methodRequestOPTIONS = ApiGateway.createMethodRequest(apiGatewayClient, restApiId, resourceId, "OPTIONS", "NONE", true);
+        String methodRequestOPTIONS = ApiGateway.createMethodRequest(
+                apiGatewayClient,
+                restApiId,
+                resourceId,
+                "OPTIONS",
+                "NONE",
+                false
+        );
         System.out.println("Successfully created API method request: " + methodRequestOPTIONS);
 
         String integrationRequestPOST = ApiGateway.createIntegrationRequest(
@@ -150,7 +171,7 @@ public class BotLauncher {
                 roleArn,
                 "arn:aws:apigateway:" + awsAppDeploymentRegion + ":lambda:path/2015-03-31/functions/" + lambdaArn + "/invocations",
                 IntegrationType.AWS_PROXY,
-                "POST"
+                "OPTIONS"
         );
         System.out.println("Successfully created API integration request: " + integrationRequestOPTIONS);
 
@@ -220,12 +241,34 @@ public class BotLauncher {
                 "DBM_key",
                 "Test key",
                 true,
-                true,
                 usagePlanId,
                 "API_KEY"
         );
 
         apiGatewayClient.close();
+
+        CodeCommitClient codeCommitClient = CodeCommit.authenticateCodeCommit(awsBasicCredentials, appRegion);
+
+        String repositoryId = CodeCommit.createRepository(
+                codeCommitClient,
+                "some-repository",
+                "some-description"
+        );
+        System.out.println("Successfully created repository with id: " + repositoryId);
+
+        codeCommitClient.close();
+
+        AmplifyClient amplifyClient = Amplify.authenticateAmplify(awsBasicCredentials, appRegion);
+
+        String appId = Amplify.createApp(
+                amplifyClient,
+                "Some name",
+                "Some description",
+                Platform.WEB
+        );
+        System.out.println("Successfully created app with id: " + appId);
+
+        amplifyClient.close();
     }
 
     /**
