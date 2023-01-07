@@ -2,7 +2,6 @@ services/database/Students.class
 services/lexBotConfiguration/Lex.class
 services/Lambda$1.class
 services/database/DynamoDB.class
-launcher/BotLauncher$1.class
 services/api/ApiGateway$1.class
 services/S3.class
 services/api/ApiGatewayProxyResponse$ApiGatewayProxyResponseBuilder.class
@@ -21,6 +20,5 @@ services/lexBotConfiguration/Utterance.class
 services/CodeCommit.class
 services/Lambda.class
 services/lexBotConfiguration/BotAlias.class
-launcher/BotLauncher$2.class
 services/api/ApiGatewayProxyRequest.class
 launcher/BotLauncher.class

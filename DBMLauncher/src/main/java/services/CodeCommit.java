@@ -4,8 +4,7 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.codecommit.CodeCommitClient;
-import software.amazon.awssdk.services.codecommit.model.CreateRepositoryRequest;
-import software.amazon.awssdk.services.codecommit.model.CreateRepositoryResponse;
+import software.amazon.awssdk.services.codecommit.model.*;
 
 public class CodeCommit {
 
@@ -27,6 +26,6 @@ public class CodeCommit {
                 .build();
 
         CreateRepositoryResponse createRepositoryResponse = codeCommitClient.createRepository(createRepositoryRequest);
-        return createRepositoryResponse.repositoryMetadata().repositoryId();
+        return createRepositoryResponse.repositoryMetadata().cloneUrlHttp();
     }
 }

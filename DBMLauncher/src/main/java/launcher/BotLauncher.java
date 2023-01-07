@@ -249,12 +249,12 @@ public class BotLauncher {
 
         CodeCommitClient codeCommitClient = CodeCommit.authenticateCodeCommit(awsBasicCredentials, appRegion);
 
-        String repositoryId = CodeCommit.createRepository(
+        String cloneUrlHttp = CodeCommit.createRepository(
                 codeCommitClient,
-                "some-repository",
-                "some-description"
+                "DBM-Repository",
+                "UI of the DBM application"
         );
-        System.out.println("Successfully created repository with id: " + repositoryId);
+        System.out.println("Successfully created repository with clone URL Http: " + cloneUrlHttp);
 
         codeCommitClient.close();
 
@@ -262,9 +262,10 @@ public class BotLauncher {
 
         String appId = Amplify.createApp(
                 amplifyClient,
-                "Some name",
-                "Some description",
-                Platform.WEB
+                "DBM",
+                "Database manager application",
+                Platform.WEB,
+                cloneUrlHttp
         );
         System.out.println("Successfully created app with id: " + appId);
 
