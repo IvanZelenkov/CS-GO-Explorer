@@ -5,7 +5,7 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbParti
 
 @DynamoDbBean
 public class Students {
-    private Integer studentID;
+    private Integer studentId;
     private String firstName;
     private String lastName;
     private String dateOfBirth;
@@ -13,12 +13,12 @@ public class Students {
     private String email;
 
     @DynamoDbPartitionKey
-    public Integer getStudentID() {
-        return studentID;
+    public Integer getStudentId() {
+        return studentId;
     }
 
-    public void setStudentID(Integer studentID) {
-        this.studentID = studentID;
+    public void setStudentID(Integer studentId) {
+        this.studentId = studentId;
     }
 
     public String getFirstName() {

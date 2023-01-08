@@ -27,13 +27,14 @@ public class IAM {
 
     /**
      * Authenticate to the IAM client using the AWS user's credentials.
-     * @param awsCredentials The AWS Access Key ID and Secret Access Key are credentials that are used to securely sign requests to AWS services.
+     * @param awsBasicCredentials The AWS Access Key ID and Secret Access Key are credentials that are used to securely sign requests to AWS services.
+     * @param iamRegion The AWS Region where the service will be hosted.
      * @return Service client for accessing IAM.
      */
-    public static IamClient authenticateIAM(AwsBasicCredentials awsCredentials, Region iamRegion) {
+    public static IamClient authenticateIAM(AwsBasicCredentials awsBasicCredentials, Region iamRegion) {
         return IamClient
                 .builder()
-                .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
+                .credentialsProvider(StaticCredentialsProvider.create(awsBasicCredentials))
                 .region(iamRegion)
                 .build();
     }
@@ -42,25 +43,28 @@ public class IAM {
      * Creates an IAM role that will be used across the entire application in AWS.
      * @param iamClient Service client for accessing IAM.
      * @param roleName IAM role name.
+     * @param roleDescription IAM role description.
      * @return Role ARN.
      */
-    public static String createRole(IamClient iamClient, String roleName) {
+    public static String createRole(IamClient iamClient, String roleName, String roleDescription) {
         try {
             IamWaiter iamWaiter = iamClient.waiter();
             JSONObject jsonObject = (JSONObject) readJsonFromFile("trust-policy");
-            CreateRoleRequest createRoleRequest = CreateRoleRequest.builder()
+            CreateRoleRequest createRoleRequest = CreateRoleRequest
+                    .builder()
                     .roleName(roleName)
+                    .description(roleDescription)
                     .assumeRolePolicyDocument(jsonObject.toJSONString())
-                    .description("Database Bot Manager Trust Policy")
                     .build();
 
             CreateRoleResponse createRoleResponse = iamClient.createRole(createRoleRequest);
 
-            // Wait until the role is created.
-            GetRoleRequest roleRequest = GetRoleRequest.builder()
+            GetRoleRequest roleRequest = GetRoleRequest
+                    .builder()
                     .roleName(createRoleResponse.role().roleName())
                     .build();
 
+            // Wait until the role is created
             WaiterResponse<GetRoleResponse> waitUntilRoleExists = iamWaiter.waitUntilRoleExists(roleRequest);
             waitUntilRoleExists.matched().response().ifPresent(System.out::println);
 
@@ -81,23 +85,32 @@ public class IAM {
      * @return Service-linked role ARN.
      */
     public static String createServiceLinkedRole(IamClient iamClient, String awsServiceName, String customSuffix, String description) {
-        CreateServiceLinkedRoleRequest createServiceLinkedRoleRequest = CreateServiceLinkedRoleRequest
-                .builder()
-                .awsServiceName(awsServiceName)
-                .customSuffix(customSuffix)
-                .description(description)
-                .build();
+        try {
+            IamWaiter iamWaiter = iamClient.waiter();
+            CreateServiceLinkedRoleRequest createServiceLinkedRoleRequest = CreateServiceLinkedRoleRequest
+                    .builder()
+                    .awsServiceName(awsServiceName)
+                    .customSuffix(customSuffix)
+                    .description(description)
+                    .build();
 
-        CreateServiceLinkedRoleResponse createServiceLinkedRoleResponse = iamClient.createServiceLinkedRole(createServiceLinkedRoleRequest);
+            CreateServiceLinkedRoleResponse createServiceLinkedRoleResponse = iamClient.createServiceLinkedRole(createServiceLinkedRoleRequest);
 
-        GetRoleRequest getRoleRequest = GetRoleRequest
-                .builder()
-                .roleName(createServiceLinkedRoleResponse.role().roleName())
-                .build();
+            GetRoleRequest getRoleRequest = GetRoleRequest
+                    .builder()
+                    .roleName(createServiceLinkedRoleResponse.role().roleName())
+                    .build();
 
-        GetRoleResponse getRoleResponse = iamClient.getRole(getRoleRequest);
+            // Wait until the service-linked role is created
+            WaiterResponse<GetRoleResponse> waitUntilRoleExists = iamWaiter.waitUntilRoleExists(getRoleRequest);
+            waitUntilRoleExists.matched().response().ifPresent(System.out::println);
 
-        return getRoleResponse.role().arn();
+            return createServiceLinkedRoleResponse.role().arn();
+        } catch (IamException error) {
+                System.err.println(error.getMessage());
+                System.exit(1);
+        }
+        return "";
     }
 
     /**
@@ -110,22 +123,24 @@ public class IAM {
         try {
             IamWaiter iamWaiter = iamClient.waiter();
             JSONObject jsonObject = (JSONObject) readJsonFromFile("permissions-policy");
-            CreatePolicyRequest request = CreatePolicyRequest.builder()
+            CreatePolicyRequest request = CreatePolicyRequest
+                    .builder()
                     .policyName(policyName)
                     .policyDocument(jsonObject.toJSONString())
                     .build();
 
-            CreatePolicyResponse response = iamClient.createPolicy(request);
+            CreatePolicyResponse createPolicyResponse = iamClient.createPolicy(request);
 
-            // Wait until the policy is created.
-            GetPolicyRequest policyRequest = GetPolicyRequest.builder()
-                    .policyArn(response.policy().arn())
+            GetPolicyRequest getPolicyRequest = GetPolicyRequest
+                    .builder()
+                    .policyArn(createPolicyResponse.policy().arn())
                     .build();
 
-            WaiterResponse<GetPolicyResponse> waitUntilPolicyExists = iamWaiter.waitUntilPolicyExists(policyRequest);
+            // Wait until the permissions policy is created
+            WaiterResponse<GetPolicyResponse> waitUntilPolicyExists = iamWaiter.waitUntilPolicyExists(getPolicyRequest);
             waitUntilPolicyExists.matched().response().ifPresent(System.out::println);
 
-            return response.policy().arn();
+            return createPolicyResponse.policy().arn();
         } catch (IamException | IOException | ParseException error) {
             System.err.println(error.getMessage());
             System.exit(1);
@@ -134,14 +149,16 @@ public class IAM {
     }
 
     /**
-     *
+     * Attaches the specified managed policy to the specified IAM role. When you attach a managed policy to a role,
+     * the managed policy becomes part of the role's permission (access) policy.
      * @param iamClient Service client for accessing IAM.
      * @param roleName Name of the role to which permissions policy will be attached.
      * @param permissionsPolicyArn Permissions policy ARN.
      */
     public static void attachRolePermissionsPolicy(IamClient iamClient, String roleName, String permissionsPolicyArn) {
         try {
-            ListAttachedRolePoliciesRequest request = ListAttachedRolePoliciesRequest.builder()
+            ListAttachedRolePoliciesRequest request = ListAttachedRolePoliciesRequest
+                    .builder()
                     .roleName(roleName)
                     .build();
 
@@ -158,7 +175,8 @@ public class IAM {
                 }
             }
 
-            AttachRolePolicyRequest attachPolicyRequest = AttachRolePolicyRequest.builder()
+            AttachRolePolicyRequest attachPolicyRequest = AttachRolePolicyRequest
+                    .builder()
                     .roleName(roleName)
                     .policyArn(permissionsPolicyArn)
                     .build();
@@ -174,13 +192,12 @@ public class IAM {
      * Reads JSON file content then converts it to the InputStream and parses to JSONObject.
      * @param filename The name of the JSON file to read.
      * @return Returns the parsed contents of the JSON file as a JSONObject.
-     * @throws IOException Signals that an I/O exception of some sort has occurred. This class is the general class of exceptions produced by failed or interrupted I/O operations.
+     * @throws IOException Signals that an I/O exception has occurred. This class is the general class of exceptions produced by failed or interrupted I/O operations.
      * @throws ParseException Signals that an error has been reached unexpectedly while parsing.
      */
     private static Object readJsonFromFile(String filename) throws IOException, ParseException {
         InputStream inputStream = IAM.class.getResourceAsStream("/policies/" + filename + ".json");
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-
         JSONParser jsonParser = new JSONParser();
         return jsonParser.parse(bufferedReader);
     }

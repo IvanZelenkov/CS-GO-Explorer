@@ -31,7 +31,7 @@ const Contacts = () => {
 
 	const columns = [
 		{
-			field: "studentID",
+			field: "studentId",
 			headerName: "Student ID",
 			type: "number",
 			flex: 0.5,

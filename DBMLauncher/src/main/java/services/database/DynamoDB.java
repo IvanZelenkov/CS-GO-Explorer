@@ -1,7 +1,12 @@
 package services.database;
 
-import java.io.IOException;
-import java.util.*;
+import handler.BotLogic;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -21,12 +26,19 @@ import software.amazon.awssdk.services.dynamodb.paginators.ScanIterable;
 import software.amazon.awssdk.services.dynamodb.waiters.DynamoDbWaiter;
 import software.amazon.awssdk.services.sns.SnsClient;
 
-import handler.BotLogic;
-
+/**
+ * Amazon DynamoDB is a fully managed NoSQL database service that provides fast and predictable performance with
+ * seamless scalability. You can use Amazon DynamoDB to create a database table that can store and retrieve any
+ * amount of data, and serve any level of request traffic.
+ */
 public class DynamoDB {
 
-    private static final String DYNAMO_DB_TABLE_NAME = "Students";
-
+    /**
+     * Authenticate to the DynamoDB client using the AWS user's credentials.
+     * @param awsBasicCredentials The AWS Access Key ID and Secret Access Key are credentials that are used to securely sign requests to AWS services.
+     * @param appRegion The AWS Region where the service will be hosted.
+     * @return Service client for accessing Amazon DynamoDB.
+     */
     public static DynamoDbClient authenticateDynamoDB(AwsBasicCredentials awsBasicCredentials, Region appRegion) {
         return DynamoDbClient
                 .builder()
@@ -35,26 +47,44 @@ public class DynamoDB {
                 .build();
     }
 
-    public static String createTable(DynamoDbClient dynamoDbClient, String tableName, String key) {
-        ListTablesResponse listTables = dynamoDbClient.listTables();
-        for (String table : listTables.tableNames()) {
-            if (table.equals(DYNAMO_DB_TABLE_NAME)) {
-                return table + " table already exists.";
-            }
-        }
-
+    /**
+     * Creates a new DynamoDB.
+     * @param dynamoDbClient Client for accessing DynamoDB.
+     * @param tableName The name of the table to create.
+     * @param attributeName A name for the attribute.
+     * @param attributeType The data type for the attribute, where:
+     *                      S - the attribute is of type String,
+     *                      N - the attribute is of type Number,
+     *                      B - the attribute is of type Binary.
+     * @param keyType The role that this key attribute will assume: HASH - partition key or RANGE - sort key
+     * @return The name of the table.
+     */
+    public static String createTable(DynamoDbClient dynamoDbClient,
+                                     String tableName,
+                                     String attributeName,
+                                     ScalarAttributeType attributeType,
+                                     KeyType keyType) {
         try {
-            DynamoDbWaiter dbWaiter = dynamoDbClient.waiter();
-            CreateTableRequest request = CreateTableRequest.builder()
-                    .attributeDefinitions(AttributeDefinition.builder()
-                            .attributeName(key)
-                            .attributeType(ScalarAttributeType.N)
+            ListTablesResponse listTables = dynamoDbClient.listTables();
+
+            for (String table : listTables.tableNames())
+                if (table.equals(System.getenv("DYNAMO_DB_TABLE_NAME")))
+                    return table + " table already exists.";
+
+            CreateTableRequest request = CreateTableRequest
+                    .builder()
+                    .attributeDefinitions(AttributeDefinition
+                            .builder()
+                            .attributeName(attributeName)
+                            .attributeType(attributeType)
                             .build())
-                    .keySchema(KeySchemaElement.builder()
-                            .attributeName(key)
-                            .keyType(KeyType.HASH)
+                    .keySchema(KeySchemaElement
+                            .builder()
+                            .attributeName(attributeName)
+                            .keyType(keyType)
                             .build())
-                    .provisionedThroughput(ProvisionedThroughput.builder()
+                    .provisionedThroughput(ProvisionedThroughput
+                            .builder()
                             .readCapacityUnits(10L)
                             .writeCapacityUnits(10L)
                             .build())
@@ -68,28 +98,39 @@ public class DynamoDB {
                     .build();
 
             // Wait until the Amazon DynamoDB table is created
+            DynamoDbWaiter dbWaiter = dynamoDbClient.waiter();
             WaiterResponse<DescribeTableResponse> waiterResponse =  dbWaiter.waitUntilTableExists(tableRequest);
             waiterResponse.matched().response().ifPresent(System.out::println);
+
+            return tableRequest.tableName();
         } catch (DynamoDbException error) {
             System.err.println(error.getMessage());
             System.exit(1);
         }
-        return "Table " + DYNAMO_DB_TABLE_NAME + " created.";
+        return "";
     }
 
-    public static void getRecord(DynamoDbClient dynamoDbClient, String keyName, String keyValue) throws IOException {
-        Map<String,AttributeValue> keyToGet = new HashMap<>();
+    /**
+     * Gets a set of attributes for the item with the given primary key.
+     * If there is no matching item, it does not return any data and
+     * there will be no Item element in the response.
+     * @param dynamoDbClient Client for accessing DynamoDB.
+     * @param primaryKeyName The name of the primary key attribute.
+     * @param primaryKeyValue The value of the primary key attribute.
+     */
+    public static void getRecord(DynamoDbClient dynamoDbClient, String primaryKeyName, String primaryKeyValue) {
         List<String> messages = new ArrayList<>();
-
-        keyToGet.put(keyName, AttributeValue.builder().n(keyValue).build());
-
-        GetItemRequest request = GetItemRequest.builder()
-                .key(keyToGet)
-                .tableName(DYNAMO_DB_TABLE_NAME)
-                .build();
+        Map<String,AttributeValue> keyToGet = new HashMap<>();
+        keyToGet.put(primaryKeyName, AttributeValue.builder().n(primaryKeyValue).build());
 
         try {
-            Map<String, AttributeValue> returnedItem = dynamoDbClient.getItem(request).item();
+            GetItemRequest getItemRequest = GetItemRequest
+                    .builder()
+                    .key(keyToGet)
+                    .tableName(System.getenv("DYNAMO_DB_TABLE_NAME"))
+                    .build();
+
+            Map<String, AttributeValue> returnedItem = dynamoDbClient.getItem(getItemRequest).item();
 
             if (returnedItem != null) {
                 Set<String> keys = returnedItem.keySet();
@@ -98,96 +139,148 @@ public class DynamoDB {
                 for (String key : keys) {
                     messages.add(String.format("%s: %s\n", key, returnedItem.get(key).toString()));
                 }
+                messages.add("Student with ID " + primaryKeyValue + " was successfully retrieved.");
             } else {
-                messages.add(String.format("No item found with the key %s!\n", keyName));
+                messages.add(String.format("No item found with the key %s!\n", primaryKeyName));
             }
         } catch (DynamoDbException error) {
             System.err.println(error.getMessage());
             System.exit(1);
         }
 
-        String mainMessage = "Student with ID " + keyValue + " was successfully retrieved.";
-        messages.add(mainMessage);
-        BotLogic.multipleMessages(messages, "PlainText");
-
-        SNS sns = new SNS();
-        SnsClient snsClient = sns.authenticateSNS(BotLogic.getAwsBasicCredentials());
-        sns.publishMessage(snsClient, messages, mainMessage, "GET");
+        // Publish the message to the SNS topic
+        String mainMessage;
+        if (messages.size() > 1) {
+            mainMessage = messages.get(messages.size() - 1);
+        } else {
+            mainMessage = messages.get(0);
+        }
+        SnsClient snsClient = SNS.authenticateSNS(BotLogic.getAwsBasicCredentials());
+        SNS.publishMessage(snsClient, System.getenv("SNS_TOPIC_NAME"), messages, mainMessage, "GET");
+        snsClient.close();
     }
 
-    public static void putRecord(DynamoDbEnhancedClient enhancedClient) throws IOException {
+    /**
+     * Creates a new item, or replaces an old item with a new item. If an item that has
+     * the same primary key as the new item already exists in the specified table,
+     * the new item completely replaces the existing item.
+     * @param dynamoDbClient Client for accessing DynamoDB.
+     */
+    public static void putRecord(DynamoDbClient dynamoDbClient) {
         Students studentRecord = new Students();
         try {
-            DynamoDbTable<Students> table = enhancedClient.table(
-                    DYNAMO_DB_TABLE_NAME, TableSchema.fromBean(Students.class));
+            DynamoDbEnhancedClient dynamoDbEnhancedClient = DynamoDbEnhancedClient
+                    .builder()
+                    .dynamoDbClient(dynamoDbClient)
+                    .build();
 
-            // Populate the Table.
-            studentRecord.setStudentID(Integer.parseInt(BotLogic.getSlotValue("StudentID")));
+            DynamoDbTable<Students> table = dynamoDbEnhancedClient.table(
+                    System.getenv("DYNAMO_DB_TABLE_NAME"), TableSchema.fromBean(Students.class));
+
+            // Populate the table
+            studentRecord.setStudentID(Integer.parseInt(BotLogic.getSlotValue("StudentId")));
             studentRecord.setFirstName(BotLogic.getSlotValue("FirstName"));
             studentRecord.setLastName(BotLogic.getSlotValue("LastName"));
             studentRecord.setDateOfBirth(BotLogic.getSlotValue("DateOfBirth"));
             studentRecord.setClassification(BotLogic.getSlotValue("Classification"));
             studentRecord.setEmail(BotLogic.getSlotValue("Email"));
 
-            // Put the student data into an Amazon DynamoDB table.
+            // Put the student data into an Amazon DynamoDB table
             table.putItem(studentRecord);
         } catch (DynamoDbException error) {
             System.err.println(error.getMessage());
             System.exit(1);
         }
 
+        // Publish the message to the SNS topic
         List<String> messages = new ArrayList<>();
-        String mainMessage = "Student with ID: " + studentRecord.getStudentID() + " has been successfully added.";
+        String mainMessage = "Student with ID: " + studentRecord.getStudentId() + " has been successfully added.";
         messages.add(mainMessage);
-        BotLogic.multipleMessages(messages, "PlainText");
-
-        SNS sns = new SNS();
-        SnsClient snsClient = sns.authenticateSNS(BotLogic.getAwsBasicCredentials());
-        sns.publishMessage(snsClient, messages, mainMessage, "INSERT");
+        SnsClient snsClient = SNS.authenticateSNS(BotLogic.getAwsBasicCredentials());
+        SNS.publishMessage(snsClient, "DynamoStudentsDBTableChanges", messages, mainMessage, "INSERT");
+        snsClient.close();
     }
 
-    public static void removeRecord(DynamoDbClient dynamoDbClient, String keyName, String keyValue) throws IOException {
+    /**
+     * Deletes a single item in a table by primary key.
+     * @param dynamoDbClient Client for accessing DynamoDB.
+     * @param primaryKeyName The name of the primary key attribute.
+     * @param primaryKeyValue The value of the primary key attribute.
+     */
+    public static void removeRecord(DynamoDbClient dynamoDbClient, String primaryKeyName, String primaryKeyValue) {
+        List<String> messages = new ArrayList<>();
         Map<String, AttributeValue> keyToGet = new HashMap<>();
-        keyToGet.put(keyName, AttributeValue.builder().n(keyValue).build());
+        keyToGet.put(primaryKeyName, AttributeValue.builder().n(primaryKeyValue).build());
 
-        DeleteItemRequest deleteRequest = DeleteItemRequest.builder()
-                .tableName(DYNAMO_DB_TABLE_NAME)
-                .key(keyToGet)
-                .build();
         try {
-            dynamoDbClient.deleteItem(deleteRequest);
+            GetItemRequest getItemRequest = GetItemRequest
+                    .builder()
+                    .key(keyToGet)
+                    .tableName(System.getenv("DYNAMO_DB_TABLE_NAME"))
+                    .build();
+
+            GetItemResponse getItemResponse = dynamoDbClient.getItem(getItemRequest);
+            if (getItemResponse.hasItem()) {
+                DeleteItemRequest deleteRequest = DeleteItemRequest.builder()
+                        .tableName(System.getenv("DYNAMO_DB_TABLE_NAME"))
+                        .key(keyToGet)
+                        .build();
+                dynamoDbClient.deleteItem(deleteRequest);
+                messages.add("Student with ID: " + primaryKeyValue + " has been successfully removed.");
+            } else {
+                messages.add("Student with ID: " + primaryKeyValue + " has not been found.");
+            }
         } catch (DynamoDbException error) {
             System.err.println(error.getMessage());
             System.exit(1);
         }
 
-        List<String> messages = new ArrayList<>();
-        String mainMessage = "Student with ID: " + keyValue + " has been successfully removed.";
-        messages.add(mainMessage);
-        BotLogic.multipleMessages(messages, "PlainText");
-
-        SNS sns = new SNS();
-        SnsClient snsClient = sns.authenticateSNS(BotLogic.getAwsBasicCredentials());
-        sns.publishMessage(snsClient, messages, mainMessage, "REMOVE");
+        // Publish the message to the SNS topic
+        String mainMessage = messages.get(0);
+        SnsClient snsClient = SNS.authenticateSNS(BotLogic.getAwsBasicCredentials());
+        SNS.publishMessage(snsClient, System.getenv("SNS_TOPIC_NAME"), messages, mainMessage, "REMOVE");
+        snsClient.close();
     }
 
-    public static void updateRecord(DynamoDbClient dynamoDbClient, String keyName, String keyValue, String nameOfRecordToUpdate, String newValue) throws IOException {
+    /**
+     * Edits an existing item's attributes, or adds a new item to the table if it does not already exist.
+     * @param dynamoDbClient Client for accessing DynamoDB.
+     * @param primaryKeyName The name of the primary key attribute.
+     * @param primaryKeyValue The value of the primary key attribute.
+     * @param attributeName The name of the attribute to update its value.
+     * @param newValue The new value of the attribute.
+     */
+    public static void updateRecord(DynamoDbClient dynamoDbClient,
+                                    String primaryKeyName,
+                                    String primaryKeyValue,
+                                    String attributeName,
+                                    String newValue) {
         Map<String,AttributeValue> itemKey = new HashMap<>();
-        itemKey.put(keyName, AttributeValue.builder().n(keyValue).build());
-        Map<String, AttributeValueUpdate> updatedValues = new HashMap<>();
+        itemKey.put(primaryKeyName, AttributeValue.builder().n(primaryKeyValue).build());
 
-        // Update the column specified by nameOfRecordToUpdate with newValue
-        updatedValues.put(nameOfRecordToUpdate, AttributeValueUpdate.builder()
-                .value(AttributeValue.builder().s(newValue).build())
-                .action(AttributeAction.PUT)
-                .build());
+        // Update the column specified by attributeName with newValue
+        AttributeValueUpdate attributeValue;
+        if (attributeName.equals(primaryKeyName)) {
+            attributeValue = AttributeValueUpdate
+                    .builder()
+                    .value(AttributeValue.builder().n(newValue).build())
+                    .action(AttributeAction.PUT)
+                    .build();
+        } else {
+            attributeValue = AttributeValueUpdate
+                    .builder()
+                    .value(AttributeValue.builder().s(newValue).build())
+                    .action(AttributeAction.PUT)
+                    .build();
+        }
+        Map<String, AttributeValueUpdate> updatedValues = new HashMap<>();
+        updatedValues.put(attributeName, attributeValue);
 
         UpdateItemRequest request = UpdateItemRequest.builder()
-                .tableName(DYNAMO_DB_TABLE_NAME)
+                .tableName(System.getenv("DYNAMO_DB_TABLE_NAME"))
                 .key(itemKey)
                 .attributeUpdates(updatedValues)
                 .build();
-
         try {
             dynamoDbClient.updateItem(request);
         } catch (DynamoDbException error) {
@@ -195,17 +288,22 @@ public class DynamoDB {
             System.exit(1);
         }
 
+        // Publish the message to the SNS topic
         List<String> messages = new ArrayList<>();
-        String mainMessage = "The " + nameOfRecordToUpdate + " attribute's value of the student with id " + keyValue + " has been successfully updated.";
+        String mainMessage = "The " + attributeName + " attribute's value of the student with id " + primaryKeyValue + " has been successfully updated.";
         messages.add(mainMessage);
-        BotLogic.multipleMessages(messages, "PlainText");
-
-        SNS sns = new SNS();
-        SnsClient snsClient = sns.authenticateSNS(BotLogic.getAwsBasicCredentials());
-        sns.publishMessage(snsClient, messages, mainMessage, "UPDATE");
+        SnsClient snsClient = SNS.authenticateSNS(BotLogic.getAwsBasicCredentials());
+        SNS.publishMessage(snsClient, "DynamoStudentsDBTableChanges", messages, mainMessage, "UPDATE");
     }
 
-    public static Object scanTable(DynamoDbClient dynamoDbClient, Map<String, Object> event) {
+    /**
+     * Scans table items and returns an API Gateway proxy response containing all table items
+     * that will be displayed to the user on the website.
+     * @param dynamoDbClient Client for accessing DynamoDB.
+     * @param event The Lambda Function event.
+     * @return API Gateway proxy response containing status code, headers, body, and base64 encoding enabled.
+     */
+    public static ApiGatewayProxyResponse scanTable(DynamoDbClient dynamoDbClient, Map<String, Object> event) {
         // Handles CORS preflight request
         if (event.get("httpMethod").equals("OPTIONS")) {
             // Response headers
@@ -249,16 +347,16 @@ public class DynamoDB {
             }
         }
 
-        // Response body
-        JSONObject responseBody = new JSONObject();
-        responseBody.put("students", jsonArray);
-
         // Response headers
         JSONObject responseHeaders = new JSONObject();
         responseHeaders.put("Access-Control-Allow-Headers", "Content-Type");
         responseHeaders.put("Access-Control-Allow-Origin", "http://localhost:3000");
         responseHeaders.put("Access-Control-Allow-Methods", "OPTIONS, POST");
         responseHeaders.put("Access-Control-Allow-Credentials", "true");
+
+        // Response body
+        JSONObject responseBody = new JSONObject();
+        responseBody.put("students", jsonArray);
 
         ApiGatewayProxyResponse apiGatewayProxyPostResponse = new ApiGatewayProxyResponse.ApiGatewayProxyResponseBuilder()
                 .withStatusCode(200)

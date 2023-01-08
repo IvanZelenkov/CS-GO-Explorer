@@ -1,15 +1,14 @@
 package services;
 
+import handler.BotLogic;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.sns.SnsClient;
 import software.amazon.awssdk.services.sns.model.CreateTopicRequest;
 import software.amazon.awssdk.services.sns.model.CreateTopicResponse;
@@ -21,18 +20,18 @@ import software.amazon.awssdk.services.sns.model.ListSubscriptionsResponse;
 import software.amazon.awssdk.services.sns.model.Subscription;
 import software.amazon.awssdk.services.sns.model.PublishRequest;
 
-import handler.BotLogic;
-
+/**
+ * Amazon Simple Notification Service (Amazon SNS) is a web service that enables applications, end-users,
+ * and devices to instantly send and receive notifications from the cloud.
+ */
 public class SNS {
 
-    private final String SNS_TOPIC_NAME = "DynamoStudentsDBTableChanges";
-    private final List<String> subscribersList;
-
-    public SNS() {
-        this.subscribersList = new ArrayList<>();
-    }
-
-    public SnsClient authenticateSNS(AwsBasicCredentials awsBasicCredentials) {
+    /**
+     * Authenticate to the SNS client using the AWS user's credentials.
+     * @param awsBasicCredentials The AWS Access Key ID and Secret Access Key are credentials that are used to securely sign requests to AWS services.
+     * @return Service client for accessing Amazon SNS.
+     */
+    public static SnsClient authenticateSNS(AwsBasicCredentials awsBasicCredentials) {
         return SnsClient
                 .builder()
                 .credentialsProvider(StaticCredentialsProvider.create(awsBasicCredentials))
@@ -40,14 +39,19 @@ public class SNS {
                 .build();
     }
 
-    public String createSNSTopic(SnsClient snsClient) {
-        CreateTopicResponse result;
+    /**
+     * Creates a topic to which notifications can be published.
+     * @param snsClient Service client for accessing SNS.
+     * @param snsTopicName The name of the topic you want to create.
+     * @return The Amazon Resource Name (ARN) assigned to the created topic.
+     */
+    public static String createSNSTopic(SnsClient snsClient, String snsTopicName) {
         try {
             CreateTopicRequest request = CreateTopicRequest.builder()
-                    .name(SNS_TOPIC_NAME)
+                    .name(snsTopicName)
                     .build();
 
-            result = snsClient.createTopic(request);
+            CreateTopicResponse result = snsClient.createTopic(request);
             return result.topicArn();
         } catch (SnsException error) {
             System.err.println(error.awsErrorDetails().errorMessage());
@@ -56,6 +60,21 @@ public class SNS {
         return "";
     }
 
+    /**
+     * Subscribes an endpoint to an Amazon SNS topic.
+     * @param snsClient Service client for accessing SNS.
+     * @param topicArn The ARN of the topic you want to subscribe to.
+     * @param email The endpoint that you want to receive notifications. Endpoints vary by protocol:
+     *              For the http protocol, the (public) endpoint is a URL beginning with http://.
+     *              For the https protocol, the (public) endpoint is a URL beginning with https://.
+     *              For the email protocol, the endpoint is an email address.
+     *              For the email-json protocol, the endpoint is an email address.
+     *              For the sms protocol, the endpoint is a phone number of an SMS-enabled device.
+     *              For the sqs protocol, the endpoint is the ARN of an Amazon SQS queue.
+     *              For the application protocol, the endpoint is the EndpointArn of a mobile app and device.
+     *              For the lambda protocol, the endpoint is the ARN of an AWS Lambda function.
+     *              For the firehose protocol, the endpoint is the ARN of an Amazon Kinesis Data Firehose delivery stream.
+     */
     public static void emailSubscriber(SnsClient snsClient, String topicArn, String email) {
         try {
             SubscribeRequest request = SubscribeRequest.builder()
@@ -73,8 +92,12 @@ public class SNS {
         }
     }
 
-
-    public List<Subscription> listSNSSubscriptions(SnsClient snsClient) {
+    /**
+     * Returns a list of the requester's subscriptions.
+     * @param snsClient Service client for accessing SNS.
+     * @return List of the requester's subscriptions.
+     */
+    public static List<Subscription> listSNSSubscriptions(SnsClient snsClient) {
         try {
             ListSubscriptionsRequest request = ListSubscriptionsRequest.builder().build();
             ListSubscriptionsResponse result = snsClient.listSubscriptions(request);
@@ -83,27 +106,42 @@ public class SNS {
             System.err.println(error.awsErrorDetails().errorMessage());
             System.exit(1);
         }
-        return null;
+        return new ArrayList<>();
     }
 
-    public void publishMessage(SnsClient snsClient, List<String> messages, String mainMessage, String type) {
+    /**
+     * Sends a message to an Amazon SNS topic, a text message (SMS message) directly to a phone number,
+     * or a message to a mobile platform endpoint (when you specify the TargetArn).
+     * @param snsClient Service client for accessing SNS.
+     * @param snsTopicName The name of the topic you want to create.
+     * @param messages List of messages that will be displayed to the user in the lex-bot
+     * @param message The message you want to send.
+     * @param type Type of action that was taken on the DynamoDB table (GET, INSERT, REMOVE, or UPDATE).
+     */
+    public static void publishMessage(SnsClient snsClient, String snsTopicName, List<String> messages, String message, String type) {
         try {
-            String topicArn = createSNSTopic(snsClient);
+            // TODO
+            String topicArn = createSNSTopic(snsClient, snsTopicName);
+            List<String> subscribersList = new ArrayList<>();
             subscribersList.add(System.getenv("ADMIN_EMAIL"));
-            // TODO may add subscriber feature to the chatbot
+
             for (String subscriber : subscribersList)
                 emailSubscriber(snsClient, topicArn, subscriber);
 
             PublishRequest request = PublishRequest.builder()
-                    .message(mainMessage)
+                    .message(message)
                     .topicArn(topicArn)
                     .build();
-
             snsClient.publish(request);
+
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("Confirmation sent to ");
-            for (Subscription subscription : listSNSSubscriptions(snsClient))
-                stringBuilder.append(subscription.endpoint()).append(" ");
+            for (Subscription subscription : listSNSSubscriptions(snsClient)) {
+                if (listSNSSubscriptions(snsClient).get(listSNSSubscriptions(snsClient).size() - 1).equals(subscription)) {
+                    stringBuilder.append(subscription.endpoint());
+                }
+                stringBuilder.append(subscription.endpoint()).append(", ");
+            }
 
             messages.add(String.valueOf(stringBuilder));
             messages.add("Do you want to perform another operation on the \"Students\" table?");
@@ -114,15 +152,10 @@ public class SNS {
 
         BotLogic.multipleMessages(messages, "PlainText");
 
-        S3 s3 = new S3();
-        S3Client s3Client = s3.authenticateS3(BotLogic.getAwsBasicCredentials());
-        String createBucketResponse = s3.createBucket(s3Client);
-        System.out.print("BUCKET: " + createBucketResponse);
-        PutObjectRequest objectRequest = PutObjectRequest
-                .builder()
-                .bucket(s3.getS3_BUCKET_NAME())
-                .key(type + "-" + UUID.randomUUID() + ".txt")
-                .build();
-        s3Client.putObject(objectRequest, RequestBody.fromString(mainMessage));
+        S3Client s3Client = S3.authenticateS3(BotLogic.getAwsBasicCredentials());
+        String bucketName = S3.createBucket(s3Client, System.getenv("S3_BUCKET_NAME"));
+
+        String putObjectResponse = S3.putObject(s3Client, bucketName, type, message);
+        System.out.println("Successfully put object to the S3 bucket " + bucketName + ": " + putObjectResponse);
     }
 }

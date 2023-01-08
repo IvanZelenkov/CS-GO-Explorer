@@ -1,28 +1,24 @@
 package handler;
 
+import services.database.DynamoDB;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
-import java.io.IOException;
-
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-
-import services.database.DynamoDB;
 
 /**
  * The BotLogic program implements the bot application logic that manages an Amazon DynamoDB Students table.
  * @author Ivan Zelenkov
  * @version 1.0.0
  */
-@SuppressWarnings("unchecked")
 public class BotLogic implements RequestHandler<Map<String, Object>, Object> {
 
     private static Map<String, Object> currentEvent;
@@ -45,14 +41,12 @@ public class BotLogic implements RequestHandler<Map<String, Object>, Object> {
         }
         currentEvent = event;
         String intentName = getIntentName(event);
-        String studentIDValue;
-        String createTableResponse = DynamoDB.createTable(dynamoDbClient, "Students", "studentID");
-        System.out.print("TABLE: " + createTableResponse);
+        String studentIdValue;
         switch (intentName) {
             case "Greeting":
                 String greetingUserInputText = ((String) event.get("inputTranscript"));
-                if (!"nova".equalsIgnoreCase(greetingUserInputText))
-                    greetingUserInputText = ((String) event.get("inputTranscript")).replaceAll(",*\\s*[n|N]ova.*", "").trim();
+                if (!"alexa".equalsIgnoreCase(greetingUserInputText))
+                    greetingUserInputText = ((String) event.get("inputTranscript")).replaceAll(",*\\s*[a|A]lexa.*", "").trim();
 
                 fillGreetingsList();
                 dialogAction("ElicitIntent");
@@ -66,47 +60,27 @@ public class BotLogic implements RequestHandler<Map<String, Object>, Object> {
                 return response;
             case "GetStudent":
                 dialogAction("ElicitIntent");
-                studentIDValue = getSlotValue("StudentID");
-                try {
-                    DynamoDB.getRecord(dynamoDbClient, "studentID", studentIDValue);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                studentIdValue = getSlotValue("StudentId");
+                DynamoDB.getRecord(dynamoDbClient, "studentId", studentIdValue);
                 dynamoDbClient.close();
                 return response;
             case "InsertStudent":
-                DynamoDbEnhancedClient enhancedClient = DynamoDbEnhancedClient
-                        .builder()
-                        .dynamoDbClient(dynamoDbClient)
-                        .build();
                 dialogAction("ElicitIntent");
-                try {
-                    DynamoDB.putRecord(enhancedClient);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                DynamoDB.putRecord(dynamoDbClient);
                 dynamoDbClient.close();
                 return response;
             case "RemoveStudent":
                 dialogAction("ElicitIntent");
-                studentIDValue = getSlotValue("StudentID");
-                try {
-                    DynamoDB.removeRecord(dynamoDbClient, "studentID", studentIDValue);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                studentIdValue = getSlotValue("StudentId");
+                DynamoDB.removeRecord(dynamoDbClient, "studentId", studentIdValue);
                 dynamoDbClient.close();
                 return response;
             case "UpdateStudent":
                 dialogAction("ElicitIntent");
-                studentIDValue = getSlotValue("StudentID");
+                studentIdValue = getSlotValue("StudentId");
                 String attributeName = getSlotValue("AttributeName");
                 String newAttributeValue = getSlotValue("NewAttributeValue");
-                try {
-                    DynamoDB.updateRecord(dynamoDbClient, "studentID", studentIDValue, attributeName, newAttributeValue);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                DynamoDB.updateRecord(dynamoDbClient, "studentId", studentIdValue, attributeName, newAttributeValue);
                 dynamoDbClient.close();
                 return response;
             case "EndOfConversation":
@@ -118,6 +92,10 @@ public class BotLogic implements RequestHandler<Map<String, Object>, Object> {
         return event;
     }
 
+    /**
+     * Constructs a new credentials object, with the specified AWS access key and AWS secret key.
+     * @return Credentials object.
+     */
     public static AwsBasicCredentials getAwsBasicCredentials() {
         return AwsBasicCredentials.create(
                 System.getenv("ACCESS_KEY_ID"),
@@ -125,7 +103,7 @@ public class BotLogic implements RequestHandler<Map<String, Object>, Object> {
     }
 
     /**
-     * Populate the list with greetings.
+     * Populates the list with greetings.
      */
     private static void fillGreetingsList() {
         greetingUtteranceList = new ArrayList<>();
@@ -138,7 +116,7 @@ public class BotLogic implements RequestHandler<Map<String, Object>, Object> {
     }
 
     /**
-     * Get intent name.
+     * Gets intent name.
      * @param event The Lambda Function event.
      * @return Intent name.
      */
@@ -152,7 +130,7 @@ public class BotLogic implements RequestHandler<Map<String, Object>, Object> {
     }
 
     /**
-     * Get slot name.
+     * Gets slot name.
      * @param slotName Slot name.
      * @return Map instance containing slot data.
      */
@@ -168,7 +146,7 @@ public class BotLogic implements RequestHandler<Map<String, Object>, Object> {
     }
 
     /**
-     * Get slot value.
+     * Gets slot value.
      * @param slotName Slot name.
      * @return Value in a slot.
      */
@@ -177,21 +155,29 @@ public class BotLogic implements RequestHandler<Map<String, Object>, Object> {
                 ((Map<String, Object>)
                         getSlotName(slotName)
                                 .get("value"))
-                        .get("originalValue");
+                                    .get("originalValue");
     }
 
+    /**
+     * Gets session attribute value.
+     * @param event The Lambda Function event.
+     * @param attribute The name of the session attribute.
+     * @return Session attribute value.
+     */
     private static String getSessionAttribute(Map<String, Object> event, String attribute) {
         return (String)
                 ((Map<String, Object>)
                         ((Map<String, Object>)
                                 event.get("sessionState"))
-                                .get("sessionAttributes"))
-                        .get(attribute);
+                                            .get("sessionAttributes"))
+                                    .get(attribute);
     }
 
-    private static void sessionAttributes(String attribute) {
-        Map<String, Object> sessionAttributes = new HashMap<>();
-        sessionAttributes.put("tableName", attribute);
+    /**
+     * Creates session state.
+     * @param sessionAttributes The session attributes to include in the session state.
+     */
+    private static void sessionState(Map<String, String> sessionAttributes) {
         sessionState.put("sessionAttributes", sessionAttributes);
         response.put("sessionState", sessionState);
     }

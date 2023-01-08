@@ -2,7 +2,6 @@ package services;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -26,13 +25,14 @@ public class Lambda {
 
     /**
      * Authenticate to the Lambda client using the AWS user's credentials.
-     * @param awsCredentials The AWS Access Key ID and Secret Access Key are credentials that are used to securely sign requests to AWS services.
+     * @param awsBasicCredentials The AWS Access Key ID and Secret Access Key are credentials that are used to securely sign requests to AWS services.
+     * @param appRegion The AWS Region where the service will be hosted.
      * @return Service client for accessing AWS Lambda.
      */
-    public static LambdaClient authenticateLambda(AwsBasicCredentials awsCredentials, Region appRegion) {
+    public static LambdaClient authenticateLambda(AwsBasicCredentials awsBasicCredentials, Region appRegion) {
         return LambdaClient
                 .builder()
-                .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
+                .credentialsProvider(StaticCredentialsProvider.create(awsBasicCredentials))
                 .region(appRegion)
                 .build();
     }
@@ -41,57 +41,59 @@ public class Lambda {
      * Creates lambda function.
      * @param lambdaClient Service client for accessing AWS Lambda.
      * @param functionName The name of the Lambda function.
+     * @param functionDescription The description of the Lambda function.
      * @param roleArn The Amazon Resource Name (ARN) of the function's execution role.
-     * @param accessKey User's access key.
-     * @param secretAccessKey User's secret access key.
+     * @param handlerPath The path to the handler method to invoke the function in the uploaded package.
+     * @param runtime The runtime in which the lambda function will be executed.
+     * @param timeout Lambda function's maximum invocation timeout limit.
+     * @param memorySizeMB The amount of memory allocated to a Lambda function.
+     * @param environment A function's environment variable settings. You can use environment
+     *                    variables to adjust your function's behavior without updating code.
+     *                    An environment variable is a pair of strings that are stored in a
+     *                    function's version-specific configuration.
      * @return Lambda function ARN.
      */
     public static String createLambdaFunction(LambdaClient lambdaClient,
                                               String functionName,
+                                              String functionDescription,
                                               String roleArn,
-                                              String accessKey,
-                                              String secretAccessKey,
-                                              String adminEmail,
-                                              Region appRegion,
-                                              String restApiId) {
+                                              String handlerPath,
+                                              Runtime runtime,
+                                              int timeout,
+                                              int memorySizeMB,
+                                              Environment environment) {
         try {
-            LambdaWaiter lambdaWaiter = lambdaClient.waiter();
             Path path = Paths.get("");
             InputStream inputStream = new FileInputStream(path.toAbsolutePath() + "/DBMLauncher-1.0.0.jar");
             SdkBytes fileToUpload = SdkBytes.fromInputStream(inputStream);
 
             // Lambda function code
-            FunctionCode code = FunctionCode.builder()
+            FunctionCode code = FunctionCode
+                    .builder()
                     .zipFile(fileToUpload)
                     .build();
 
-            // Configure environment variables, so they can be accessible from function code during execution
-            Environment environment = Environment.builder().variables(new HashMap<>(){{
-                put("ACCESS_KEY_ID", accessKey);
-                put("SECRET_ACCESS_KEY", secretAccessKey);
-                put("ADMIN_EMAIL", adminEmail);
-                put("AWS_APP_REGION", appRegion.toString());
-                put("REST_API_ID", restApiId);
-            }}).build();
-
-            CreateFunctionRequest functionRequest = CreateFunctionRequest.builder()
+            CreateFunctionRequest functionRequest = CreateFunctionRequest
+                    .builder()
                     .functionName(functionName)
-                    .description("Database Bot Manager Application Logic")
+                    .description(functionDescription)
                     .code(code)
-                    .handler("handler.BotLogic::handleRequest")
-                    .runtime(Runtime.JAVA11)
+                    .handler(handlerPath)
+                    .runtime(runtime)
                     .role(roleArn)
-                    .timeout(60)
-                    .memorySize(512)
+                    .timeout(timeout)
+                    .memorySize(memorySizeMB)
                     .environment(environment)
                     .build();
 
             CreateFunctionResponse functionResponse = lambdaClient.createFunction(functionRequest);
-            GetFunctionRequest getFunctionRequest = GetFunctionRequest.builder()
+            GetFunctionRequest getFunctionRequest = GetFunctionRequest
+                    .builder()
                     .functionName(functionResponse.functionName())
                     .build();
 
-            WaiterResponse<GetFunctionResponse> waiterResponse = lambdaWaiter.waitUntilFunctionExists(getFunctionRequest);
+            // Wait until the lambda function is created
+            WaiterResponse<GetFunctionResponse> waiterResponse = lambdaClient.waiter().waitUntilFunctionExists(getFunctionRequest);
             waiterResponse.matched().response().ifPresent(System.out::println);
 
             return functionResponse.functionArn();
@@ -106,16 +108,28 @@ public class Lambda {
      * Grants an AWS Lex service permission to use a lambda function.
      * @param lambdaClient Service client for accessing AWS Lambda.
      * @param lambdaFunctionName The name of the Lambda function, version, or alias.
+     * @param statementId A statement identifier that differentiates the statement from others in the same policy.
+     * @param action The action that the principal can use on the function.
+     * @param principal The AWS service or AWS account that invokes the function.
      */
-    public static void createResourcePolicy(LambdaClient lambdaClient, String lambdaFunctionName) {
-        AddPermissionRequest addPermissionRequest = AddPermissionRequest
-                .builder()
-                .functionName(lambdaFunctionName)
-                .statementId("chatbot-fulfillment")
-                .action("lambda:InvokeFunction")
-                .principal("lex.amazonaws.com")
-                .build();
+    public static void createResourcePolicy(LambdaClient lambdaClient,
+                                            String lambdaFunctionName,
+                                            String statementId,
+                                            String action,
+                                            String principal) {
+        try {
+            AddPermissionRequest addPermissionRequest = AddPermissionRequest
+                    .builder()
+                    .functionName(lambdaFunctionName)
+                    .statementId(statementId)
+                    .action(action)
+                    .principal(principal)
+                    .build();
 
-        lambdaClient.addPermission(addPermissionRequest);
+            lambdaClient.addPermission(addPermissionRequest);
+        } catch (LambdaException error) {
+            System.err.println(error.getMessage());
+            System.exit(1);
+        }
     }
 }
