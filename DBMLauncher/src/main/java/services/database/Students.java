@@ -17,7 +17,7 @@ public class Students {
         return studentId;
     }
 
-    public void setStudentID(Integer studentId) {
+    public void setStudentId(Integer studentId) {
         this.studentId = studentId;
     }
 

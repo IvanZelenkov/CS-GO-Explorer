@@ -8,7 +8,7 @@
 
 **A Bot web interface has been created, so the application is currently available online at the following link: https://dy98y34hu2srm.cloudfront.net/index.html**
 
-**Dev version of the website UI has been created and is currently available online at the following link: https://dev.d1fj5jf9tc05mg.amplifyapp.com**
+**The development version of the website UI has been created and is currently available online at the following link: https://main.d5zti4gi5dj06.amplifyapp.com**
 
 ## DBMLauncher
 

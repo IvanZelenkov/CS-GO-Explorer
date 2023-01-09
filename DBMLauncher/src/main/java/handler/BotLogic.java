@@ -89,6 +89,7 @@ public class BotLogic implements RequestHandler<Map<String, Object>, Object> {
                 return response;
 
         }
+        dynamoDbClient.close();
         return event;
     }
 

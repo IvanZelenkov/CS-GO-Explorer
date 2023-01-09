@@ -17,8 +17,6 @@ import software.amazon.awssdk.services.lexmodelsv2.model.*;
  */
 public class Lex {
 
-    private static final String botName = "DBM";
-    private static final String botDescription = "Database Bot Manager";
     private static final String botVersion = "DRAFT";
     private static final String botAliasName = "DatabaseBotManager";
     private static final String localeId = "en_US";
@@ -44,10 +42,16 @@ public class Lex {
      * @param lexModelsV2Client Service client for accessing Lex Models V2.
      * @param lexRoleArn Service-linked role (ARN) for the Lex bot.
      * @param lambdaArn Lambda ARN defines a function hook that will be called during the conversation.
+     * @param botName The name of the bot. The bot name must be unique in the account that creates the bot.
+     * @param botDescription The description of the bot.
      */
-    public static String botConfiguration(LexModelsV2Client lexModelsV2Client, String lexRoleArn, String lambdaArn) {
+    public static String botConfiguration(LexModelsV2Client lexModelsV2Client,
+                                          String lexRoleArn,
+                                          String lambdaArn,
+                                          String botName,
+                                          String botDescription) {
         // Create bot
-        CreateBotResponse createBotResponse = createBot(
+        CreateBotResponse createBotResponse = createLexV2Bot(
                 lexModelsV2Client,
                 lexRoleArn,
                 botName,
@@ -461,13 +465,13 @@ public class Lex {
      * @param lexModelsV2Client LexModelsV2Client lexModelsV2Client.
      * @param roleArn The Amazon Resource Name (ARN) of an IAM role that has permission to access the bot.
      * @param botName The name of the bot. The bot name must be unique in the account that creates the bot.
-     * @param description A description of the bot. It appears in lists to help you identify a particular bot.
+     * @param botDescription A description of the bot. It appears in lists to help you identify a particular bot.
      * @return If the action is successful, returns a response object with metadata.
      */
-    private static CreateBotResponse createBot(LexModelsV2Client lexModelsV2Client,
-                                               String roleArn,
-                                               String botName,
-                                               String description) {
+    private static CreateBotResponse createLexV2Bot(LexModelsV2Client lexModelsV2Client,
+                                                    String roleArn,
+                                                    String botName,
+                                                    String botDescription) {
         DataPrivacy dataPrivacy = DataPrivacy
                 .builder()
                 .childDirected(false)
@@ -476,7 +480,7 @@ public class Lex {
         CreateBotRequest createBotRequest = CreateBotRequest
                 .builder()
                 .botName(botName)
-                .description(description)
+                .description(botDescription)
                 .roleArn(roleArn)
                 .dataPrivacy(dataPrivacy)
                 .idleSessionTTLInSeconds(600)

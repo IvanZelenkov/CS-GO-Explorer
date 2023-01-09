@@ -10,15 +10,7 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.sns.SnsClient;
-import software.amazon.awssdk.services.sns.model.CreateTopicRequest;
-import software.amazon.awssdk.services.sns.model.CreateTopicResponse;
-import software.amazon.awssdk.services.sns.model.SnsException;
-import software.amazon.awssdk.services.sns.model.SubscribeRequest;
-import software.amazon.awssdk.services.sns.model.SubscribeResponse;
-import software.amazon.awssdk.services.sns.model.ListSubscriptionsRequest;
-import software.amazon.awssdk.services.sns.model.ListSubscriptionsResponse;
-import software.amazon.awssdk.services.sns.model.Subscription;
-import software.amazon.awssdk.services.sns.model.PublishRequest;
+import software.amazon.awssdk.services.sns.model.*;
 
 /**
  * Amazon Simple Notification Service (Amazon SNS) is a web service that enables applications, end-users,
@@ -29,13 +21,14 @@ public class SNS {
     /**
      * Authenticate to the SNS client using the AWS user's credentials.
      * @param awsBasicCredentials The AWS Access Key ID and Secret Access Key are credentials that are used to securely sign requests to AWS services.
+     * @param appRegion The AWS Region where the service will be hosted.
      * @return Service client for accessing Amazon SNS.
      */
-    public static SnsClient authenticateSNS(AwsBasicCredentials awsBasicCredentials) {
+    public static SnsClient authenticateSNS(AwsBasicCredentials awsBasicCredentials, Region appRegion) {
         return SnsClient
                 .builder()
                 .credentialsProvider(StaticCredentialsProvider.create(awsBasicCredentials))
-                .region(Region.of(System.getenv("AWS_REGION")))
+                .region(appRegion)
                 .build();
     }
 
@@ -95,12 +88,17 @@ public class SNS {
     /**
      * Returns a list of the requester's subscriptions.
      * @param snsClient Service client for accessing SNS.
+     * @param topicArn The ARN of the topic we want to use to get the list of subscriptions.
      * @return List of the requester's subscriptions.
      */
-    public static List<Subscription> listSNSSubscriptions(SnsClient snsClient) {
+    public static List<Subscription> getListOfSubscriptionsByTopic(SnsClient snsClient, String topicArn) {
         try {
-            ListSubscriptionsRequest request = ListSubscriptionsRequest.builder().build();
-            ListSubscriptionsResponse result = snsClient.listSubscriptions(request);
+            ListSubscriptionsByTopicRequest listSubscriptionsByTopicRequest = ListSubscriptionsByTopicRequest
+                    .builder()
+                    .topicArn(topicArn)
+                    .build();
+
+            ListSubscriptionsByTopicResponse result = snsClient.listSubscriptionsByTopic(listSubscriptionsByTopicRequest);
             return result.subscriptions();
         } catch (SnsException error) {
             System.err.println(error.awsErrorDetails().errorMessage());
@@ -113,32 +111,35 @@ public class SNS {
      * Sends a message to an Amazon SNS topic, a text message (SMS message) directly to a phone number,
      * or a message to a mobile platform endpoint (when you specify the TargetArn).
      * @param snsClient Service client for accessing SNS.
-     * @param snsTopicName The name of the topic you want to create.
+     * @param snsTopicArn The ARN of the existing topic.
      * @param messages List of messages that will be displayed to the user in the lex-bot
      * @param message The message you want to send.
      * @param type Type of action that was taken on the DynamoDB table (GET, INSERT, REMOVE, or UPDATE).
      */
-    public static void publishMessage(SnsClient snsClient, String snsTopicName, List<String> messages, String message, String type) {
+    public static void publishMessage(SnsClient snsClient,
+                                      String snsTopicArn,
+                                      List<String> messages,
+                                      String message,
+                                      String type) {
         try {
-            // TODO
-            String topicArn = createSNSTopic(snsClient, snsTopicName);
             List<String> subscribersList = new ArrayList<>();
             subscribersList.add(System.getenv("ADMIN_EMAIL"));
 
             for (String subscriber : subscribersList)
-                emailSubscriber(snsClient, topicArn, subscriber);
+                emailSubscriber(snsClient, snsTopicArn, subscriber);
 
             PublishRequest request = PublishRequest.builder()
                     .message(message)
-                    .topicArn(topicArn)
+                    .topicArn(snsTopicArn)
                     .build();
             snsClient.publish(request);
 
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("Confirmation sent to ");
-            for (Subscription subscription : listSNSSubscriptions(snsClient)) {
-                if (listSNSSubscriptions(snsClient).get(listSNSSubscriptions(snsClient).size() - 1).equals(subscription)) {
+            for (Subscription subscription : getListOfSubscriptionsByTopic(snsClient, snsTopicArn)) {
+                if (getListOfSubscriptionsByTopic(snsClient, snsTopicArn).get(getListOfSubscriptionsByTopic(snsClient, snsTopicArn).size() - 1).equals(subscription)) {
                     stringBuilder.append(subscription.endpoint());
+                    break;
                 }
                 stringBuilder.append(subscription.endpoint()).append(", ");
             }
@@ -152,10 +153,8 @@ public class SNS {
 
         BotLogic.multipleMessages(messages, "PlainText");
 
-        S3Client s3Client = S3.authenticateS3(BotLogic.getAwsBasicCredentials());
-        String bucketName = S3.createBucket(s3Client, System.getenv("S3_BUCKET_NAME"));
-
-        String putObjectResponse = S3.putObject(s3Client, bucketName, type, message);
-        System.out.println("Successfully put object to the S3 bucket " + bucketName + ": " + putObjectResponse);
+        S3Client s3Client = S3.authenticateS3(BotLogic.getAwsBasicCredentials(), Region.of(System.getenv("AWS_REGION")));
+        String putObjectResponse = S3.putObject(s3Client, System.getenv("S3_BUCKET_NAME"), type, message);
+        System.out.println("Successfully put object to the S3 bucket " + System.getenv("S3_BUCKET_NAME") + ": " + putObjectResponse);
     }
 }

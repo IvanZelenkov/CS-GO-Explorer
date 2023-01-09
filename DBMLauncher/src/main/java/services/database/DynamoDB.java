@@ -2,6 +2,7 @@ package services.database;
 
 import handler.BotLogic;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,7 +58,7 @@ public class DynamoDB {
      *                      N - the attribute is of type Number,
      *                      B - the attribute is of type Binary.
      * @param keyType The role that this key attribute will assume: HASH - partition key or RANGE - sort key
-     * @return The name of the table.
+     * @return The id of the table.
      */
     public static String createTable(DynamoDbClient dynamoDbClient,
                                      String tableName,
@@ -102,7 +103,7 @@ public class DynamoDB {
             WaiterResponse<DescribeTableResponse> waiterResponse =  dbWaiter.waitUntilTableExists(tableRequest);
             waiterResponse.matched().response().ifPresent(System.out::println);
 
-            return tableRequest.tableName();
+            return createTableResponse.tableDescription().tableId();
         } catch (DynamoDbException error) {
             System.err.println(error.getMessage());
             System.exit(1);
@@ -132,7 +133,7 @@ public class DynamoDB {
 
             Map<String, AttributeValue> returnedItem = dynamoDbClient.getItem(getItemRequest).item();
 
-            if (returnedItem != null) {
+            if (!returnedItem.isEmpty()) {
                 Set<String> keys = returnedItem.keySet();
                 messages.add("Amazon DynamoDB table attributes: \n");
 
@@ -155,8 +156,8 @@ public class DynamoDB {
         } else {
             mainMessage = messages.get(0);
         }
-        SnsClient snsClient = SNS.authenticateSNS(BotLogic.getAwsBasicCredentials());
-        SNS.publishMessage(snsClient, System.getenv("SNS_TOPIC_NAME"), messages, mainMessage, "GET");
+        SnsClient snsClient = SNS.authenticateSNS(BotLogic.getAwsBasicCredentials(), Region.of(System.getenv("AWS_REGION")));
+        SNS.publishMessage(snsClient, System.getenv("SNS_TOPIC_ARN"), messages, mainMessage, "GET");
         snsClient.close();
     }
 
@@ -178,7 +179,7 @@ public class DynamoDB {
                     System.getenv("DYNAMO_DB_TABLE_NAME"), TableSchema.fromBean(Students.class));
 
             // Populate the table
-            studentRecord.setStudentID(Integer.parseInt(BotLogic.getSlotValue("StudentId")));
+            studentRecord.setStudentId(Integer.parseInt(BotLogic.getSlotValue("StudentId")));
             studentRecord.setFirstName(BotLogic.getSlotValue("FirstName"));
             studentRecord.setLastName(BotLogic.getSlotValue("LastName"));
             studentRecord.setDateOfBirth(BotLogic.getSlotValue("DateOfBirth"));
@@ -196,8 +197,8 @@ public class DynamoDB {
         List<String> messages = new ArrayList<>();
         String mainMessage = "Student with ID: " + studentRecord.getStudentId() + " has been successfully added.";
         messages.add(mainMessage);
-        SnsClient snsClient = SNS.authenticateSNS(BotLogic.getAwsBasicCredentials());
-        SNS.publishMessage(snsClient, "DynamoStudentsDBTableChanges", messages, mainMessage, "INSERT");
+        SnsClient snsClient = SNS.authenticateSNS(BotLogic.getAwsBasicCredentials(), Region.of(System.getenv("AWS_REGION")));
+        SNS.publishMessage(snsClient, System.getenv("SNS_TOPIC_ARN"), messages, mainMessage, "INSERT");
         snsClient.close();
     }
 
@@ -237,8 +238,8 @@ public class DynamoDB {
 
         // Publish the message to the SNS topic
         String mainMessage = messages.get(0);
-        SnsClient snsClient = SNS.authenticateSNS(BotLogic.getAwsBasicCredentials());
-        SNS.publishMessage(snsClient, System.getenv("SNS_TOPIC_NAME"), messages, mainMessage, "REMOVE");
+        SnsClient snsClient = SNS.authenticateSNS(BotLogic.getAwsBasicCredentials(), Region.of(System.getenv("AWS_REGION")));
+        SNS.publishMessage(snsClient, System.getenv("SNS_TOPIC_ARN"), messages, mainMessage, "REMOVE");
         snsClient.close();
     }
 
@@ -255,45 +256,48 @@ public class DynamoDB {
                                     String primaryKeyValue,
                                     String attributeName,
                                     String newValue) {
+        List<String> messages = new ArrayList<>();
         Map<String,AttributeValue> itemKey = new HashMap<>();
         itemKey.put(primaryKeyName, AttributeValue.builder().n(primaryKeyValue).build());
 
-        // Update the column specified by attributeName with newValue
+        List<String> dynamoDbAttributes = new ArrayList<>();
+        Field[] fields = Students.class.getDeclaredFields();
+        for (Field field : fields)
+            dynamoDbAttributes.add(field.getName().toLowerCase());
+
         AttributeValueUpdate attributeValue;
-        if (attributeName.equals(primaryKeyName)) {
-            attributeValue = AttributeValueUpdate
-                    .builder()
-                    .value(AttributeValue.builder().n(newValue).build())
-                    .action(AttributeAction.PUT)
-                    .build();
-        } else {
+        String mainMessage;
+        if (dynamoDbAttributes.contains(attributeName.toLowerCase())) {
+            // Update the column specified by attributeName with newValue
             attributeValue = AttributeValueUpdate
                     .builder()
                     .value(AttributeValue.builder().s(newValue).build())
                     .action(AttributeAction.PUT)
                     .build();
-        }
-        Map<String, AttributeValueUpdate> updatedValues = new HashMap<>();
-        updatedValues.put(attributeName, attributeValue);
 
-        UpdateItemRequest request = UpdateItemRequest.builder()
-                .tableName(System.getenv("DYNAMO_DB_TABLE_NAME"))
-                .key(itemKey)
-                .attributeUpdates(updatedValues)
-                .build();
-        try {
-            dynamoDbClient.updateItem(request);
-        } catch (DynamoDbException error) {
-            System.err.println(error.getMessage());
-            System.exit(1);
+            Map<String, AttributeValueUpdate> updatedValues = new HashMap<>();
+            updatedValues.put(attributeName, attributeValue);
+
+            UpdateItemRequest request = UpdateItemRequest.builder()
+                    .tableName(System.getenv("DYNAMO_DB_TABLE_NAME"))
+                    .key(itemKey)
+                    .attributeUpdates(updatedValues)
+                    .build();
+            try {
+                dynamoDbClient.updateItem(request);
+            } catch (DynamoDbException error) {
+                System.err.println(error.getMessage());
+                System.exit(1);
+            }
+            mainMessage = "The " + attributeName + " attribute's value of the student with id " + primaryKeyValue + " has been successfully updated.";
+        } else {
+            mainMessage = "An invalid student ID or attribute name was entered. Please try again.";
         }
 
         // Publish the message to the SNS topic
-        List<String> messages = new ArrayList<>();
-        String mainMessage = "The " + attributeName + " attribute's value of the student with id " + primaryKeyValue + " has been successfully updated.";
         messages.add(mainMessage);
-        SnsClient snsClient = SNS.authenticateSNS(BotLogic.getAwsBasicCredentials());
-        SNS.publishMessage(snsClient, "DynamoStudentsDBTableChanges", messages, mainMessage, "UPDATE");
+        SnsClient snsClient = SNS.authenticateSNS(BotLogic.getAwsBasicCredentials(), Region.of(System.getenv("AWS_REGION")));
+        SNS.publishMessage(snsClient, System.getenv("SNS_TOPIC_ARN"), messages, mainMessage, "UPDATE");
     }
 
     /**
@@ -309,7 +313,7 @@ public class DynamoDB {
             // Response headers
             JSONObject responseHeaders = new JSONObject();
             responseHeaders.put("Access-Control-Allow-Headers", "Content-Type");
-            responseHeaders.put("Access-Control-Allow-Origin", "http://localhost:3000");
+            responseHeaders.put("Access-Control-Allow-Origin", System.getenv("APP_URL"));
             responseHeaders.put("Access-Control-Allow-Methods", "OPTIONS, POST");
             responseHeaders.put("Access-Control-Allow-Credentials", "true");
 
@@ -350,7 +354,7 @@ public class DynamoDB {
         // Response headers
         JSONObject responseHeaders = new JSONObject();
         responseHeaders.put("Access-Control-Allow-Headers", "Content-Type");
-        responseHeaders.put("Access-Control-Allow-Origin", "http://localhost:3000");
+        responseHeaders.put("Access-Control-Allow-Origin", System.getenv("APP_URL"));
         responseHeaders.put("Access-Control-Allow-Methods", "OPTIONS, POST");
         responseHeaders.put("Access-Control-Allow-Credentials", "true");
 

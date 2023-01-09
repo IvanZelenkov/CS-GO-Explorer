@@ -1,9 +1,7 @@
 package launcher;
 
 import java.util.HashMap;
-import java.util.Random;
 
-import services.CodeCommit;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
@@ -20,11 +18,11 @@ import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.lambda.model.Environment;
 import software.amazon.awssdk.services.lambda.model.Runtime;
 import software.amazon.awssdk.services.lexmodelsv2.LexModelsV2Client;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.sns.SnsClient;
 
-import services.IAM;
-import services.Lambda;
+import services.*;
 import services.bot.Lex;
-import services.Amplify;
 import services.api.ApiGateway;
 import services.database.DynamoDB;
 
@@ -48,26 +46,33 @@ public class BotLauncher {
             System.exit(1);
         }
 
-        // Predefined configuration variables
-        final String roleName = "DatabaseBotManagerRole";
-        final String permissionsPolicyName = "DatabaseBotManagerFullAccess";
-        final String lambdaFunctionName = "database-bot-manager-lambda";
-
         // Command line arguments
         final String accessKey = args[0];
         final String secretAccessKey = args[1];
         final String awsAppDeploymentRegion = args[2];
         final String adminEmail = args[3];
 
+        // Predefined configuration variables. The creation of services follows this order
+        final String roleName = "DatabaseBotManagerRole"; // IAM
+        final String permissionsPolicyName = "DatabaseBotManagerFullAccess"; // IAM
+        final String restApiName = "database-manager-rest-api"; // API Gateway
+        final String s3BucketName = "dynamo-db-students-table-actions"; // S3
+        final String snsTopicName = "DynamoStudentsDBTableChanges"; // SNS
+        final String lambdaFunctionName = "database-bot-manager-lambda"; // Lambda
+        final String botName = "DbmBot"; // Lex
+        final String tableName = "Students"; // DynamoDB
+        final String codeCommitRepositoryName = "DBM-Repository"; // CodeCommit
+        final String appName = "DBM"; // Amplify
+
         // IAM region and the region where the AWS application will be deployed
-        Region iamRegion = Region.AWS_GLOBAL;
-        Region appRegion = Region.of(awsAppDeploymentRegion);
+        final Region globalRegion = Region.AWS_GLOBAL;
+        final Region appRegion = Region.of(awsAppDeploymentRegion);
 
         // Create an AWS account credentials instance
         AwsBasicCredentials awsBasicCredentials = AwsBasicCredentials.create(accessKey, secretAccessKey);
 
         // Authenticate and create an IAM client
-        IamClient iamClient = IAM.authenticateIAM(awsBasicCredentials, iamRegion);
+        IamClient iamClient = IAM.authenticateIAM(awsBasicCredentials, globalRegion);
 
         // Create an IAM Lex V2 role
         String lexRoleArn = IAM.createServiceLinkedRole(iamClient, "lexv2.amazonaws.com", Lex.lexRoleCustomSuffixGenerator(), "DBM Lex V2 Bot Role");
@@ -92,14 +97,74 @@ public class BotLauncher {
         // Authenticate and create an API Gateway client
         ApiGatewayClient apiGatewayClient = ApiGateway.authenticateApiGateway(awsBasicCredentials, appRegion);
 
+        // Create REST API
         String restApiId = ApiGateway.createAPI(
                 apiGatewayClient,
-                "database-manager-rest-api",
+                restApiName,
                 "REST API for DBM application",
                 ApiKeySourceType.AUTHORIZER,
                 EndpointConfiguration.builder().types(EndpointType.REGIONAL).build()
         );
         System.out.println("Successfully created api with id: " + restApiId);
+
+        // Authenticate and create an S3 client
+        S3Client s3Client = S3.authenticateS3(awsBasicCredentials, appRegion);
+
+        // Create S3 bucket
+        String bucketName = S3.createBucket(s3Client, s3BucketName);
+        System.out.print("S3 bucket " + bucketName + " has been created.");
+
+        // Close S3 client
+        s3Client.close();
+
+        // Authenticate and create an SNS client
+        SnsClient snsClient = SNS.authenticateSNS(awsBasicCredentials, appRegion);
+
+        // Create an SNS topic
+        String topicArn = SNS.createSNSTopic(snsClient, snsTopicName);
+        System.out.print("Successfully created an SNS topic: " + topicArn);
+
+        // Close SNS client
+        snsClient.close();
+
+        // Authenticate and create a CodeCommit client
+        CodeCommitClient codeCommitClient = CodeCommit.authenticateCodeCommit(awsBasicCredentials, appRegion);
+
+        // Create a CodeCommit repository
+        String cloneUrlHttp = CodeCommit.createRepository(
+                codeCommitClient,
+                codeCommitRepositoryName,
+                "UI of the DBM application"
+        );
+        System.out.println("Successfully created repository with clone URL Http: " + cloneUrlHttp);
+
+        // Close CodeCommit client
+        codeCommitClient.close();
+
+        // Authenticate and create an Amplify client
+        AmplifyClient amplifyClient = Amplify.authenticateAmplify(awsBasicCredentials, appRegion);
+
+        // Create Amplify application
+        String appId = Amplify.createApp(
+                amplifyClient,
+                appName,
+                "Database manager application",
+                Platform.WEB,
+                "arn:aws:iam::981684844178:role/DatabaseBotManagerRole",
+                cloneUrlHttp,
+                true,
+                true,
+                Stage.DEVELOPMENT,
+                true,
+                true
+        );
+        System.out.println("Successfully created app with id: " + appId);
+
+        // Get app default domain
+        String appDefaultDomain = Amplify.getApp(amplifyClient, appId);
+
+        // Close Amplify client
+        amplifyClient.close();
 
         // Authenticate and create a Lambda client
         LambdaClient lambdaClient = Lambda.authenticateLambda(awsBasicCredentials, appRegion);
@@ -110,10 +175,11 @@ public class BotLauncher {
             put("SECRET_ACCESS_KEY", secretAccessKey);
             put("AWS_APP_REGION", appRegion.toString());
             put("REST_API_ID", restApiId);
-            put("DYNAMO_DB_TABLE_NAME", "Students");
-            put("S3_BUCKET_NAME", "dynamo-db-students-table-actions");
-            put("SNS_TOPIC_NAME", "DynamoStudentsDBTableChanges");
+            put("DYNAMO_DB_TABLE_NAME", tableName);
+            put("SNS_TOPIC_ARN", topicArn);
             put("ADMIN_EMAIL", adminEmail);
+            put("S3_BUCKET_NAME", s3BucketName);
+            put("APP_URL", "https://main." + appDefaultDomain);
         }}).build();
 
         // Create a lambda function and attach a role
@@ -136,26 +202,10 @@ public class BotLauncher {
         // Close Lambda client
         lambdaClient.close();
 
-        // Authenticate and create a Lex V2 client
-        LexModelsV2Client lexModelsV2Client = Lex.authenticateLexV2(awsBasicCredentials, appRegion);
-
-        String botId = Lex.botConfiguration(lexModelsV2Client, lexRoleArn, lambdaArn);
-        System.out.println("Successfully created lex bot with ID: " + lambdaArn);
-
-        // Close Lex V2 client
-        lexModelsV2Client.close();
-
-        DynamoDbClient dynamoDbClient = DynamoDB.authenticateDynamoDB(awsBasicCredentials, appRegion);
-
-        String tableName = DynamoDB.createTable(dynamoDbClient, "Students", "studentId", ScalarAttributeType.N, KeyType.HASH);
-        System.out.print("Successfully created " + tableName + " table.");
-
-        // Close DynamoDB client
-        dynamoDbClient.close();
-
-        // 'get-all-table-items'  configuration of resources and its methods
+        // 'get-all-table-items' configuration of resources and its methods
         String resourceId = ApiGateway.createResource(apiGatewayClient, restApiId, 0, "get-all-table-items");
 
+        // Create method request for the get-all-table-items/POST
         String methodRequestPOST = ApiGateway.createMethodRequest(
                 apiGatewayClient,
                 restApiId,
@@ -166,6 +216,7 @@ public class BotLauncher {
         );
         System.out.println("Successfully created API method request: " + methodRequestPOST);
 
+        // Create integration request for the get-all-table-items/POST
         String integrationRequestPOST = ApiGateway.createIntegrationRequest(
                 apiGatewayClient,
                 restApiId,
@@ -178,6 +229,7 @@ public class BotLauncher {
         );
         System.out.println("Successfully created API integration request: " + integrationRequestPOST);
 
+        // Create integration response for the get-all-table-items/POST
         String integrationResponsePOST = ApiGateway.createIntegrationResponse(
                 apiGatewayClient,
                 restApiId,
@@ -187,6 +239,7 @@ public class BotLauncher {
         );
         System.out.println("Successfully created API integration response: " + integrationResponsePOST);
 
+        // Create method response for the get-all-table-items/POST
         String methodResponsePOST = ApiGateway.createMethodResponse(
                 apiGatewayClient,
                 restApiId,
@@ -197,6 +250,7 @@ public class BotLauncher {
         );
         System.out.println("Successfully created API method response: " + methodResponsePOST);
 
+        // Create method request for the get-all-table-items/OPTIONS
         String methodRequestOPTIONS = ApiGateway.createMethodRequest(
                 apiGatewayClient,
                 restApiId,
@@ -207,6 +261,7 @@ public class BotLauncher {
         );
         System.out.println("Successfully created API method request: " + methodRequestOPTIONS);
 
+        // Create integration request for the get-all-table-items/OPTIONS
         String integrationRequestOPTIONS = ApiGateway.createIntegrationRequest(
                 apiGatewayClient,
                 restApiId,
@@ -219,6 +274,7 @@ public class BotLauncher {
         );
         System.out.println("Successfully created API integration request: " + integrationRequestOPTIONS);
 
+        // Create integration response for the get-all-table-items/OPTIONS
         String integrationResponseOPTIONS = ApiGateway.createIntegrationResponse(
                 apiGatewayClient,
                 restApiId,
@@ -228,6 +284,7 @@ public class BotLauncher {
         );
         System.out.println("Successfully created API integration response: " + integrationResponseOPTIONS);
 
+        // Create method response for the get-all-table-items/OPTIONS
         String methodResponseOPTIONS = ApiGateway.createMethodResponse(
                 apiGatewayClient,
                 restApiId,
@@ -238,6 +295,7 @@ public class BotLauncher {
         );
         System.out.println("Successfully created API method response: " + methodResponseOPTIONS);
 
+        // Create a deployment stage
         String stageName = "DevelopmentStage";
         String id = ApiGateway.createNewDeployment(
                 apiGatewayClient,
@@ -248,6 +306,7 @@ public class BotLauncher {
         );
         System.out.println("The id of the REST API deployment: " + id);
 
+        // Configure and create a usage plan
         ThrottleSettings throttleSettings = ThrottleSettings
                 .builder()
                 .rateLimit(100.0)
@@ -269,6 +328,7 @@ public class BotLauncher {
                 1200
         );
 
+        // Create API key
         ApiGateway.createApiKey(
                 apiGatewayClient,
                 "DBM_key",
@@ -281,36 +341,29 @@ public class BotLauncher {
         // Close API Gateway client
         apiGatewayClient.close();
 
-        CodeCommitClient codeCommitClient = CodeCommit.authenticateCodeCommit(awsBasicCredentials, appRegion);
+        // Authenticate and create a Lex V2 client
+        LexModelsV2Client lexModelsV2Client = Lex.authenticateLexV2(awsBasicCredentials, appRegion);
 
-        String cloneUrlHttp = CodeCommit.createRepository(
-                codeCommitClient,
-                "DBM-Repository",
-                "UI of the DBM application"
-        );
-        System.out.println("Successfully created repository with clone URL Http: " + cloneUrlHttp);
+        // Create Lex V2 bot
+        String botId = Lex.botConfiguration(lexModelsV2Client, lexRoleArn, lambdaArn, botName, "Helps manage DynamoDB table");
+        System.out.println("Successfully created lex bot with ID: " + botId);
 
-        // Close CodeCommit client
-        codeCommitClient.close();
+        // Close Lex V2 client
+        lexModelsV2Client.close();
 
-        AmplifyClient amplifyClient = Amplify.authenticateAmplify(awsBasicCredentials, appRegion);
+        // Authenticate and create a DynamoDB client
+        DynamoDbClient dynamoDbClient = DynamoDB.authenticateDynamoDB(awsBasicCredentials, appRegion);
 
-        String appId = Amplify.createApp(
-                amplifyClient,
-                "DBM",
-                "Database manager application",
-                Platform.WEB,
-                roleArn,
-                cloneUrlHttp,
-                true,
-                true,
-                Stage.DEVELOPMENT,
-                true,
-                true
-        );
-        System.out.println("Successfully created app with id: " + appId);
+        // Create DynamoDB table
+        String tableId = DynamoDB.createTable(dynamoDbClient, tableName, "studentId", ScalarAttributeType.N, KeyType.HASH);
+        System.out.println("Successfully created " + tableName + " table.");
 
-        // Close Amplify client
-        amplifyClient.close();
+        // Close DynamoDB client
+        dynamoDbClient.close();
+
+        // Output the website to the user that can be used after
+        System.out.println("The database manager website will be available at https://main." + appDefaultDomain
+                + " after the code is committed through the Git control system. Please follow the documentation on how to accomplish it.");
+        System.out.println("Use the following HTTPS link to push the code:: " + cloneUrlHttp);
     }
 }

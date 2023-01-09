@@ -84,4 +84,20 @@ public class Amplify {
         }
         return "";
     }
+
+    /**
+     * Returns an existing Amplify app by appID.
+     * @param amplifyClient Service client for accessing Amplify.
+     * @param appId The unique ID for an Amplify app.
+     * @return The default domain for the Amplify app.
+     */
+    public static String getApp(AmplifyClient amplifyClient, String appId) {
+        GetAppRequest getAppRequest = GetAppRequest
+                .builder()
+                .appId(appId)
+                .build();
+
+        GetAppResponse getAppResponse = amplifyClient.getApp(getAppRequest);
+        return getAppResponse.app().defaultDomain();
+    }
 }

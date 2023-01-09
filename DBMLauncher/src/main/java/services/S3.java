@@ -9,7 +9,6 @@ import software.amazon.awssdk.core.waiters.WaiterResponse;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
-import software.amazon.awssdk.services.s3.waiters.S3Waiter;
 
 /**
  * Amazon S3 provides storage for the Internet, and is designed to make web-scale computing easier for developers.
@@ -19,13 +18,14 @@ public class S3 {
     /**
      * Authenticate to the S3 client using the AWS user's credentials.
      * @param awsBasicCredentials The AWS Access Key ID and Secret Access Key are credentials that are used to securely sign requests to AWS services.
+     * @param appRegion The AWS Region where the service will be hosted.
      * @return Service client for accessing AWS Lambda.
      */
-    public static S3Client authenticateS3(AwsBasicCredentials awsBasicCredentials) {
+    public static S3Client authenticateS3(AwsBasicCredentials awsBasicCredentials, Region appRegion) {
         return S3Client
                 .builder()
                 .credentialsProvider(StaticCredentialsProvider.create(awsBasicCredentials))
-                .region(Region.of(System.getenv("AWS_REGION")))
+                .region(appRegion)
                 .build();
     }
 
@@ -37,9 +37,9 @@ public class S3 {
      */
     public static String createBucket(S3Client s3Client, String bucketName) {
         try {
-            ListBucketsResponse s3Response = s3Client.listBuckets();
+            ListBucketsResponse listBucketsResponse = s3Client.listBuckets();
 
-            for (Bucket bucket : s3Response.buckets())
+            for (Bucket bucket : listBucketsResponse.buckets())
                 if (bucket.name().equals(bucketName))
                     return bucket.name() + " bucket already exists.";
 
@@ -58,7 +58,6 @@ public class S3 {
             WaiterResponse<HeadBucketResponse> waitUntilBucketExists = s3Client.waiter().waitUntilBucketExists(headBucketRequest);
             waitUntilBucketExists.matched().response().ifPresent(System.out::println);
 
-            System.out.print("S3 bucket " + headBucketRequest.bucket() + " has been created.");
             return headBucketRequest.bucket();
         } catch (S3Exception error) {
             System.err.println(error.getMessage());
