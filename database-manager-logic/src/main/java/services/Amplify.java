@@ -6,6 +6,11 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
 import software.amazon.awssdk.services.amplify.model.*;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+
 /**
  * The Amplify Framework is a comprehensive set of SDKs, libraries, tools, and documentation for client app development.
  * Amplify provides a continuous delivery and hosting service for web applications.
@@ -43,6 +48,7 @@ public class Amplify {
      * @param enablePerformanceMode Enables performance mode for the branch.
      * @param stage Describes the current stage for the auto-created branch. Valid Values:
      *              PRODUCTION | BETA | DEVELOPMENT | EXPERIMENTAL | PULL_REQUEST
+     * @param environmentalVariables The environment variables for the auto-created branch.
      * @return The unique ID of the Amplify app.
      */
     public static String createApp(AmplifyClient amplifyClient,
@@ -55,13 +61,23 @@ public class Amplify {
                                    boolean enableBranchAutoBuild,
                                    Stage stage,
                                    boolean enableAutoBuild,
-                                   boolean enablePerformanceMode) {
+                                   boolean enablePerformanceMode,
+                                   Map<String, String> environmentalVariables) {
         try {
             AutoBranchCreationConfig autoBranchCreationConfig = AutoBranchCreationConfig
                     .builder()
                     .stage(stage)
                     .enableAutoBuild(enableAutoBuild)
 //                    .enablePerformanceMode(enablePerformanceMode)
+                    .build();
+
+            String buildSpec = readYmlFile("amplify-build-spec", "amplify-build-spec.yml");
+
+            CustomRule customRule = CustomRule
+                    .builder()
+                    .status("200")
+                    .source("</^[^.]+$|\\.(?!(css|gif|ico|jpg|js|png|txt|svg|woff|woff2|ttf|map|json)$)([^.]+$)/>")
+                    .target("/")
                     .build();
 
             CreateAppRequest createAppRequest = CreateAppRequest
@@ -74,11 +90,14 @@ public class Amplify {
                     .enableAutoBranchCreation(enableAutoBranchCreation)
                     .enableBranchAutoBuild(enableBranchAutoBuild)
                     .autoBranchCreationConfig(autoBranchCreationConfig)
+                    .environmentVariables(environmentalVariables)
+                    .buildSpec(buildSpec)
+                    .customRules(customRule)
                     .build();
 
             CreateAppResponse createAppResponse = amplifyClient.createApp(createAppRequest);
             return createAppResponse.app().appId();
-        } catch (AmplifyException error) {
+        } catch (AmplifyException | IOException error) {
             System.err.println(error.getMessage());
             System.exit(1);
         }
@@ -105,5 +124,17 @@ public class Amplify {
             System.exit(1);
         }
         return "";
+    }
+
+    /**
+     * Reads YML file content then converts it to the InputStream and returns as a string.
+     * @param filename The name of the YML file to read.
+     * @return Returns the YML contents converted to a string.
+     * @throws IOException Signals that an I/O exception has occurred. This class is the general class of exceptions produced by failed or interrupted I/O operations.
+     */
+    private static String readYmlFile(String folder, String filename) throws IOException {
+        InputStream inputStream = IAM.class.getResourceAsStream("/" + folder + "/" + filename);
+        assert inputStream != null;
+        return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
     }
 }

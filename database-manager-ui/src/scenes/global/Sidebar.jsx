@@ -110,7 +110,7 @@ const Sidebar = () => {
 									Ivan Zelenkov
 								</Typography>
 								<Typography variant="h5" color={colors.greenAccent[500]}>
-									DBM Admin
+									Database Admin
 								</Typography>
 							</Box>
 						</Box>

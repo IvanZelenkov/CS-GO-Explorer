@@ -15,7 +15,6 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.lambda.model.*;
 import software.amazon.awssdk.services.lambda.model.Runtime;
-import software.amazon.awssdk.services.lambda.waiters.LambdaWaiter;
 
 /**
  * AWS Lambda is a serverless, event-driven compute service that lets you run code for
@@ -98,23 +97,6 @@ public class Lambda {
 
             return functionResponse.functionArn();
         } catch (LambdaException | FileNotFoundException error) {
-            System.err.println(error.getMessage());
-            System.exit(1);
-        }
-        return "";
-    }
-
-    public static String updateLambdaFunctionConfiguration(LambdaClient lambdaClient, String functionName, Environment environment) {
-        try {
-            UpdateFunctionConfigurationRequest updateFunctionConfigurationRequest = UpdateFunctionConfigurationRequest
-                    .builder()
-                    .functionName(functionName)
-                    .environment(environment)
-                    .build();
-
-            UpdateFunctionConfigurationResponse updateFunctionConfigurationResponse = lambdaClient.updateFunctionConfiguration(updateFunctionConfigurationRequest);
-            return updateFunctionConfigurationResponse.toString();
-        } catch (LambdaException error) {
             System.err.println(error.getMessage());
             System.exit(1);
         }

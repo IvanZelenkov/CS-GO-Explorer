@@ -49,12 +49,12 @@ public class IAM {
     public static String createRole(IamClient iamClient, String roleName, String roleDescription) {
         try {
             IamWaiter iamWaiter = iamClient.waiter();
-            JSONObject jsonObject = (JSONObject) readJsonFromFile("trust-policy");
+            JSONObject trustPolicy = (JSONObject) readJsonFile("policies", "trust-policy");
             CreateRoleRequest createRoleRequest = CreateRoleRequest
                     .builder()
                     .roleName(roleName)
                     .description(roleDescription)
-                    .assumeRolePolicyDocument(jsonObject.toJSONString())
+                    .assumeRolePolicyDocument(trustPolicy.toJSONString())
                     .build();
 
             CreateRoleResponse createRoleResponse = iamClient.createRole(createRoleRequest);
@@ -122,11 +122,11 @@ public class IAM {
     public static String createPermissionsPolicy(IamClient iamClient, String policyName) {
         try {
             IamWaiter iamWaiter = iamClient.waiter();
-            JSONObject jsonObject = (JSONObject) readJsonFromFile("permissions-policy");
+            JSONObject permissionsPolicy = (JSONObject) readJsonFile("policies", "permissions-policy");
             CreatePolicyRequest request = CreatePolicyRequest
                     .builder()
                     .policyName(policyName)
-                    .policyDocument(jsonObject.toJSONString())
+                    .policyDocument(permissionsPolicy.toJSONString())
                     .build();
 
             CreatePolicyResponse createPolicyResponse = iamClient.createPolicy(request);
@@ -195,8 +195,8 @@ public class IAM {
      * @throws IOException Signals that an I/O exception has occurred. This class is the general class of exceptions produced by failed or interrupted I/O operations.
      * @throws ParseException Signals that an error has been reached unexpectedly while parsing.
      */
-    private static Object readJsonFromFile(String filename) throws IOException, ParseException {
-        InputStream inputStream = IAM.class.getResourceAsStream("/policies/" + filename + ".json");
+    private static Object readJsonFile(String folder, String filename) throws IOException, ParseException {
+        InputStream inputStream = IAM.class.getResourceAsStream("/" + folder + "/" + filename + ".json");
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
         JSONParser jsonParser = new JSONParser();
         return jsonParser.parse(bufferedReader);

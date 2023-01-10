@@ -1,10 +1,7 @@
 package launcher;
 
-import java.io.*;
-import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.Map;
 
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.regions.Region;
@@ -116,18 +113,12 @@ public class AppLauncher {
         );
         System.out.println("Successfully created api with id: " + restApiId);
 
-        // Create .env file in database-manager-ui folder
-        System.out.println(System.getProperty("user.dir").replace("database-manager-logic", ""));
-
-        String filePath = createEnvFile(".env");
-        writeEnvironmentalVariableToEnvFile(filePath, "REST_API_ID", "1");
-
         // Authenticate and create an S3 client
         S3Client s3Client = S3.authenticateS3(awsBasicCredentials, appRegion);
 
         // Create S3 bucket
         String bucketName = S3.createBucket(s3Client, s3BucketName);
-        System.out.print("S3 bucket " + bucketName + " has been created.");
+        System.out.println("S3 bucket " + bucketName + " has been created.");
 
         // Close S3 client
         s3Client.close();
@@ -137,7 +128,7 @@ public class AppLauncher {
 
         // Create an SNS topic
         String topicArn = SNS.createSNSTopic(snsClient, snsTopicName);
-        System.out.print("Successfully created an SNS topic: " + topicArn);
+        System.out.println("Successfully created an SNS topic: " + topicArn);
 
         // Close SNS client
         snsClient.close();
@@ -159,6 +150,10 @@ public class AppLauncher {
         // Authenticate and create an Amplify client
         AmplifyClient amplifyClient = Amplify.authenticateAmplify(awsBasicCredentials, appRegion);
 
+        Map<String, String> environmentalVariables = new HashMap<>();
+        environmentalVariables.put("BUILD_ENV", "prod");
+        environmentalVariables.put("REACT_APP_REST_API_ID", restApiId);
+
         // Create Amplify application
         String appId = Amplify.createApp(
                 amplifyClient,
@@ -171,7 +166,8 @@ public class AppLauncher {
                 true,
                 Stage.DEVELOPMENT,
                 true,
-                true
+                true,
+                environmentalVariables
         );
         System.out.println("Successfully created app with id: " + appId);
 
@@ -189,7 +185,6 @@ public class AppLauncher {
             put("ACCESS_KEY_ID", accessKey);
             put("SECRET_ACCESS_KEY", secretAccessKey);
             put("AWS_APP_REGION", appRegion.toString());
-            put("REST_API_ID", restApiId);
             put("DYNAMO_DB_TABLE_NAME", tableName);
             put("SNS_TOPIC_ARN", topicArn);
             put("ADMIN_EMAIL", adminEmail);
@@ -203,7 +198,7 @@ public class AppLauncher {
                 lambdaFunctionName,
                 "Database Bot Manager Application Logic",
                 roleArn,
-                "handler.BotLogic::handleRequest",
+                "handler.AppHandler::handleRequest",
                 Runtime.JAVA11,
                 60,
                 512,
@@ -380,43 +375,5 @@ public class AppLauncher {
         System.out.println("The database manager website will be available at https://main." + appDefaultDomain
                 + " after the code is committed through the Git control system. Please follow the documentation on how to accomplish it.");
         System.out.println("Use the following HTTPS link to push the code:: " + cloneUrlHttp);
-    }
-
-    /**
-     * Creates .env file which will store environmental variables that database-manager-ui can access
-     * independently from database-manager-logic whenever the app is deployed to an Amplify.
-     * @param fileName The name of the file.
-     * @return The path where the created file is located.
-     */
-    private static String createEnvFile(String fileName) {
-        try {
-            Path path = Paths.get("");
-            File newFile = new File(path.toAbsolutePath().getParent() + "/database-manager-ui/");
-            newFile.createNewFile();
-            System.out.println(fileName + " file has been successfully created.");
-            return newFile.getPath();
-        } catch (IOException error) {
-            System.err.println(error.getMessage());
-            System.exit(1);
-        }
-        return "";
-    }
-
-    /**
-     * Writes an environment variable to the created .env file.
-     * @param filePath The path where the created .env file is located.
-     * @param keyName The name of the environment variable key.
-     * @param keyValue The value of the environment variable.
-     */
-    private static void writeEnvironmentalVariableToEnvFile(String filePath, String keyName, String keyValue) {
-        try {
-            String environmentalVariable = keyName + "=" + keyValue;
-            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
-            writer.write(environmentalVariable);
-            writer.close();
-        } catch (IOException error) {
-            System.err.println(error.getMessage());
-            System.exit(1);
-        }
     }
 }

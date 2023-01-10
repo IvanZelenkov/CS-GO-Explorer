@@ -12,10 +12,24 @@ import GeographyChart from "../../components/GeographyChart";
 import BarChart from "../../components/BarChart";
 import StatBox from "../../components/StatBox";
 import ProgressCircle from "../../components/ProgressCircle";
+import axios from "axios";
+import { useState } from 'react';
 
 const Dashboard = () => {
 	const theme = useTheme();
 	const colors = tokens(theme.palette.mode);
+	const [data, setData] = useState([]);
+
+	const sendRequest = () => {
+		axios.get(
+			""
+			).then(function (response) {
+			console.log(response);
+			setData(response);
+		}).catch(function (error) {
+			console.log(error);
+		});
+	};
 
 	return (
 		<Box m="20px">
@@ -33,6 +47,7 @@ const Dashboard = () => {
 							padding: "10px 20px",
 						}}
 						onClick={() => {
+							// sendRequest();
 							alert('Download Reports');
 						}}
 					>

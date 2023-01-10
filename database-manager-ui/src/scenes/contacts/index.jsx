@@ -1,11 +1,11 @@
-import {Box, Button} from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import { useTheme } from "@mui/material";
 import axios from "axios";
 import Refresh from "@mui/icons-material/Refresh";
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 
 const Contacts = () => {
 	const theme = useTheme();
@@ -14,7 +14,7 @@ const Contacts = () => {
 
 	const sendRequest = () => {
 		axios.post(
-			"https://" + process.env.REST_API_ID + ".execute-api.us-east-1.amazonaws.com/DevelopmentStage/get-all-table-items",
+			"https://" + process.env.REACT_APP_REST_API_ID + ".execute-api.us-east-1.amazonaws.com/DevelopmentStage/get-all-table-items",
 			JSON.stringify({"ENTIRE_TABLE": "EmptyBody"})
 		).then(function (response) {
 			console.log(response.data.students);
@@ -75,6 +75,23 @@ const Contacts = () => {
 			/>
 			{/* REFRESH BUTTON */}
 			<Box display="flex" justifyContent="space-between" alignItems="center">
+				<Box>
+					<Button
+						sx={{
+							backgroundColor: colors.blueAccent[700],
+							color: colors.grey[100],
+							fontSize: "14px",
+							fontWeight: "bold",
+							padding: "10px 20px",
+						}}
+						onClick={() => {
+							sendRequest();
+						}}
+					>
+						<Refresh sx={{ mr: "10px" }}/>
+						Refresh
+					</Button>
+				</Box>
 				<Box>
 					<Button
 						sx={{
