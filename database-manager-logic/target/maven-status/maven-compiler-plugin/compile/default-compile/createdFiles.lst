@@ -11,6 +11,7 @@ services/Amplify.class
 services/SNS.class
 services/bot/Slot.class
 services/bot/Intent.class
+services/api/steam/SteamApi.class
 launcher/AppLauncher.class
 services/IAM.class
 launcher/AppLauncher$3.class
@@ -21,6 +22,7 @@ services/CodeCommit.class
 launcher/AppLauncher$1.class
 handler/AppHandler.class
 services/Lambda.class
+launcher/AppLauncher$5.class
 services/bot/Lex.class
 services/api/ApiGatewayProxyRequest.class
 services/bot/Utterance.class

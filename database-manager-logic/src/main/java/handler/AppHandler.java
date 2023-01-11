@@ -1,6 +1,7 @@
 package handler;
 
 import services.database.DynamoDB;
+import services.api.steam.SteamApi;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,11 @@ public class AppHandler implements RequestHandler<Map<String, Object>, Object> {
         DynamoDbClient dynamoDbClient = DynamoDB.authenticateDynamoDB(getAwsBasicCredentials(), Region.of(System.getenv("AWS_REGION")));
         System.out.println(event);
         if (event.containsKey("httpMethod")) {
-            return DynamoDB.scanTable(dynamoDbClient, event);
+            if (event.get("resource").equals("/get-all-table-items")) {
+                return DynamoDB.scanTable(dynamoDbClient, event);
+            } else if (event.get("resource").equals("/get-player-summaries")) {
+                return SteamApi.getPlayerSummaries(event);
+            }
         }
         currentEvent = event;
         String intentName = getIntentName(event);

@@ -1,5 +1,6 @@
 /Users/ivanzelenkov/IdeaProjects/Database-Manager/database-manager-logic/src/main/java/launcher/AppLauncher.java
 /Users/ivanzelenkov/IdeaProjects/Database-Manager/database-manager-logic/src/main/java/handler/AppHandler.java
+/Users/ivanzelenkov/IdeaProjects/Database-Manager/database-manager-logic/src/main/java/services/api/steam/SteamApi.java
 /Users/ivanzelenkov/IdeaProjects/Database-Manager/database-manager-logic/src/main/java/services/bot/Slot.java
 /Users/ivanzelenkov/IdeaProjects/Database-Manager/database-manager-logic/src/main/java/services/api/ApiGatewayProxyResponse.java
 /Users/ivanzelenkov/IdeaProjects/Database-Manager/database-manager-logic/src/main/java/services/api/ApiGatewayProxyRequest.java

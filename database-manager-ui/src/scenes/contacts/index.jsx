@@ -14,7 +14,7 @@ const Contacts = () => {
 
 	const sendRequest = () => {
 		axios.post(
-			"https://" + process.env.REACT_APP_REST_API_ID + ".execute-api.us-east-1.amazonaws.com/DevelopmentStage/get-all-table-items",
+			"https://" + process.env.REACT_APP_REST_API_ID + ".execute-api.us-east-1.amazonaws.com/ProductionStage/get-all-table-items",
 			JSON.stringify({"ENTIRE_TABLE": "EmptyBody"})
 		).then(function (response) {
 			console.log(response.data.students);

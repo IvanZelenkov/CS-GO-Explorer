@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {useMemo, useState} from "react";
 import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { Link } from "react-router-dom";
@@ -16,6 +16,8 @@ import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutl
 import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
+import { useEffect } from "react";
+import axios from "axios";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
 	const theme = useTheme();
@@ -40,6 +42,26 @@ const Sidebar = () => {
 	const colors = tokens(theme.palette.mode);
 	const [isCollapsed, setIsCollapsed] = useState(false);
 	const [selected, setSelected] = useState("Dashboard");
+	const [profile, setProfile] = useState({});
+
+	// Loaded flag
+	const [infoLoaded, setInfoLoaded] = useState(false)
+
+	const sendRequest = () => {
+		axios.get(
+			"https://jcpkbqzpe1.execute-api.us-east-1.amazonaws.com/ProductionStage/get-player-summaries"
+		).then(function (response) {
+			setProfile(JSON.parse(response.data.getPlayerSummariesBody));
+			setInfoLoaded(true);
+			// console.log(response.data.getPlayerSummariesBody);
+		}).catch(function (error) {
+			console.log(error);
+		});
+	}
+
+	useEffect(() => {
+		sendRequest();
+	}, []);
 
 	return (
 		<Box
@@ -96,7 +118,7 @@ const Sidebar = () => {
 									alt="profile-user"
 									width="100px"
 									height="100px"
-									src={`https://img.freepik.com/free-vector/security-shield-vector-cyber-security-technology_53876-112196.jpg?w=2000`}
+									src={profile.response.players[0].avatarfull}
 									style={{ cursor: "pointer", borderRadius: "50%" }}
 								/>
 							</Box>
@@ -107,7 +129,7 @@ const Sidebar = () => {
 									fontWeight="bold"
 									sx={{ m: "10px 0 0 0" }}
 								>
-									Ivan Zelenkov
+									{infoLoaded && profile.response.players[0].personaname}
 								</Typography>
 								<Typography variant="h5" color={colors.greenAccent[500]}>
 									Database Admin

@@ -40,9 +40,10 @@ public class AppLauncher {
                 "    accessKey - used to sign programmatic requests that you make to AWS.\n" +
                 "    secretAccessKey - used to sign programmatic requests that you make to AWS.\n" +
                 "    awsAppDeploymentRegion - The AWS Region where the application will be deployed.\n" +
-                "    adminEmail - administrator's email address to which notifications about changes in the database will be sent.";
+                "    adminEmail - administrator's email address to which notifications about changes in the database will be sent.\n" +
+                "    steamId - unique identifier of your Steam account.";
 
-        if (args.length != 4) {
+        if (args.length != 6) {
             System.out.println(usage);
             System.exit(1);
         }
@@ -52,14 +53,16 @@ public class AppLauncher {
         final String secretAccessKey = args[1];
         final String awsAppDeploymentRegion = args[2];
         final String adminEmail = args[3];
+        final String steamId = args[4];
+        final String steamApiKey = args[5];
 
         // Predefined configuration variables. The creation of services follows this order
-        final String roleName = "DatabaseBotManagerRole"; // IAM
-        final String permissionsPolicyName = "DatabaseBotManagerFullAccess"; // IAM
+        final String roleName = "DatabaseManagerRole"; // IAM
+        final String permissionsPolicyName = "DatabaseManagerFullAccess"; // IAM
         final String restApiName = "database-manager-rest-api"; // API Gateway
-        final String s3BucketName = "dynamo-db-students-table-actions"; // S3
-        final String snsTopicName = "DynamoStudentsDBTableChanges"; // SNS
-        final String lambdaFunctionName = "database-bot-manager-lambda"; // Lambda
+        final String s3BucketName = "dynamo-db-table-actions"; // S3
+        final String snsTopicName = "DynamoDBTableChanges"; // SNS
+        final String lambdaFunctionName = "database-manager-lambda"; // Lambda
         final String botName = "DatabaseManagerBot"; // Lex
         final String tableName = "Students"; // DynamoDB
         final String codeCommitRepositoryName = "DatabaseManagerRepository"; // CodeCommit
@@ -76,12 +79,7 @@ public class AppLauncher {
         IamClient iamClient = IAM.authenticateIAM(awsBasicCredentials, globalRegion);
 
         // Create an IAM Lex V2 role
-        String lexRoleArn = IAM.createServiceLinkedRole(
-                iamClient,
-                "lexv2.amazonaws.com",
-                Lex.lexRoleCustomSuffixGenerator(),
-                "Database Manager Lex V2 Bot Role"
-        );
+        String lexRoleArn = IAM.createServiceLinkedRole(iamClient, "lexv2.amazonaws.com", Lex.lexRoleCustomSuffixGenerator(), "Database Manager Lex V2 Bot Role");
 
         // Create an IAM Lambda role and attach trust policy
         String roleArn = IAM.createRole(iamClient, roleName, "Database Bot Manager Trust Policy");
@@ -104,13 +102,8 @@ public class AppLauncher {
         ApiGatewayClient apiGatewayClient = ApiGateway.authenticateApiGateway(awsBasicCredentials, appRegion);
 
         // Create REST API
-        String restApiId = ApiGateway.createAPI(
-                apiGatewayClient,
-                restApiName,
-                "REST API for Database Manager application",
-                ApiKeySourceType.AUTHORIZER,
-                EndpointConfiguration.builder().types(EndpointType.REGIONAL).build()
-        );
+        String restApiId = ApiGateway.createAPI(apiGatewayClient, restApiName, "REST API for Database Manager application",
+                ApiKeySourceType.AUTHORIZER, EndpointConfiguration.builder().types(EndpointType.REGIONAL).build());
         System.out.println("Successfully created api with id: " + restApiId);
 
         // Authenticate and create an S3 client
@@ -137,11 +130,7 @@ public class AppLauncher {
         CodeCommitClient codeCommitClient = CodeCommit.authenticateCodeCommit(awsBasicCredentials, appRegion);
 
         // Create a CodeCommit repository
-        String cloneUrlHttp = CodeCommit.createRepository(
-                codeCommitClient,
-                codeCommitRepositoryName,
-                "UI of the DBM application"
-        );
+        String cloneUrlHttp = CodeCommit.createRepository(codeCommitClient, codeCommitRepositoryName, "UI of the DBM application");
         System.out.println("Successfully created repository with clone URL Http: " + cloneUrlHttp);
 
         // Close CodeCommit client
@@ -150,25 +139,14 @@ public class AppLauncher {
         // Authenticate and create an Amplify client
         AmplifyClient amplifyClient = Amplify.authenticateAmplify(awsBasicCredentials, appRegion);
 
-        Map<String, String> environmentalVariables = new HashMap<>();
-        environmentalVariables.put("BUILD_ENV", "prod");
-        environmentalVariables.put("REACT_APP_REST_API_ID", restApiId);
+        // Create a Map with environmental variables for an Amplify
+        Map<String, String> amplifyEnvironmentalVariables = new HashMap<>();
+        amplifyEnvironmentalVariables.put("BUILD_ENV", "prod");
+        amplifyEnvironmentalVariables.put("REACT_APP_REST_API_ID", restApiId);
 
         // Create Amplify application
-        String appId = Amplify.createApp(
-                amplifyClient,
-                appName,
-                "Database manager application",
-                Platform.WEB,
-                "arn:aws:iam::981684844178:role/DatabaseBotManagerRole",
-                cloneUrlHttp,
-                true,
-                true,
-                Stage.DEVELOPMENT,
-                true,
-                true,
-                environmentalVariables
-        );
+        String appId = Amplify.createApp(amplifyClient, appName, "Database manager application", Platform.WEB, "arn:aws:iam::981684844178:role/DatabaseBotManagerRole",
+                cloneUrlHttp, true, true, Stage.PRODUCTION, true, true, amplifyEnvironmentalVariables);
         System.out.println("Successfully created app with id: " + appId);
 
         // Get app default domain
@@ -190,20 +168,13 @@ public class AppLauncher {
             put("ADMIN_EMAIL", adminEmail);
             put("S3_BUCKET_NAME", s3BucketName);
             put("APP_URL", "https://main." + appDefaultDomain);
+            put("STEAM_ID", steamId);
+            put("STEAM_API_KEY", steamApiKey);
         }}).build();
 
         // Create a lambda function and attach a role
-        String lambdaArn = Lambda.createLambdaFunction(
-                lambdaClient,
-                lambdaFunctionName,
-                "Database Bot Manager Application Logic",
-                roleArn,
-                "handler.AppHandler::handleRequest",
-                Runtime.JAVA11,
-                60,
-                512,
-                environment
-        );
+        String lambdaArn = Lambda.createLambdaFunction(lambdaClient, lambdaFunctionName, "Database Bot Manager Application Logic",
+                roleArn, "handler.AppHandler::handleRequest", Runtime.JAVA11, 60, 512, environment);
         System.out.println("Successfully created lambda function: " + lambdaArn);
 
         // Create a resource policy and add a resource-based policy statement
@@ -212,141 +183,94 @@ public class AppLauncher {
         // Close Lambda client
         lambdaClient.close();
 
-        // 'get-all-table-items' configuration of resources and its methods
-        String resourceId = ApiGateway.createResource(apiGatewayClient, restApiId, 0, "get-all-table-items");
+        // Create 'get-all-table-items' resource
+        String getAllTableItemsResourceId = ApiGateway.createResource(apiGatewayClient, restApiId, 0, "get-all-table-items");
 
         // Create method request for the get-all-table-items/POST
-        String methodRequestPOST = ApiGateway.createMethodRequest(
-                apiGatewayClient,
-                restApiId,
-                resourceId,
-                "POST",
-                "NONE",
-                false
-        );
-        System.out.println("Successfully created API method request: " + methodRequestPOST);
+        String methodRequestGetAllTableItemsPOST = ApiGateway.createMethodRequest(apiGatewayClient, restApiId, getAllTableItemsResourceId, "POST", "NONE", false);
+        System.out.println("Successfully created API method request: " + methodRequestGetAllTableItemsPOST);
 
         // Create integration request for the get-all-table-items/POST
-        String integrationRequestPOST = ApiGateway.createIntegrationRequest(
-                apiGatewayClient,
-                restApiId,
-                resourceId,
-                "POST",
-                roleArn,
-                "arn:aws:apigateway:" + awsAppDeploymentRegion + ":lambda:path/2015-03-31/functions/" + lambdaArn + "/invocations",
-                IntegrationType.AWS_PROXY,
-                "POST"
-        );
-        System.out.println("Successfully created API integration request: " + integrationRequestPOST);
+        String integrationRequestGetAllTableItemsPOST = ApiGateway.createIntegrationRequest(apiGatewayClient, restApiId, getAllTableItemsResourceId, "POST", roleArn,
+                "arn:aws:apigateway:" + awsAppDeploymentRegion + ":lambda:path/2015-03-31/functions/" + lambdaArn + "/invocations", IntegrationType.AWS_PROXY, "POST");
+        System.out.println("Successfully created API integration request: " + integrationRequestGetAllTableItemsPOST);
 
         // Create integration response for the get-all-table-items/POST
-        String integrationResponsePOST = ApiGateway.createIntegrationResponse(
-                apiGatewayClient,
-                restApiId,
-                resourceId,
-                "POST",
-                "200"
-        );
-        System.out.println("Successfully created API integration response: " + integrationResponsePOST);
+        String integrationResponseGetAllTableItemsPOST = ApiGateway.createIntegrationResponse(apiGatewayClient, restApiId, getAllTableItemsResourceId, "POST", "200");
+        System.out.println("Successfully created API integration response: " + integrationResponseGetAllTableItemsPOST);
 
         // Create method response for the get-all-table-items/POST
-        String methodResponsePOST = ApiGateway.createMethodResponse(
-                apiGatewayClient,
-                restApiId,
-                resourceId,
-                "POST",
-                "200",
-                new HashMap<>(){{put("application/json", "Empty");}}
-        );
-        System.out.println("Successfully created API method response: " + methodResponsePOST);
+        String methodResponseGetAllTableItemsPOST = ApiGateway.createMethodResponse(apiGatewayClient, restApiId, getAllTableItemsResourceId, "POST", "200", new HashMap<>(){{put("application/json", "Empty");}});
+        System.out.println("Successfully created API method response: " + methodResponseGetAllTableItemsPOST);
 
         // Create method request for the get-all-table-items/OPTIONS
-        String methodRequestOPTIONS = ApiGateway.createMethodRequest(
-                apiGatewayClient,
-                restApiId,
-                resourceId,
-                "OPTIONS",
-                "NONE",
-                false
-        );
-        System.out.println("Successfully created API method request: " + methodRequestOPTIONS);
+        String methodRequestGetAllTableItemsOPTIONS = ApiGateway.createMethodRequest(apiGatewayClient, restApiId, getAllTableItemsResourceId, "OPTIONS", "NONE", false);
+        System.out.println("Successfully created API method request: " + methodRequestGetAllTableItemsOPTIONS);
 
         // Create integration request for the get-all-table-items/OPTIONS
-        String integrationRequestOPTIONS = ApiGateway.createIntegrationRequest(
-                apiGatewayClient,
-                restApiId,
-                resourceId,
-                "OPTIONS",
-                roleArn,
-                "arn:aws:apigateway:" + awsAppDeploymentRegion + ":lambda:path/2015-03-31/functions/" + lambdaArn + "/invocations",
-                IntegrationType.AWS_PROXY,
-                "POST"
-        );
-        System.out.println("Successfully created API integration request: " + integrationRequestOPTIONS);
+        String integrationRequestGetAllTableItemsOPTIONS = ApiGateway.createIntegrationRequest(apiGatewayClient, restApiId, getAllTableItemsResourceId, "OPTIONS", roleArn,
+                "arn:aws:apigateway:" + awsAppDeploymentRegion + ":lambda:path/2015-03-31/functions/" + lambdaArn + "/invocations", IntegrationType.AWS_PROXY, "POST");
+        System.out.println("Successfully created API integration request: " + integrationRequestGetAllTableItemsOPTIONS);
 
         // Create integration response for the get-all-table-items/OPTIONS
-        String integrationResponseOPTIONS = ApiGateway.createIntegrationResponse(
-                apiGatewayClient,
-                restApiId,
-                resourceId,
-                "OPTIONS",
-                "200"
-        );
-        System.out.println("Successfully created API integration response: " + integrationResponseOPTIONS);
+        String integrationResponseGetAllTableItemsOPTIONS = ApiGateway.createIntegrationResponse(apiGatewayClient, restApiId, getAllTableItemsResourceId, "OPTIONS", "200");
+        System.out.println("Successfully created API integration response: " + integrationResponseGetAllTableItemsOPTIONS);
 
         // Create method response for the get-all-table-items/OPTIONS
-        String methodResponseOPTIONS = ApiGateway.createMethodResponse(
-                apiGatewayClient,
-                restApiId,
-                resourceId,
-                "OPTIONS",
-                "200",
-                new HashMap<>(){{put("application/json", "Empty");}}
-        );
-        System.out.println("Successfully created API method response: " + methodResponseOPTIONS);
+        String methodResponseGetAllTableItemsOPTIONS = ApiGateway.createMethodResponse(apiGatewayClient, restApiId, getAllTableItemsResourceId, "OPTIONS", "200", new HashMap<>(){{put("application/json", "Empty");}});
+        System.out.println("Successfully created API method response: " + methodResponseGetAllTableItemsOPTIONS);
+
+        // Create 'get-player-summaries' resource
+        String getPlayerSummariesResourceId = ApiGateway.createResource(apiGatewayClient, restApiId, 1, "get-player-summaries");
+
+        // Create method request for the get-player-summaries/POST
+        String methodRequestGetPlayerSummariesGET = ApiGateway.createMethodRequest(apiGatewayClient, restApiId, getPlayerSummariesResourceId, "GET", "NONE", false);
+        System.out.println("Successfully created API method request: " + methodRequestGetPlayerSummariesGET);
+
+        // Create integration request for the get-player-summaries/POST
+        String integrationRequestGetPlayerSummariesGET = ApiGateway.createIntegrationRequest(apiGatewayClient, restApiId, getPlayerSummariesResourceId, "GET", roleArn,
+                "arn:aws:apigateway:" + awsAppDeploymentRegion + ":lambda:path/2015-03-31/functions/" + lambdaArn + "/invocations", IntegrationType.AWS_PROXY, "POST");
+        System.out.println("Successfully created API integration request: " + integrationRequestGetPlayerSummariesGET);
+
+        // Create integration response for the get-player-summaries/POST
+        String integrationResponseGetPlayerSummariesGET = ApiGateway.createIntegrationResponse(apiGatewayClient, restApiId, getPlayerSummariesResourceId, "GET", "200");
+        System.out.println("Successfully created API integration response: " + integrationResponseGetPlayerSummariesGET);
+
+        // Create method response for the get-player-summaries/POST
+        String methodResponseGetPlayerSummariesGET = ApiGateway.createMethodResponse(apiGatewayClient, restApiId, getPlayerSummariesResourceId, "GET", "200", new HashMap<>(){{put("application/json", "Empty");}});
+        System.out.println("Successfully created API method response: " + methodResponseGetPlayerSummariesGET);
+
+        // Create method request for the get-player-summaries/OPTIONS
+        String methodRequestGetPlayerSummariesOPTIONS = ApiGateway.createMethodRequest(apiGatewayClient, restApiId, getPlayerSummariesResourceId, "OPTIONS", "NONE", false);
+        System.out.println("Successfully created API method request: " + methodRequestGetPlayerSummariesOPTIONS);
+
+        // Create integration request for the get-player-summaries/OPTIONS
+        String integrationRequestGetPlayerSummariesOPTIONS = ApiGateway.createIntegrationRequest(apiGatewayClient, restApiId, getPlayerSummariesResourceId, "OPTIONS", roleArn,
+                "arn:aws:apigateway:" + awsAppDeploymentRegion + ":lambda:path/2015-03-31/functions/" + lambdaArn + "/invocations", IntegrationType.AWS_PROXY, "POST");
+        System.out.println("Successfully created API integration request: " + integrationRequestGetPlayerSummariesOPTIONS);
+
+        // Create integration response for the get-player-summaries/OPTIONS
+        String integrationResponseGetPlayerSummariesOPTIONS = ApiGateway.createIntegrationResponse(apiGatewayClient, restApiId, getPlayerSummariesResourceId, "OPTIONS", "200");
+        System.out.println("Successfully created API integration response: " + integrationResponseGetPlayerSummariesOPTIONS);
+
+        // Create method response for the get-player-summaries/OPTIONS
+        String methodResponseGetPlayerSummariesOPTIONS = ApiGateway.createMethodResponse(apiGatewayClient, restApiId, getPlayerSummariesResourceId, "OPTIONS", "200", new HashMap<>(){{put("application/json", "Empty");}});
+        System.out.println("Successfully created API method response: " + methodResponseGetPlayerSummariesOPTIONS);
 
         // Create a deployment stage
-        String stageName = "DevelopmentStage";
-        String deploymentId = ApiGateway.createNewDeployment(
-                apiGatewayClient,
-                restApiId,
-                "Created using Java AWS SDK",
-                stageName,
-                "Test Deployment"
-        );
+        String stageName = "ProductionStage";
+        String deploymentId = ApiGateway.createNewDeployment(apiGatewayClient, restApiId, "Created using Java AWS SDK", stageName, "Production deployment stage");
         System.out.println("The id of the REST API deployment: " + deploymentId);
 
         // Configure and create a usage plan
-        ThrottleSettings throttleSettings = ThrottleSettings
-                .builder()
-                .rateLimit(100.0)
-                .burstLimit(100)
-                .build();
+        ThrottleSettings throttleSettings = ThrottleSettings.builder().rateLimit(100.0).burstLimit(100).build();
 
-        String usagePlanId = ApiGateway.createUsagePlan(
-                apiGatewayClient,
-                restApiId,
-                stageName,
-                throttleSettings,
-                new HashMap<>(){{
-                    put("/get-all-table-items/OPTIONS", throttleSettings);
-                    put("/get-all-table-items/POST", throttleSettings);
-                }},
-                "test-plan",
-                "DBM test usage plan",
-                "DAY",
-                1200
-        );
-
-        // Create API key
-        ApiGateway.createApiKey(
-                apiGatewayClient,
-                "DBM_key",
-                "Test key",
-                true,
-                usagePlanId,
-                "API_KEY"
-        );
+        // Create usage plan
+//        String usagePlanId = ApiGateway.createUsagePlan(apiGatewayClient, restApiId, stageName, throttleSettings, new HashMap<>(){{put("/get-all-table-items/OPTIONS", throttleSettings);
+//                    put("/get-all-table-items/POST", throttleSettings);}}, "test-plan", "DBM test usage plan", "DAY", 1200);
+//
+//        // Create API key
+//        ApiGateway.createApiKey(apiGatewayClient, "DBM_key", "Test key", true, usagePlanId, "API_KEY");
 
         // Close API Gateway client
         apiGatewayClient.close();
@@ -366,7 +290,7 @@ public class AppLauncher {
 
         // Create DynamoDB table
         String tableId = DynamoDB.createTable(dynamoDbClient, tableName, "studentId", ScalarAttributeType.N, KeyType.HASH);
-        System.out.println("Successfully created " + tableName + " table.");
+        System.out.println("Successfully created " + tableName + " table with id: " + tableId);
 
         // Close DynamoDB client
         dynamoDbClient.close();
@@ -374,6 +298,6 @@ public class AppLauncher {
         // Output the website to the user that can be used after
         System.out.println("The database manager website will be available at https://main." + appDefaultDomain
                 + " after the code is committed through the Git control system. Please follow the documentation on how to accomplish it.");
-        System.out.println("Use the following HTTPS link to push the code:: " + cloneUrlHttp);
+        System.out.println("Use the following HTTPS link to push the code: " + cloneUrlHttp);
     }
 }
