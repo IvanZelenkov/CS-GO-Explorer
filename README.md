@@ -1,4 +1,4 @@
-# Database Manager
+# Steam Client
 
 ### Support
 *itproger.ivan@gmail.com*
