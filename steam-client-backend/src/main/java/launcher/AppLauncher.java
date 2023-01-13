@@ -186,10 +186,13 @@ public class AppLauncher {
         lambdaClient.close();
 
         // Create 'GetAllTableItems' resource
-        ApiGateway.createAndConfigureRestApiResource(apiGatewayClient, restApiId, roleArn, lambdaArn, awsAppDeploymentRegion, 0,"GetAllTableItems", true, "POST", "NONE");
+        ApiGateway.createAndConfigureRestApiResource(apiGatewayClient, restApiId, roleArn, lambdaArn, awsAppDeploymentRegion, 0, "GetAllTableItems", true, "POST", "NONE");
 
         // Create 'GetPlayerSummaries' resource
-        ApiGateway.createAndConfigureRestApiResource(apiGatewayClient, restApiId, roleArn, lambdaArn, awsAppDeploymentRegion, 1,"GetPlayerSummaries", true, "GET", "NONE");
+        ApiGateway.createAndConfigureRestApiResource(apiGatewayClient, restApiId, roleArn, lambdaArn, awsAppDeploymentRegion, 1, "GetPlayerSummaries", true, "POST", "NONE");
+
+        // Create 'GetFriendList' resource
+        ApiGateway.createAndConfigureRestApiResource(apiGatewayClient, restApiId, roleArn, lambdaArn, awsAppDeploymentRegion, 2, "GetFriendList", true, "GET", "NONE");
 
         // Create a deployment stage
         String stageName = "ProductionStage";

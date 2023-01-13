@@ -14,7 +14,7 @@ export const tokens = (mode) => ({
 				600: "#525252",
 				700: "#3d3d3d",
 				800: "#292929",
-				900: "#141414",
+				900: "#141414"
 			},
 			primary: {
 				100: "#d0d1d5",
@@ -25,7 +25,7 @@ export const tokens = (mode) => ({
 				600: "#101624",
 				700: "#0c101b",
 				800: "#080b12",
-				900: "#040509",
+				900: "#040509"
 			},
 			greenAccent: {
 				100: "#dbf5ee",
@@ -36,7 +36,7 @@ export const tokens = (mode) => ({
 				600: "#3da58a",
 				700: "#2e7c67",
 				800: "#1e5245",
-				900: "#0f2922",
+				900: "#0f2922"
 			},
 			redAccent: {
 				100: "#f8dcdb",
@@ -47,7 +47,7 @@ export const tokens = (mode) => ({
 				600: "#af3f3b",
 				700: "#832f2c",
 				800: "#58201e",
-				900: "#2c100f",
+				900: "#2c100f"
 			},
 			blueAccent: {
 				100: "#e1e2fe",
@@ -58,8 +58,16 @@ export const tokens = (mode) => ({
 				600: "#535ac8",
 				700: "#3e4396",
 				800: "#2a2d64",
-				900: "#151632",
+				900: "#151632"
 			},
+			steamColors: {
+				1: "#171a21",
+				2: "#1b2838",
+				3: "#2a475e",
+				4: "#c7d5e0",
+				5: "#66c0f4",
+				6: "#7da10e"
+			}
 		}
 		: {
 			grey: {
@@ -71,18 +79,18 @@ export const tokens = (mode) => ({
 				600: "#858585",
 				700: "#a3a3a3",
 				800: "#c2c2c2",
-				900: "#e0e0e0",
+				900: "#e0e0e0"
 			},
 			primary: {
 				100: "#040509",
 				200: "#080b12",
 				300: "#0c101b",
-				400: "#f2f0f0", // manually changed
+				400: "#f2f0f0",
 				500: "#141b2d",
 				600: "#1F2A40",
 				700: "#727681",
 				800: "#a1a4ab",
-				900: "#d0d1d5",
+				900: "#d0d1d5"
 			},
 			greenAccent: {
 				100: "#0f2922",
@@ -93,7 +101,7 @@ export const tokens = (mode) => ({
 				600: "#70d8bd",
 				700: "#94e2cd",
 				800: "#b7ebde",
-				900: "#dbf5ee",
+				900: "#dbf5ee"
 			},
 			redAccent: {
 				100: "#2c100f",
@@ -104,7 +112,7 @@ export const tokens = (mode) => ({
 				600: "#e2726e",
 				700: "#e99592",
 				800: "#f1b9b7",
-				900: "#f8dcdb",
+				900: "#f8dcdb"
 			},
 			blueAccent: {
 				100: "#151632",
@@ -115,7 +123,15 @@ export const tokens = (mode) => ({
 				600: "#868dfb",
 				700: "#a4a9fc",
 				800: "#c3c6fd",
-				900: "#e1e2fe",
+				900: "#e1e2fe"
+			},
+			steamColors: {
+				1: "#171a21",
+				2: "#1b2838",
+				3: "#2a475e",
+				4: "#c7d5e0",
+				5: "#66c0f4",
+				6: "#7da10e"
 			}
 		})
 });
@@ -130,35 +146,41 @@ export const themeSettings = (mode) => {
 				? {
 					// palette values for dark mode
 					primary: {
-						main: colors.primary[500],
+						main: colors.grey[100]
 					},
 					secondary: {
-						main: colors.greenAccent[500],
+						main: colors.grey[900]
 					},
-					neutral: {
-						dark: colors.grey[700],
-						main: colors.grey[500],
-						light: colors.grey[100],
+					custom: {
+						steamColorA: colors.steamColors[1],
+						steamColorB: colors.steamColors[2],
+						steamColorC: colors.steamColors[3],
+						steamColorD: colors.steamColors[4],
+						steamColorE: colors.steamColors[5],
+						steamColorF: colors.steamColors[6],
 					},
 					background: {
-						default: colors.primary[500],
+						default: colors.steamColors[3],
 					}
 				}
 				: {
 					// palette values for light mode
 					primary: {
-						main: colors.primary[100],
+						main: colors.grey[100]
 					},
 					secondary: {
-						main: colors.greenAccent[500],
+						main: colors.grey[900]
 					},
-					neutral: {
-						dark: colors.grey[700],
-						main: colors.grey[500],
-						light: colors.grey[100],
+					custom: {
+						steamColorA: colors.steamColors[1],
+						steamColorB: colors.steamColors[2],
+						steamColorC: colors.steamColors[3],
+						steamColorD: colors.steamColors[4],
+						steamColorE: colors.steamColors[5],
+						steamColorF: colors.steamColors[6],
 					},
 					background: {
-						default: "#fcfcfc",
+						default: colors.steamColors[4],
 					},
 				}),
 		},

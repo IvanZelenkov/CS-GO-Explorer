@@ -16,12 +16,12 @@ const FAQ = () => {
 
 			<Accordion>
 				<AccordionSummary expandIcon={<ExpandMoreIcon />}>
-					<Typography color={colors.greenAccent[500]} variant="h5">
+					<Typography color="custom.steamColorF" variant="h5">
 						An Important Question
 					</Typography>
 				</AccordionSummary>
 				<AccordionDetails>
-					<Typography>
+					<Typography color="custom.steamColorD">
 						Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
 						malesuada lacus ex, sit amet blandit leo lobortis eget.
 					</Typography>
@@ -29,12 +29,12 @@ const FAQ = () => {
 			</Accordion>
 			<Accordion sx={{marginTop: "2%"}}>
 				<AccordionSummary expandIcon={<ExpandMoreIcon />}>
-					<Typography color={colors.greenAccent[500]} variant="h5">
+					<Typography color="custom.steamColorF" variant="h5">
 						Another Important Question
 					</Typography>
 				</AccordionSummary>
 				<AccordionDetails>
-					<Typography>
+					<Typography color="custom.steamColorD">
 						Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
 						malesuada lacus ex, sit amet blandit leo lobortis eget.
 					</Typography>
@@ -42,12 +42,12 @@ const FAQ = () => {
 			</Accordion>
 			<Accordion sx={{marginTop: "2%"}}>
 				<AccordionSummary expandIcon={<ExpandMoreIcon />}>
-					<Typography color={colors.greenAccent[500]} variant="h5">
+					<Typography color="custom.steamColorF" variant="h5">
 						Your Favorite Question
 					</Typography>
 				</AccordionSummary>
 				<AccordionDetails>
-					<Typography>
+					<Typography color="custom.steamColorD">
 						Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
 						malesuada lacus ex, sit amet blandit leo lobortis eget.
 					</Typography>
@@ -55,12 +55,12 @@ const FAQ = () => {
 			</Accordion>
 			<Accordion sx={{marginTop: "2%"}}>
 				<AccordionSummary expandIcon={<ExpandMoreIcon />}>
-					<Typography color={colors.greenAccent[500]} variant="h5">
+					<Typography color="custom.steamColorF" variant="h5">
 						Some Random Question
 					</Typography>
 				</AccordionSummary>
 				<AccordionDetails>
-					<Typography>
+					<Typography color="custom.steamColorD">
 						Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
 						malesuada lacus ex, sit amet blandit leo lobortis eget.
 					</Typography>
@@ -68,12 +68,12 @@ const FAQ = () => {
 			</Accordion>
 			<Accordion sx={{marginTop: "2%"}}>
 				<AccordionSummary expandIcon={<ExpandMoreIcon />}>
-					<Typography color={colors.greenAccent[500]} variant="h5">
+					<Typography color="custom.steamColorF" variant="h5">
 						The Final Question
 					</Typography>
 				</AccordionSummary>
 				<AccordionDetails>
-					<Typography>
+					<Typography color="custom.steamColorD">
 						Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
 						malesuada lacus ex, sit amet blandit leo lobortis eget.
 					</Typography>

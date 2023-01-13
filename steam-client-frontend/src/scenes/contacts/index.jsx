@@ -12,7 +12,7 @@ const Contacts = () => {
 	const colors = tokens(theme.palette.mode);
 	const [data, setData] = useState([]);
 
-	const sendRequest = () => {
+	const getAllTableItems = () => {
 		axios.post(
 			"https://" + process.env.REACT_APP_REST_API_ID + ".execute-api.us-east-1.amazonaws.com/ProductionStage/GetAllTableItems",
 			JSON.stringify({"ENTIRE_TABLE": "EmptyBody"})
@@ -24,9 +24,9 @@ const Contacts = () => {
 		});
 	};
 
-	useEffect(() => {
-		sendRequest();
-	}, []);
+	// useEffect(() => {
+	// 	getAllTableItems();
+	// }, []);
 
 	const columns = [
 		{
@@ -78,31 +78,14 @@ const Contacts = () => {
 				<Box>
 					<Button
 						sx={{
-							backgroundColor: colors.blueAccent[700],
-							color: colors.grey[100],
+							backgroundColor: "custom.steamColorA",
+							color: "custom.steamColorD",
 							fontSize: "14px",
 							fontWeight: "bold",
 							padding: "10px 20px",
 						}}
 						onClick={() => {
-							sendRequest();
-						}}
-					>
-						<Refresh sx={{ mr: "10px" }}/>
-						Refresh
-					</Button>
-				</Box>
-				<Box>
-					<Button
-						sx={{
-							backgroundColor: colors.blueAccent[700],
-							color: colors.grey[100],
-							fontSize: "14px",
-							fontWeight: "bold",
-							padding: "10px 20px",
-						}}
-						onClick={() => {
-							sendRequest();
+							getAllTableItems();
 						}}
 					>
 						<Refresh sx={{ mr: "10px" }}/>
@@ -115,30 +98,30 @@ const Contacts = () => {
 				height="75vh"
 				sx={{
 					"& .MuiDataGrid-root": {
-						border: "none",
+						border: "none"
 					},
 					"& .MuiDataGrid-cell": {
-						borderBottom: "none",
+						borderBottom: "none"
 					},
 					"& .name-column--cell": {
-						color: colors.greenAccent[300],
+						color: colors.greenAccent[300]
 					},
 					"& .MuiDataGrid-columnHeaders": {
-						backgroundColor: colors.blueAccent[700],
-						borderBottom: "none",
+						backgroundColor: "custom.steamColorA",
+						borderBottom: "none"
 					},
 					"& .MuiDataGrid-virtualScroller": {
-						backgroundColor: colors.primary[400],
+						backgroundColor: colors.primary[400]
 					},
 					"& .MuiDataGrid-footerContainer": {
 						borderTop: "none",
-						backgroundColor: colors.blueAccent[700],
+						backgroundColor: "custom.steamColorA"
 					},
 					"& .MuiCheckbox-root": {
-						color: `${colors.greenAccent[200]} !important`,
+						color: `${colors.greenAccent[200]} !important`
 					},
 					"& .MuiDataGrid-toolbarContainer .MuiButton-text": {
-						color: `${colors.grey[100]} !important`,
+						color: `${colors.grey[100]} !important`
 					},
 				}}
 			>

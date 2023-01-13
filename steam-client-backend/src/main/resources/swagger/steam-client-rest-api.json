@@ -1,16 +1,64 @@
 {
   "swagger" : "2.0",
   "info" : {
-    "description" : "REST API for Database Manager application",
-    "version" : "2023-01-09T02:17:32Z",
-    "title" : "database-manager-rest-api"
+    "description" : "REST API for Steam Client application",
+    "version" : "2023-01-13T00:51:03Z",
+    "title" : "steam-client-rest-api"
   },
-  "host" : "6st7h4pz35.execute-api.us-east-1.amazonaws.com",
-  "basePath" : "/DevelopmentStage",
+  "host" : "g2zu2a1p91.execute-api.us-east-1.amazonaws.com",
+  "basePath" : "/ProductionStage",
   "schemes" : [ "https" ],
   "paths" : {
-    "/get-all-table-items" : {
+    "/GetAllTableItems" : {
       "post" : {
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "200 response",
+            "schema" : {
+              "$ref" : "#/definitions/Empty"
+            }
+          }
+        }
+      },
+      "options" : {
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "200 response",
+            "schema" : {
+              "$ref" : "#/definitions/Empty"
+            }
+          }
+        }
+      }
+    },
+    "/GetFriendList" : {
+      "get" : {
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "200 response",
+            "schema" : {
+              "$ref" : "#/definitions/Empty"
+            }
+          }
+        }
+      },
+      "options" : {
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "200 response",
+            "schema" : {
+              "$ref" : "#/definitions/Empty"
+            }
+          }
+        }
+      }
+    },
+    "/GetPlayerSummaries" : {
+      "get" : {
         "produces" : [ "application/json" ],
         "responses" : {
           "200" : {

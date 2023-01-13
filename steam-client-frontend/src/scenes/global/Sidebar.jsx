@@ -26,7 +26,7 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
 		<MenuItem
 			active={selected === title}
 			style={{
-				color: colors.grey[100]
+				color: colors.steamColors[4]
 			}}
 			onClick={() => setSelected(title)}
 			icon={icon}
@@ -45,20 +45,19 @@ const Sidebar = () => {
 	const [infoLoaded, setInfoLoaded] = useState(false);
 	const [profile, setProfile] = useState({});
 
-	const sendRequest = () => {
-		axios.get(
-			"https://" + process.env.REACT_APP_REST_API_ID + ".execute-api.us-east-1.amazonaws.com/ProductionStage/GetPlayerSummaries"
-		).then(function (response) {
-			setProfile(JSON.parse(response.data.body));
-			setInfoLoaded(true);
-			// console.log(response.data.getPlayerSummariesBody);
-		}).catch(function (error) {
-			console.log(error);
-		});
-	}
-
 	useEffect(() => {
-		sendRequest();
+		const getPlayerSummaries = () => {
+			axios.get(
+				"https://" + process.env.REACT_APP_REST_API_ID + ".execute-api.us-east-1.amazonaws.com/ProductionStage/GetPlayerSummaries"
+			).then(function (response) {
+				setProfile(JSON.parse(response.data.body));
+				setInfoLoaded(true);
+				// console.log(response.data.getPlayerSummariesBody);
+			}).catch(function (error) {
+				console.log(error);
+			});
+		}
+		getPlayerSummaries();
 	}, []);
 
 	// if (infoLoaded === false) {
@@ -69,19 +68,23 @@ const Sidebar = () => {
 	// 	)
 	// }
 
-	const computeLastTimeOnline = () => {
-		if (infoLoaded && profile.length !== 0) {
+	const formatLastTimeOnlineData = () => {
+		if (infoLoaded && profile.length !== 0 && profile.response.players[0].lastlogoff !== undefined) {
 			let unix_timestamp = profile.response.players[0].lastlogoff;
+			console.log(profile.response.players[0])
 			let date = new Date(unix_timestamp * 1000);
 			let day = date.getDate();
 			let month = date.getMonth() + 1;
 			let year = date.getFullYear();
 			let hours = date.getHours();
-			let minutes = "0" + date.getMinutes();
-			let seconds = "0" + date.getSeconds();
+			let minutes = date.getMinutes();
+			let seconds = date.getSeconds();
 
-			// Will display in "mm/dd/yyyy - 10:30:23" format
-			return month + "/" + day + "/" + year + " - " + hours + ':' + minutes.substr(-2) + ':' + seconds.substring(-2);
+			minutes = minutes.toString().length === 2 ? date.getMinutes() : "0" + date.getMinutes();
+			seconds = seconds.toString().length === 2 ? date.getSeconds() : "0" + date.getSeconds();
+
+			// Displays the information in "mm/dd/yyyy - 10:30:23" format
+			return month + "/" + day + "/" + year + " - " + hours + ':' + minutes + ':' + seconds;
 		}
 	}
 
@@ -118,7 +121,7 @@ const Sidebar = () => {
 		<Box
 			sx={{
 				"& .pro-sidebar-inner": {
-					background: `${colors.primary[400]} !important`,
+					background: `${colors.steamColors[2]} !important`,
 				},
 				"& .pro-icon-wrapper": {
 					backgroundColor: "transparent !important",
@@ -127,10 +130,10 @@ const Sidebar = () => {
 					padding: "5px 35px 5px 20px !important",
 				},
 				"& .pro-inner-item:hover": {
-					color: "#868dfb !important",
+					color: `${colors.steamColors[6]} !important`,
 				},
 				"& .pro-menu-item.active": {
-					color: "#6870fa !important",
+					color: `${colors.steamColors[6]} !important`,
 				}
 			}}
 		>
@@ -142,7 +145,7 @@ const Sidebar = () => {
 						icon={isCollapsed ? <MenuOutlinedIcon/> : undefined}
 						style={{
 							margin: "10px 0 20px 0",
-							color: colors.grey[100],
+							color: colors.grey[100]
 						}}
 					>
 						{!isCollapsed && (
@@ -150,18 +153,18 @@ const Sidebar = () => {
 								display="flex"
 								justifyContent="space-between"
 								alignItems="center"
-								ml="15px"
+								marginLeft="15px"
 							>
-								<Box>
-									<Typography variant="h3" color={colors.grey[100]}>
+								<Box style={{marginRight: "55px"}}>
+									<Typography variant="h3" color="custom.steamColorD">
 										Status: {infoLoaded && definePersonaState()}
 									</Typography>
-									<Typography variant="h5" color={colors.grey[100]}>
-										{infoLoaded && computeLastTimeOnline()}
+									<Typography variant="h5" color="custom.steamColorE">
+										{infoLoaded && formatLastTimeOnlineData()}
 									</Typography>
 								</Box>
 								<IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
-									<MenuOutlinedIcon />
+									<MenuOutlinedIcon sx={{ color: "custom.steamColorD" }}/>
 								</IconButton>
 							</Box>
 						)}
@@ -183,19 +186,19 @@ const Sidebar = () => {
 										height="100px"
 										src={profile.response.players[0].avatarfull}
 										style={{ cursor: "pointer", borderRadius: "50%" }}
-									/>}
+									/>
 								</ProfileLink>}
 							</Box>
 							<Box textAlign="center">
 								<Typography
 									variant="h2"
-									color={colors.grey[100]}
+									color="primary.main"
 									fontWeight="bold"
 									sx={{ m: "10px 0 0 0" }}
 								>
 									{infoLoaded && profile.response.players[0].personaname}
 								</Typography>
-								<Typography variant="h5" color={colors.greenAccent[500]}>
+								<Typography variant="h5" color="custom.steamColorE">
 									Steam ID: {infoLoaded && profile.response.players[0].steamid}
 								</Typography>
 							</Box>
@@ -215,13 +218,13 @@ const Sidebar = () => {
 						<Typography
 							variant="h6"
 							color={colors.grey[300]}
-							sx={{ m: "15px 0 5px 20px" }}
+							margin={"15px 0 5px 20px"}
 						>
 							Data
 						</Typography>
 						<Item
-							title="Manage Team"
-							to="/team"
+							title="Friends"
+							to="/friends"
 							icon={<PeopleOutlinedIcon/>}
 							selected={selected}
 							setSelected={setSelected}

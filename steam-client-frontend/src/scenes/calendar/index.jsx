@@ -44,9 +44,9 @@ const Calendar = () => {
 				{/* CALENDAR SIDEBAR */}
 				<Box
 					flex="1 1 20%"
-					backgroundColor={colors.primary[400]}
-					p="15px"
-					borderRadius="4px"
+					backgroundColor="custom.steamColorA"
+					padding="15px"
+					borderRadius="5px"
 				>
 					<Typography variant="h5">Events</Typography>
 					<List>
@@ -54,7 +54,7 @@ const Calendar = () => {
 							<ListItem
 								key={event.id}
 								sx={{
-									backgroundColor: colors.greenAccent[500],
+									backgroundColor: "custom.steamColorF",
 									margin: "10px 0",
 									borderRadius: "2px",
 								}}
@@ -62,7 +62,7 @@ const Calendar = () => {
 								<ListItemText
 									primary={event.title}
 									secondary={
-										<Typography>
+										<Typography color="custom.steamColorA">
 											{formatDate(event.start, {
 												year: "numeric",
 												month: "short",
@@ -91,6 +91,8 @@ const Calendar = () => {
 							center: "title",
 							right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth",
 						}}
+						eventBackgroundColor={colors.steamColors[5]}
+						eventTextColor={colors.steamColors[1]}
 						initialView="dayGridMonth"
 						editable={true}
 						selectable={true}
@@ -108,7 +110,7 @@ const Calendar = () => {
 							{
 								id: "5123",
 								title: "Timed event",
-								date: "2022-09-28",
+								date: "2023-01-12",
 							},
 						]}
 					/>

@@ -19,11 +19,11 @@ const Topbar = () => {
 			{/* SEARCH BAR */}
 			<Box
 				display="flex"
-				backgroundColor={colors.primary[400]}
+				backgroundColor="custom.steamColorB"
 				borderRadius="3px"
 			>
 				<InputBase sx={{ marginLeft: 2, flex: 1 }} placeholder="Search"/>
-				<IconButton type="button" sx={{ p: 1 }}>
+				<IconButton type="button" sx={{ padding: 1, color: "custom.steamColorD" }}>
 					<SearchIcon/>
 				</IconButton>
 			</Box>
@@ -32,19 +32,19 @@ const Topbar = () => {
 			<Box display="flex">
 				<IconButton onClick={colorMode.toggleColorMode}>
 					{theme.palette.mode === "dark" ? (
-						<DarkModeOutlinedIcon/>
+						<DarkModeOutlinedIcon sx={{ color: "custom.steamColorD" }}/>
 					) : (
 						<LightModeOutlinedIcon/>
 					)}
 				</IconButton>
 				<IconButton>
-					<NotificationsOutlinedIcon/>
+					<NotificationsOutlinedIcon sx={{ color: "custom.steamColorD" }}/>
 				</IconButton>
 				<IconButton>
-					<SettingsOutlinedIcon/>
+					<SettingsOutlinedIcon sx={{ color: "custom.steamColorD" }}/>
 				</IconButton>
 				<IconButton>
-					<PersonOutlinedIcon/>
+					<PersonOutlinedIcon sx={{ color: "custom.steamColorD" }}/>
 				</IconButton>
 			</Box>
 		</Box>

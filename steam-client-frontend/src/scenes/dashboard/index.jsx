@@ -22,12 +22,11 @@ const Dashboard = () => {
 			{/* HEADER */}
 			<Box display="flex" justifyContent="space-between" alignItems="center">
 				<Header title="DASHBOARD" subtitle="Welcome to your dashboard"/>
-
 				<Box>
 					<Button
 						sx={{
-							backgroundColor: colors.blueAccent[700],
-							color: colors.grey[100],
+							backgroundColor: "custom.steamColorA",
+							color: "custom.steamColorD",
 							fontSize: "14px",
 							fontWeight: "bold",
 							padding: "10px 20px",
@@ -52,7 +51,7 @@ const Dashboard = () => {
 				{/* ROW 1 */}
 				<Box
 					gridColumn="span 3"
-					backgroundColor={colors.primary[400]}
+					backgroundColor="custom.steamColorB"
 					display="flex"
 					alignItems="center"
 					justifyContent="center"
@@ -64,14 +63,14 @@ const Dashboard = () => {
 						increase="+14%"
 						icon={
 							<EmailIcon
-								sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
+								sx={{ color: "custom.steamColorF", fontSize: "26px" }}
 							/>
 						}
 					/>
 				</Box>
 				<Box
 					gridColumn="span 3"
-					backgroundColor={colors.primary[400]}
+					backgroundColor="custom.steamColorB"
 					display="flex"
 					alignItems="center"
 					justifyContent="center"
@@ -83,14 +82,14 @@ const Dashboard = () => {
 						increase="+21%"
 						icon={
 							<PointOfSaleIcon
-								sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
+								sx={{ color: "custom.steamColorF", fontSize: "26px" }}
 							/>
 						}
 					/>
 				</Box>
 				<Box
 					gridColumn="span 3"
-					backgroundColor={colors.primary[400]}
+					backgroundColor="custom.steamColorB"
 					display="flex"
 					alignItems="center"
 					justifyContent="center"
@@ -102,14 +101,14 @@ const Dashboard = () => {
 						increase="+5%"
 						icon={
 							<PersonAddIcon
-								sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
+								sx={{ color: "custom.steamColorF", fontSize: "26px" }}
 							/>
 						}
 					/>
 				</Box>
 				<Box
 					gridColumn="span 3"
-					backgroundColor={colors.primary[400]}
+					backgroundColor="custom.steamColorB"
 					display="flex"
 					alignItems="center"
 					justifyContent="center"
@@ -121,7 +120,7 @@ const Dashboard = () => {
 						increase="+43%"
 						icon={
 							<TrafficIcon
-								sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
+								sx={{ color: "custom.steamColorF", fontSize: "26px" }}
 							/>
 						}
 					/>
@@ -131,7 +130,7 @@ const Dashboard = () => {
 				<Box
 					gridColumn="span 8"
 					gridRow="span 2"
-					backgroundColor={colors.primary[400]}
+					backgroundColor="custom.steamColorB"
 				>
 					<Box
 						mt="25px"
@@ -144,14 +143,14 @@ const Dashboard = () => {
 							<Typography
 								variant="h5"
 								fontWeight="600"
-								color={colors.grey[100]}
+								color="custom.steamColorD"
 							>
 								Revenue Generated
 							</Typography>
 							<Typography
 								variant="h3"
 								fontWeight="bold"
-								color={colors.greenAccent[500]}
+								color="custom.steamColorF"
 							>
 								$59,342.32
 							</Typography>
@@ -159,7 +158,7 @@ const Dashboard = () => {
 						<Box>
 							<IconButton>
 								<DownloadOutlinedIcon
-									sx={{ fontSize: "26px", color: colors.greenAccent[500] }}
+									sx={{ fontSize: "26px", color: "custom.steamColorF" }}
 								/>
 							</IconButton>
 						</Box>
@@ -171,18 +170,18 @@ const Dashboard = () => {
 				<Box
 					gridColumn="span 4"
 					gridRow="span 2"
-					backgroundColor={colors.primary[400]}
+					backgroundColor="custom.steamColorB"
 					overflow="auto"
 				>
 					<Box
 						display="flex"
 						justifyContent="space-between"
 						alignItems="center"
-						borderBottom={`4px solid ${colors.primary[500]}`}
+						borderBottom={`4px solid ${colors.steamColors[6]}`}
 						colors={colors.grey[100]}
 						p="15px"
 					>
-						<Typography color={colors.grey[100]} variant="h5" fontWeight="600">
+						<Typography color="custom.steamColorD" variant="h5" fontWeight="600">
 							Recent Transactions
 						</Typography>
 					</Box>
@@ -192,26 +191,26 @@ const Dashboard = () => {
 							display="flex"
 							justifyContent="space-between"
 							alignItems="center"
-							borderBottom={`4px solid ${colors.primary[500]}`}
+							borderBottom={`4px solid ${colors.steamColors[5]}`}
 							p="15px"
 						>
 							<Box>
 								<Typography
-									color={colors.greenAccent[500]}
+									color="custom.steamColorF"
 									variant="h5"
 									fontWeight="600"
 								>
 									{transaction.txId}
 								</Typography>
-								<Typography color={colors.grey[100]}>
+								<Typography color="custom.steamColorD">
 									{transaction.user}
 								</Typography>
 							</Box>
-							<Box color={colors.grey[100]}>{transaction.date}</Box>
+							<Box color="custom.steamColorD">{transaction.date}</Box>
 							<Box
-								backgroundColor={colors.greenAccent[500]}
-								p="5px 10px"
-								borderRadius="4px"
+								backgroundColor="custom.steamColorF"
+								padding="5px 10px"
+								borderRadius="5px"
 							>
 								${transaction.cost}
 							</Box>
@@ -223,10 +222,10 @@ const Dashboard = () => {
 				<Box
 					gridColumn="span 4"
 					gridRow="span 2"
-					backgroundColor={colors.primary[400]}
+					backgroundColor="custom.steamColorB"
 					p="30px"
 				>
-					<Typography variant="h5" fontWeight="600">
+					<Typography variant="h5" fontWeight="600" color="custom.steamColorD">
 						Campaign
 					</Typography>
 					<Box
@@ -238,23 +237,26 @@ const Dashboard = () => {
 						<ProgressCircle size="125" />
 						<Typography
 							variant="h5"
-							color={colors.greenAccent[500]}
-							sx={{ mt: "15px" }}
+							color="custom.steamColorF"
+							marginTop="15px"
 						>
 							$48,352 revenue generated
 						</Typography>
-						<Typography>Includes extra misc expenditures and costs</Typography>
+						<Typography color="custom.steamColorD">
+							Includes extra misc expenditures and costs
+						</Typography>
 					</Box>
 				</Box>
 				<Box
 					gridColumn="span 4"
 					gridRow="span 2"
-					backgroundColor={colors.primary[400]}
+					backgroundColor="custom.steamColorB"
 				>
 					<Typography
 						variant="h5"
 						fontWeight="600"
-						sx={{ padding: "30px 30px 0 30px" }}
+						color="custom.steamColorD"
+						padding="30px 30px 0 30px"
 					>
 						Sales Quantity
 					</Typography>
@@ -265,13 +267,14 @@ const Dashboard = () => {
 				<Box
 					gridColumn="span 4"
 					gridRow="span 2"
-					backgroundColor={colors.primary[400]}
+					backgroundColor="custom.steamColorB"
 					padding="30px"
 				>
 					<Typography
 						variant="h5"
 						fontWeight="600"
-						sx={{ marginBottom: "15px" }}
+						color="custom.steamColorD"
+						marginBottom="15px"
 					>
 						Geography Based Traffic
 					</Typography>
