@@ -3,11 +3,11 @@ package services.api;
 import org.json.simple.JSONObject;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.internal.waiters.DefaultWaiter;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.apigateway.ApiGatewayClient;
 import software.amazon.awssdk.services.apigateway.model.*;
 
-import java.net.http.HttpResponse;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -76,7 +76,7 @@ public class ApiGateway {
      * @param roleArn Role ARN.
      * @param lambdaArn Lambda function ARN.
      * @param awsAppDeploymentRegion The app deployment region.
-     * @param parentResourceIndex Index of the created resource in API (from 0 to n).
+     * @param parentId The parent resource's identifier.
      * @param resourceName The name of the resource.
      * @param isPreflightRequest Is the use of the HTTP method needs a preflight request.
      * @param methodName Specifies the method request's HTTP method type.
@@ -85,68 +85,71 @@ public class ApiGateway {
      *                          AWS_IAM for using AWS IAM permissions,
      *                          CUSTOM for using a custom authorizer, or
      *                          COGNITO_USER_POOLS for using a Cognito user pool.
+     * @return Parent ID.
      */
-    public static void createAndConfigureRestApiResource(ApiGatewayClient apiGatewayClient,
+    public static String createAndConfigureRestApiResource(ApiGatewayClient apiGatewayClient,
                                                          String restApiId,
                                                          String roleArn,
                                                          String lambdaArn,
                                                          String awsAppDeploymentRegion,
-                                                         int parentResourceIndex,
+                                                         String parentId,
                                                          String resourceName,
                                                          boolean isPreflightRequest,
                                                          String methodName,
                                                          String authorizationType) {
         // Create a resource
-        String resourceId = ApiGateway.createResource(apiGatewayClient, restApiId, parentResourceIndex, resourceName);
+        Map<String, String> createResourceResponse = ApiGateway.createResource(apiGatewayClient, restApiId, parentId, resourceName);
 
         if (isPreflightRequest) {
             // Create method request for the resourceName/OPTIONS
-            String methodRequestOPTIONS = ApiGateway.createMethodRequest(apiGatewayClient, restApiId, resourceId, "OPTIONS", authorizationType, false);
+            String methodRequestOPTIONS = ApiGateway.createMethodRequest(apiGatewayClient, restApiId, createResourceResponse.get("resourceId"), "OPTIONS", authorizationType, false);
             System.out.println("Successfully created API method request: " + methodRequestOPTIONS);
 
             // Create integration request for the resourceName/OPTIONS
-            String integrationRequestOPTIONS = ApiGateway.createIntegrationRequest(apiGatewayClient, restApiId, resourceId, "OPTIONS", roleArn,
+            String integrationRequestOPTIONS = ApiGateway.createIntegrationRequest(apiGatewayClient, restApiId, createResourceResponse.get("resourceId"), "OPTIONS", roleArn,
                     "arn:aws:apigateway:" + awsAppDeploymentRegion + ":lambda:path/2015-03-31/functions/" + lambdaArn + "/invocations", IntegrationType.AWS_PROXY, "POST");
             System.out.println("Successfully created API integration request: " + integrationRequestOPTIONS);
 
             // Create integration response for the resourceName/OPTIONS
-            String integrationResponseOPTIONS = ApiGateway.createIntegrationResponse(apiGatewayClient, restApiId, resourceId, "OPTIONS", "200");
+            String integrationResponseOPTIONS = ApiGateway.createIntegrationResponse(apiGatewayClient, restApiId, createResourceResponse.get("resourceId"), "OPTIONS", "200");
             System.out.println("Successfully created API integration response: " + integrationResponseOPTIONS);
 
             // Create method response for the resourceName/OPTIONS
-            String methodResponseOPTIONS = ApiGateway.createMethodResponse(apiGatewayClient, restApiId, resourceId, "OPTIONS", "200", new HashMap<>(){{put("application/json", "Empty");}});
+            String methodResponseOPTIONS = ApiGateway.createMethodResponse(apiGatewayClient, restApiId, createResourceResponse.get("resourceId"), "OPTIONS", "200", new HashMap<>(){{put("application/json", "Empty");}});
             System.out.println("Successfully created API method response: " + methodResponseOPTIONS);
         }
 
         // Create method request for the resourceName/POST
-        String methodRequest = ApiGateway.createMethodRequest(apiGatewayClient, restApiId, resourceId, methodName, authorizationType, false);
+        String methodRequest = ApiGateway.createMethodRequest(apiGatewayClient, restApiId, createResourceResponse.get("resourceId"), methodName, authorizationType, false);
         System.out.println("Successfully created API method request: " + methodRequest);
 
         // Create integration request for the resourceName/POST
-        String integrationRequest = ApiGateway.createIntegrationRequest(apiGatewayClient, restApiId, resourceId, methodName, roleArn,
+        String integrationRequest = ApiGateway.createIntegrationRequest(apiGatewayClient, restApiId, createResourceResponse.get("resourceId"), methodName, roleArn,
                 "arn:aws:apigateway:" + awsAppDeploymentRegion + ":lambda:path/2015-03-31/functions/" + lambdaArn + "/invocations", IntegrationType.AWS_PROXY, "POST");
         System.out.println("Successfully created API integration request: " + integrationRequest);
 
         // Create integration response for the resourceName/POST
-        String integrationResponse = ApiGateway.createIntegrationResponse(apiGatewayClient, restApiId, resourceId, methodName, "200");
+        String integrationResponse = ApiGateway.createIntegrationResponse(apiGatewayClient, restApiId, createResourceResponse.get("resourceId"), methodName, "200");
         System.out.println("Successfully created API integration response: " + integrationResponse);
 
         // Create method response for the resourceName/POST
-        String methodResponse = ApiGateway.createMethodResponse(apiGatewayClient, restApiId, resourceId, methodName, "200", new HashMap<>(){{put("application/json", "Empty");}});
+        String methodResponse = ApiGateway.createMethodResponse(apiGatewayClient, restApiId, createResourceResponse.get("resourceId"), methodName, "200", new HashMap<>(){{put("application/json", "Empty");}});
         System.out.println("Successfully created API method response: " + methodResponse);
+
+        return createResourceResponse.get("parentId");
     }
 
     /**
      * Requests API Gateway to create a resource.
      * @param apiGatewayClient Client for accessing Amazon API Gateway.
      * @param restApiId The string identifier of the associated RestApi.
-     * @param parentResourceIndex Index of the created resource in API (from 0 to n).
+     * @param parentId The parent resource's identifier.
      * @param pathPart The last path segment for this resource.
-     * @return The parent resource's identifier.
+     * @return Resource ID and parent ID.
      */
-    private static String createResource(ApiGatewayClient apiGatewayClient,
+    private static HashMap<String, String> createResource(ApiGatewayClient apiGatewayClient,
                                         String restApiId,
-                                        int parentResourceIndex,
+                                        String parentId,
                                         String pathPart) {
         try {
             GetResourcesRequest getResourcesRequest = GetResourcesRequest
@@ -154,22 +157,35 @@ public class ApiGateway {
                     .restApiId(restApiId)
                     .build();
 
-            GetResourcesResponse getResourcesResponse = apiGatewayClient.getResources(getResourcesRequest);
-
-            CreateResourceRequest createResourceRequest = CreateResourceRequest
-                    .builder()
-                    .restApiId(restApiId)
-                    .parentId(getResourcesResponse.items().get(parentResourceIndex).id())
-                    .pathPart(pathPart)
-                    .build();
+            GetResourcesResponse getResourcesResponse;
+            CreateResourceRequest createResourceRequest;
+            if (parentId.equals("root")) {
+                getResourcesResponse = apiGatewayClient.getResources(getResourcesRequest);
+                createResourceRequest = CreateResourceRequest
+                        .builder()
+                        .restApiId(restApiId)
+                        .parentId(getResourcesResponse.items().get(0).id())
+                        .pathPart(pathPart)
+                        .build();
+            } else {
+                createResourceRequest = CreateResourceRequest
+                        .builder()
+                        .restApiId(restApiId)
+                        .parentId(parentId)
+                        .pathPart(pathPart)
+                        .build();
+            }
 
             CreateResourceResponse createResourceResponse = apiGatewayClient.createResource(createResourceRequest);
-            return createResourceResponse.id();
+            return new HashMap<>(){{
+                put("resourceId", createResourceResponse.id());
+                put("parentId", createResourceResponse.parentId());
+            }};
         } catch (ApiGatewayException error) {
             System.err.println(error.awsErrorDetails().errorMessage());
             System.exit(1);
         }
-        return "";
+        return new HashMap<>();
     }
 
     /**

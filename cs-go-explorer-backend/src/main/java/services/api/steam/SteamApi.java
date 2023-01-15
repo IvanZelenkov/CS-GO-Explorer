@@ -30,10 +30,21 @@ public class SteamApi {
         switch (resourceName) {
             case "/GetPlayerSummaries":
                 // Returns basic profile information for a list of 64-bit Steam IDs.
-                return getSteamApiData(event, "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=" + System.getenv("STEAM_API_KEY") + "&steamids=" + System.getenv("STEAM_ID"), "/GetPlayerSummaries");
+                return getSteamApiData(event, "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?" +
+                        "key=" + System.getenv("STEAM_API_KEY") + "&" +
+                        "steamids=" + System.getenv("STEAM_ID"),
+                        "/GetPlayerSummaries");
             case "/GetFriendList":
                 // Returns the friend list of any Steam user, provided their Steam Community profile visibility is set to "Public".
-                return getSteamApiData(event, "http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?key=" + System.getenv("STEAM_API_KEY") + "&steamid=" + System.getenv("STEAM_ID") + "&relationship=friend", "/GetFriendList");
+                return getSteamApiData(event, "http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?" +
+                        "key=" + System.getenv("STEAM_API_KEY") + "&" +
+                        "steamid=" + System.getenv("STEAM_ID") + "&" +
+                        "relationship=friend", "/GetFriendList");
+            case "/GetUserStatsForGame":
+                // Returns a list of achievements for this user by app id.
+                return getSteamApiData(event, "http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?" +
+                        "appid=" + System.getenv("CS_GO_APP_ID") + "&key=" + System.getenv("STEAM_API_KEY") + "&" +
+                        "steamid=" + System.getenv("STEAM_ID"), "/GetUserStatsForGame");
         }
         return new ApiGatewayProxyResponse();
     }
@@ -63,9 +74,8 @@ public class SteamApi {
 
             // Get response
             httpResponse = client.send(request, HttpResponse.BodyHandlers.ofString());
-            if (resourceName.equals("/GetPlayerSummaries")) {
-                return ApiGateway.generateResponseForPostOrGetRequest(httpResponse.body());
-            } else if (resourceName.equals("/GetFriendList")) {
+
+            if (resourceName.equals("/GetFriendList")) {
                 JSONParser jsonParser = new JSONParser();
                 JSONObject jsonResponse = (JSONObject) jsonParser.parse(httpResponse.body());
                 JSONObject friendsList = (JSONObject) jsonParser.parse(jsonResponse.get("friendslist").toString());
@@ -90,6 +100,8 @@ public class SteamApi {
 
                 HttpResponse<String> friendProfileResponse = client.send(friendProfileRequest, HttpResponse.BodyHandlers.ofString());
                 return ApiGateway.generateResponseForPostOrGetRequest(friendProfileResponse.body());
+            } else {
+                return ApiGateway.generateResponseForPostOrGetRequest(httpResponse.body());
             }
         } catch (IOException | InterruptedException | ParseException error) {
             error.printStackTrace();

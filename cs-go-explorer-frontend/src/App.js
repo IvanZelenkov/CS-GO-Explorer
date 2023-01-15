@@ -11,6 +11,7 @@ import Invoices from './scenes/invoices';
 import Form from './scenes/form';
 import Calendar from './scenes/calendar';
 import FAQ from './scenes/faq';
+import WeaponsStats from "./scenes/weapons-stats";
 import Bar from './scenes/bar';
 import Pie from './scenes/pie';
 import Line from './scenes/line';
@@ -36,6 +37,7 @@ function App() {
 							<Route exact path="/form" element={<Form/>}/>
 							<Route exact path="/calendar" element={<Calendar/>}/>
 							<Route exact path="/faq" element={<FAQ/>}/>
+							<Route exact path="/weapons-stats" element={<WeaponsStats/>}/>
 							<Route exact path="/bar" element={<Bar/>}/>
 							<Route exact path="/pie" element={<Pie/>}/>
 							<Route exact path="/line" element={<Line/>}/>

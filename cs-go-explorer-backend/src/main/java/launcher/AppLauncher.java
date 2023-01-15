@@ -65,7 +65,7 @@ public class AppLauncher {
         final String s3BucketName = "cs-go-explorer-s3-bucket"; // S3
         final String snsTopicName = "cs-go-explorer-sns-topic"; // SNS
         final String lambdaFunctionName = "cs-go-explorer-lambda-function"; // Lambda
-        final String botName = "cs-go-explorer-bot"; // Lex
+        final String botName = "CsGoExplorerBot"; // Lex
         final String tableName = "cs-go-explorer-table"; // DynamoDB
         final String codeCommitRepositoryName = "cs-go-explorer-repository"; // CodeCommit
         final String appName = "CsGoExplorer"; // Amplify
@@ -172,6 +172,7 @@ public class AppLauncher {
             put("APP_URL", "https://main." + appDefaultDomain);
             put("STEAM_ID", steamId);
             put("STEAM_API_KEY", steamApiKey);
+            put("CS_GO_APP_ID", "730");
         }}).build();
 
         // Create a lambda function and attach a role
@@ -186,28 +187,31 @@ public class AppLauncher {
         lambdaClient.close();
 
         // Create 'GetAllTableItems' resource
-        ApiGateway.createAndConfigureRestApiResource(apiGatewayClient, restApiId, roleArn, lambdaArn, awsAppDeploymentRegion, 0, "GetAllTableItems", true, "POST", "NONE");
+        String getAllTableItemsResourceParentId = ApiGateway.createAndConfigureRestApiResource(apiGatewayClient, restApiId, roleArn, lambdaArn, awsAppDeploymentRegion, "root", "GetAllTableItems", true, "POST", "NONE");
 
         // Create 'GetPlayerSummaries' resource
-        ApiGateway.createAndConfigureRestApiResource(apiGatewayClient, restApiId, roleArn, lambdaArn, awsAppDeploymentRegion, 1, "GetPlayerSummaries", true, "POST", "NONE");
+        String getPlayerSummariesResourceParentId = ApiGateway.createAndConfigureRestApiResource(apiGatewayClient, restApiId, roleArn, lambdaArn, awsAppDeploymentRegion, getAllTableItemsResourceParentId, "GetPlayerSummaries", true, "GET", "NONE");
 
         // Create 'GetFriendList' resource
-        ApiGateway.createAndConfigureRestApiResource(apiGatewayClient, restApiId, roleArn, lambdaArn, awsAppDeploymentRegion, 2, "GetFriendList", true, "GET", "NONE");
+        String getFriendListResourceParentId = ApiGateway.createAndConfigureRestApiResource(apiGatewayClient, restApiId, roleArn, lambdaArn, awsAppDeploymentRegion, getAllTableItemsResourceParentId, "GetFriendList", true, "GET", "NONE");
+
+        // Create 'GetUserStatsForGame' resource
+        String getUserStatsForGameResourceParentId = ApiGateway.createAndConfigureRestApiResource(apiGatewayClient, restApiId, roleArn, lambdaArn, awsAppDeploymentRegion, getAllTableItemsResourceParentId, "GetUserStatsForGame", true, "GET", "NONE");
 
         // Create a deployment stage
         String stageName = "ProductionStage";
         String deploymentId = ApiGateway.createNewDeployment(apiGatewayClient, restApiId, "Created using Java AWS SDK", stageName, "Production deployment stage");
         System.out.println("The id of the REST API deployment: " + deploymentId);
 
-//        // Configure and create a usage plan
-//        ThrottleSettings throttleSettings = ThrottleSettings.builder().rateLimit(100.0).burstLimit(100).build();
-//
-//        // Create usage plan
-//        String usagePlanId = ApiGateway.createUsagePlan(apiGatewayClient, restApiId, stageName, throttleSettings, new HashMap<>(){{put("/GetAllTableItems/OPTIONS", throttleSettings);
-//                    put("/GetAllTableItems/POST", throttleSettings);}}, "test-plan", "DBM test usage plan", "DAY", 1200);
-//
-//        // Create API key
-//        ApiGateway.createApiKey(apiGatewayClient, "DBM_key", "Test key", true, usagePlanId, "API_KEY");
+          // Configure and create a usage plan
+        ThrottleSettings throttleSettings = ThrottleSettings.builder().rateLimit(100.0).burstLimit(100).build();
+
+        // Create usage plan
+        String usagePlanId = ApiGateway.createUsagePlan(apiGatewayClient, restApiId, stageName, throttleSettings, new HashMap<>(){{put("/GetAllTableItems/OPTIONS", throttleSettings);
+                    put("/GetAllTableItems/POST", throttleSettings);}}, "test-plan", "DBM test usage plan", "DAY", 1200);
+
+        // Create API key
+        ApiGateway.createApiKey(apiGatewayClient, "DBM_key", "Test key", true, usagePlanId, "API_KEY");
 
         // Close API Gateway client
         apiGatewayClient.close();

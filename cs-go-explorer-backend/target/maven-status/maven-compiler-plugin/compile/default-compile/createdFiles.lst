@@ -1,5 +1,6 @@
 services/bot/Buttons.class
 services/database/Students.class
+launcher/AppLauncher$2.class
 services/bot/BotVersion.class
 services/database/DynamoDB.class
 services/bot/BotLocale.class
@@ -10,6 +11,7 @@ services/Amplify.class
 services/SNS.class
 services/bot/Slot.class
 services/bot/Intent.class
+services/api/ApiGateway$3.class
 services/api/steam/SteamApi.class
 launcher/AppLauncher.class
 services/IAM.class
