@@ -1,46 +1,49 @@
 import { useTheme } from "@mui/material";
 import { ResponsiveBar } from "@nivo/bar";
 import { tokens } from "../theme";
-import { mockBarData as data } from "../data/mockData";
 
-const BarChart = ({ isDashboard = false }) => {
+const BarChart = ({ barChartData, isDashboard = false }) => {
 	const theme = useTheme();
 	const colors = tokens(theme.palette.mode);
 
+	console.log(barChartData);
+
 	return (
 		<ResponsiveBar
-			data={data}
+			data={barChartData}
 			theme={{
-				// added
 				axis: {
 					domain: {
 						line: {
-							stroke: colors.grey[100],
-						},
+							stroke: colors.grey[100]
+						}
 					},
 					legend: {
 						text: {
-							fill: colors.grey[100],
-						},
+							fill: colors.grey[100]
+						}
 					},
 					ticks: {
 						line: {
 							stroke: colors.grey[100],
-							strokeWidth: 1,
+							strokeWidth: 1
 						},
 						text: {
-							fill: colors.grey[100],
-						},
-					},
+							fill: colors.grey[100]
+						}
+					}
 				},
 				legends: {
 					text: {
-						fill: colors.grey[100],
-					},
+						fill: colors.grey[100]
+					}
 				},
 			}}
-			keys={["hot dog", "burger", "sandwich", "kebab", "fries", "donut"]}
-			indexBy="country"
+			keys={["ak47", "aug", "awp", "bizon", "deagle", "elite", "famas", "fiveseven",
+				   "g3sg1", "galilar", "glock", "hegrenade", "hkp2000", "knife", "m4a1", "m249",
+				   "mac10", "mag7", "molotov", "mp7", "mp9", "negev", "nova", "p90", "p250",
+				   "sawedoff", "scar20", "sg556", "ssg08", "taser", "tec9", "ump45", "xm1014"]}
+			indexBy="weaponName"
 			margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
 			padding={0.3}
 			valueScale={{ type: "linear" }}
@@ -76,7 +79,7 @@ const BarChart = ({ isDashboard = false }) => {
 				tickSize: 5,
 				tickPadding: 5,
 				tickRotation: 0,
-				legend: isDashboard ? undefined : "country", // changed
+				legend: isDashboard ? undefined : "Weapon",
 				legendPosition: "middle",
 				legendOffset: 32,
 			}}
@@ -84,7 +87,7 @@ const BarChart = ({ isDashboard = false }) => {
 				tickSize: 5,
 				tickPadding: 5,
 				tickRotation: 0,
-				legend: isDashboard ? undefined : "food", // changed
+				legend: isDashboard ? undefined : "Kills",
 				legendPosition: "middle",
 				legendOffset: -40,
 			}}

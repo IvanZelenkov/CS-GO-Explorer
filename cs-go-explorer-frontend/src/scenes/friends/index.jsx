@@ -1,4 +1,4 @@
-import {Box, Button, Link as ProfileLink, useTheme} from "@mui/material";
+import { Box, Button, Link as ProfileLink, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
@@ -13,6 +13,8 @@ const Friends = () => {
 	const colors = tokens(theme.palette.mode);
 	const [infoLoaded, setInfoLoaded] = useState(false);
 	const [friendsList, setFriendsList] = useState({});
+
+	console.log(1)
 
 	const getFriendList = () => {
 		axios.get(
@@ -101,25 +103,51 @@ const Friends = () => {
 							<Box
 								component="img"
 								alt="profile-user"
-								width="40px"
-								height="40px"
-								src={row.avatar}
+								width="80px"
+								height="80px"
+								src={row.avatarfull}
 								style={{ cursor: "pointer", borderRadius: "50%" }}
 							/>
 						</ProfileLink>
 					</Box>
 				);
-			}
+			},
+			headerAlign: "center",
+			align: "center"
 		},
 		{
 			field: "personaname",
 			headerName: "Nickname",
-			flex: 1
+			flex: 1,
+			renderCell: ({ row }) => {
+				if (row.personaname === undefined)
+					return "";
+				else
+					return (
+						<Box sx={{fontSize: "14px"}}>
+							{row.personaname}
+						</Box>
+					);
+			},
+			headerAlign: "center",
+			align: "center"
 		},
 		{
 			field: "steamid",
 			headerName: "Steam ID",
-			flex: 1
+			flex: 1,
+			renderCell: ({ row }) => {
+				if (row.steamid === undefined)
+					return "";
+				else
+					return (
+						<Box sx={{fontSize: "14px"}}>
+							{row.steamid}
+						</Box>
+					);
+			},
+			headerAlign: "center",
+			align: "center"
 		},
 		{
 			field: "communityvisibilitystate",
@@ -130,11 +158,13 @@ const Friends = () => {
 			// align: "left",
 			renderCell: ({ row }) => {
 				return (
-					<Box>
+					<Box sx={{fontSize: "14px"}}>
 						{definePersonaState(row.personastate, row.communityvisibilitystate)}
 					</Box>
 				);
-			}
+			},
+			headerAlign: "center",
+			align: "center"
 		},
 		{
 			field: "lastlogoff",
@@ -148,11 +178,13 @@ const Friends = () => {
 					return "";
 				else
 					return (
-						<Box>
+						<Box sx={{fontSize: "14px"}}>
 							{formatLastTimeOnlineData(row.lastlogoff, row.personastate, row.communityvisibilitystate)}
 						</Box>
 					);
-			}
+			},
+			headerAlign: "center",
+			align: "center"
 		},
 		{
 			field: "timecreated",
@@ -163,11 +195,13 @@ const Friends = () => {
 					return "";
 				else
 					return (
-						<Box>
+						<Box sx={{fontSize: "14px"}}>
 							{unixTimeTimestampConverter(row.timecreated)}
 						</Box>
 					);
-			}
+			},
+			headerAlign: "center",
+			align: "center"
 		},
 		{
 			field: "loccountrycode",
@@ -177,8 +211,10 @@ const Friends = () => {
 				if (row.loccountrycode === undefined)
 					return "";
 				else
-					return <Box>{regionNames.of(row.loccountrycode)}</Box>
-			}
+					return <Box sx={{fontSize: "14px"}}>{regionNames.of(row.loccountrycode)}</Box>
+			},
+			headerAlign: "center",
+			align: "center"
 		},
 		{
 			field: "locstatecode",
@@ -189,10 +225,12 @@ const Friends = () => {
 					return "";
 				else {
 					const stateObject = states(row.locstatecode);
-					return <Box>{stateObject.name}</Box>
+					return <Box sx={{fontSize: "14px"}}>{stateObject.name}</Box>
 				}
-			}
-		},
+			},
+			headerAlign: "center",
+			align: "center"
+		}
 	];
 
 	if (infoLoaded === false || friendsList.length === 0) {
@@ -231,7 +269,7 @@ const Friends = () => {
 			</Box>
 			<Box
 				margin="40px 0 0 0"
-				height="75vh"
+				height="70vh"
 				sx={{
 					"& .MuiDataGrid-root": {
 						border: "none",
@@ -246,6 +284,7 @@ const Friends = () => {
 					"& .MuiDataGrid-columnHeaders": {
 						backgroundColor: "custom.steamColorA",
 						borderBottom: "none",
+						fontSize: "14px"
 					},
 					"& .MuiDataGrid-virtualScroller": {
 						backgroundColor: colors.primary[400],
@@ -263,6 +302,7 @@ const Friends = () => {
 					rows={friendsList.response.players}
 					columns={columns}
 					getRowId={((row) => row?.steamid)}
+					rowHeight={100}
 				/>}
 			</Box>
 		</Box>

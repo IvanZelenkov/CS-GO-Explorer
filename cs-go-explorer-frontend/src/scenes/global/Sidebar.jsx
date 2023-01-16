@@ -11,11 +11,12 @@ import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
-import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutlined";
 import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
+import { GiCrosshair } from "react-icons/gi";
+import { MdOutlineMapsHomeWork } from "react-icons/md";
 import axios from "axios";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
@@ -177,6 +178,7 @@ const Sidebar = () => {
 									href={profile.response.players[0].profileurl}
 									target="_blank"
 									underline="none"
+									component="button"
 								>
 									<Box
 										component="img"
@@ -198,7 +200,7 @@ const Sidebar = () => {
 									{infoLoaded && profile.response.players[0].personaname}
 								</Typography>
 								<Typography variant="h5" color="custom.steamColorE">
-									Steam ID: {infoLoaded && profile.response.players[0].steamid}
+									Steam ID: XXXXXXXXXXXX
 								</Typography>
 							</Box>
 						</Box>
@@ -282,14 +284,14 @@ const Sidebar = () => {
 						<Item
 							title="Weapons"
 							to="/weapons-stats"
-							icon={<BarChartOutlinedIcon/>}
+							icon={<GiCrosshair size={23}/>}
 							selected={selected}
 							setSelected={setSelected}
 						/>
 						<Item
-							title="Index Chart"
-							to="/bar"
-							icon={<BarChartOutlinedIcon/>}
+							title="Maps"
+							to="/maps-stats"
+							icon={<MdOutlineMapsHomeWork size={20}/>}
 							selected={selected}
 							setSelected={setSelected}
 						/>

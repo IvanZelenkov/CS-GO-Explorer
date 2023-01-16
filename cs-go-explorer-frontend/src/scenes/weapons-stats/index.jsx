@@ -1,24 +1,28 @@
-import {Box, Button, Link as ProfileLink, useTheme} from "@mui/material";
+import { Box, Button, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import axios from "axios";
+import { Outlet, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import states from 'us-state-converter';
 import { CircularProgress } from "@mui/material";
 import Refresh from "@mui/icons-material/Refresh";
+import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
+import { useLocation } from 'react-router-dom'
 
 const WeaponsStats = () => {
 	const theme = useTheme();
 	const colors = tokens(theme.palette.mode);
+	const location = useLocation();
 	const [infoLoaded, setInfoLoaded] = useState(false);
-	const [gameStats, setGameStats] = useState({});
+	const [userStats, setUserStats] = useState({});
+	const [barChartData, setBarChartData] = useState({});
 
-	const getGameStats = () => {
+	const getUserStats = () => {
 		axios.get(
 			"https://" + process.env.REACT_APP_REST_API_ID + ".execute-api.us-east-1.amazonaws.com/ProductionStage/GetUserStatsForGame"
 		).then(function (response) {
-			setGameStats(JSON.parse(response.data.body));
+			setUserStats(reformatUserStatsJson(JSON.parse(response.data.body)));
 			setInfoLoaded(true);
 		}).catch(function (error) {
 			console.log(error);
@@ -26,178 +30,159 @@ const WeaponsStats = () => {
 	}
 
 	useEffect(() => {
-		getGameStats();
+		getUserStats();
 	}, []);
 
-	console.log(gameStats);
+	console.log(1)
 
-	const definePersonaState = (personastate, communityvisibilitystate) => {
-		if (communityvisibilitystate === 3) {
-			switch (personastate) {
-				case 0:
-					return "Offline";
-				case 1:
-					return "Online";
-				case 2:
-					return "Busy";
-				case 3:
-					return "Away";
-				case 4:
-					return "Snooze";
-				case 5:
-					return "Looking to trade";
-				case 6:
-					return "Looking to play"
-				default:
-					return "Offline";
+	const reformatUserStatsJson = (overallStats) => {
+		const weapons = ["ak47", "aug", "awp", "bizon", "deagle", "elite", "famas", "fiveseven",
+			             "g3sg1", "galilar", "glock", "hegrenade", "hkp2000", "knife", "m4a1", "m249",
+						 "mac10", "mag7", "molotov", "mp7", "mp9", "negev", "nova", "p90", "p250",
+						 "sawedoff", "scar20", "sg556", "ssg08", "taser", "tec9", "ump45", "xm1014"];
+		let weaponStats = [];
+		for (let i = 0; i < weapons.length; i++)
+			weaponStats.push({
+				weaponName: weapons[i],
+				totalKills: "",
+				totalShots: "",
+				totalHits: ""
+			});
+
+		let newJsonUserStats = {
+			steamID: overallStats.playerstats.steamID,
+			gameName: "CS:GO",
+			stats: weaponStats
+		};
+
+		for (let i = 0; i < overallStats.playerstats.stats.length; i++) {
+			let dataItem = overallStats.playerstats.stats[i];
+			if (!dataItem.name.includes("total_kills") &&
+				!dataItem.name.includes("total_shots") &&
+				!dataItem.name.includes("total_hits")) {
+				continue;
 			}
-		} else {
-			return "Private";
+			let weapon = weapons.find((weaponName) => dataItem.name.includes(weaponName));
+			if (weapon !== undefined) {
+				if (dataItem.name.includes("total_kills")) {
+					newJsonUserStats.stats[weapons.indexOf(weapon)].totalKills = dataItem.value;
+					newJsonUserStats.stats[weapons.indexOf(weapon)].value = dataItem.value;
+				}
+				else if (dataItem.name.includes("total_shots"))
+					newJsonUserStats.stats[weapons.indexOf(weapon)].totalShots = dataItem.value;
+				else if (dataItem.name.includes("total_hits"))
+					newJsonUserStats.stats[weapons.indexOf(weapon)].totalHits = dataItem.value;
+			}
 		}
+
+		setBarChartData(reformatUserStatsBarChart(newJsonUserStats));
+
+		return newJsonUserStats;
 	}
 
-	const unixTimeTimestampConverter = (value) => {
-		let unix_timestamp = value;
-		let date = new Date(unix_timestamp * 1000);
-		let day = date.getDate();
-		let month = date.getMonth() + 1;
-		let year = date.getFullYear();
-		let hours = date.getHours();
-		let minutes = date.getMinutes();
-		let seconds = date.getSeconds();
+	const reformatUserStatsBarChart = (reformattedUserStats) => {
+		let weaponStats = [];
 
-		minutes = minutes.toString().length === 2 ? date.getMinutes() : "0" + date.getMinutes();
-		seconds = seconds.toString().length === 2 ? date.getSeconds() : "0" + date.getSeconds();
+		const weapons = ["ak47", "aug", "awp", "bizon", "deagle", "elite", "famas", "fiveseven",
+			"g3sg1", "galilar", "glock", "hegrenade", "hkp2000", "knife", "m4a1", "m249",
+			"mac10", "mag7", "molotov", "mp7", "mp9", "negev", "nova", "p90", "p250",
+			"sawedoff", "scar20", "sg556", "ssg08", "taser", "tec9", "ump45", "xm1014"];
 
-		// Displays the information in "mm/dd/yyyy - 10:30:23" format
-		return month + "/" + day + "/" + year + " - " + hours + ':' + minutes + ':' + seconds;
-	}
-
-	const formatLastTimeOnlineData = (lastlogoff, personastate, communityvisibilitystate) => {
-		let state = definePersonaState(personastate, communityvisibilitystate);
-		if (state === "Online") {
-			return "Currently online"
-		} else {
-			return unixTimeTimestampConverter(lastlogoff);
+		for (let i = 0; i < weapons.length; i++) {
+			weaponStats.push({
+				weaponName: reformattedUserStats.stats[i].weaponName,
+				[reformattedUserStats.stats[i].weaponName]: reformattedUserStats.stats[i].totalKills,
+				[reformattedUserStats.stats[i].weaponName + "Color"]: "hsl(229, 70%, 50%)"
+			});
 		}
-	}
 
-	const regionNames = new Intl.DisplayNames(
-		['en'], {type: 'region'}
-	);
+		return weaponStats;
+	}
 
 	const columns = [
 		{
-			field: "avatar",
-			headerName: "Avatar",
+			field: "weaponName",
+			headerName: "Weapon",
 			flex: 1,
-			// cellClassName: "name-column--cell",
-			renderCell: ({ row }) => {
+			renderCell: ({ value }) => {
 				return (
 					<Box display="flex" justifyContent="center" alignItems="center">
-						<ProfileLink
-							href={row.profileurl}
-							target="_blank"
-							underline="none"
-						>
-							<Box
-								component="img"
-								alt="profile-user"
-								width="40px"
-								height="40px"
-								src={row.avatar}
-								style={{ cursor: "pointer", borderRadius: "50%" }}
-							/>
-						</ProfileLink>
+						<Box
+							component="img"
+							alt={value}
+							width="192px"
+							height="144px"
+							src={require("../../images/weapons/" + value + ".webp")}
+							style={{ justifyContent: "center", alignItems: "center", fontSize: "20px" }}
+						/>
 					</Box>
 				);
-			}
+			},
+			headerAlign: "center",
+			align: "center"
 		},
 		{
-			field: "personaname",
-			headerName: "Nickname",
-			flex: 1
-		},
-		{
-			field: "steamid",
-			headerName: "Steam ID",
-			flex: 1
-		},
-		{
-			field: "communityvisibilitystate",
-			headerName: "Status",
+			field: "totalKills",
+			headerName: "Total Kills",
 			flex: 1,
-			// type: "number",
-			// headerAlign: "left",
-			// align: "left",
-			renderCell: ({ row }) => {
+			renderCell: ({ value }) => {
 				return (
-					<Box>
-						{definePersonaState(row.personastate, row.communityvisibilitystate)}
+					<Box display="flex" justifyContent="center" alignItems="center" sx={{fontSize: "20px"}}>
+						{value}
 					</Box>
 				);
-			}
+			},
+			headerAlign: "center",
+			align: "center"
 		},
 		{
-			field: "lastlogoff",
-			headerName: "Last time online",
+			field: "totalHits",
+			headerName: "Total Hits",
 			flex: 1,
-			// type: "number",
-			// headerAlign: "left",
-			// align: "left",
-			renderCell: ({ row }) => {
-				if (row.lastlogoff === undefined || row.personastate === undefined || row.communityvisibilitystate === undefined)
-					return "";
-				else
-					return (
-						<Box>
-							{formatLastTimeOnlineData(row.lastlogoff, row.personastate, row.communityvisibilitystate)}
-						</Box>
-					);
-			}
+			renderCell: ({ value }) => {
+				return (
+					<Box display="flex" justifyContent="center" alignItems="center" sx={{fontSize: "20px"}}>
+						{value}
+					</Box>
+				);
+			},
+			headerAlign: "center",
+			align: "center"
 		},
 		{
-			field: "timecreated",
-			headerName: "Account created",
+			field: "totalShots",
+			headerName: "Total Shots",
 			flex: 1,
-			renderCell: ({ row }) => {
-				if (row.timecreated === undefined)
-					return "";
-				else
-					return (
-						<Box>
-							{unixTimeTimestampConverter(row.timecreated)}
-						</Box>
-					);
-			}
+			renderCell: ({ value }) => {
+				return (
+					<Box display="flex" justifyContent="center" alignItems="center" sx={{fontSize: "20px"}}>
+						{value}
+					</Box>
+				);
+			},
+			headerAlign: "center",
+			align: "center"
 		},
 		{
-			field: "loccountrycode",
-			headerName: "Country",
+			field: "totalHits/totalShots",
+			headerName: "Hits/Shots %",
 			flex: 1,
 			renderCell: ({ row }) => {
-				if (row.loccountrycode === undefined)
+				if (row.totalHits.length === 0 || row.totalShots.length === 0) {
 					return "";
-				else
-					return <Box>{regionNames.of(row.loccountrycode)}</Box>
-			}
-		},
-		{
-			field: "locstatecode",
-			headerName: "State",
-			flex: 1,
-			renderCell: ({ row }) => {
-				if (row.locstatecode === undefined)
-					return "";
-				else {
-					const stateObject = states(row.locstatecode);
-					return <Box>{stateObject.name}</Box>
 				}
-			}
-		},
+				else {
+					return <Box display="flex" justifyContent="center" alignItems="center" sx={{fontSize: "20px"}}>
+						{(row.totalHits / row.totalShots * 100).toFixed(2)} %
+					</Box>
+				}
+			},
+			headerAlign: "center",
+			align: "center"
+		}
 	];
 
-	if (infoLoaded === false || gameStats.length === 0) {
+	if (infoLoaded === false || userStats.length === 0) {
 		return (
 			<Box sx={{
 				position: 'absolute', left: '50%', top: '50%',
@@ -205,70 +190,91 @@ const WeaponsStats = () => {
 			}}>
 				<CircularProgress color="success"/>
 			</Box>
-		)
+		);
+	} else if (location.pathname === "/weapons-stats") {
+		return (
+			<Box margin="20px">
+				<Header title="WEAPONS STATS" subtitle="Explore weapons stats"/>
+				<Box display="flex" justifyContent="space-between" alignItems="center">
+					<Box>
+						<Button
+							sx={{
+								backgroundColor: "custom.steamColorA",
+								color: "custom.steamColorD",
+								fontSize: "14px",
+								fontWeight: "bold",
+								padding: "10px 20px",
+							}}
+							onClick={() => {
+								setInfoLoaded(false);
+								getUserStats();
+							}}
+						>
+							<Refresh sx={{mr: "10px"}}/>
+							Refresh
+						</Button>
+					</Box>
+					<Box>
+						<Button
+							sx={{
+								backgroundColor: "custom.steamColorA",
+								color: "custom.steamColorD",
+								fontSize: "14px",
+								fontWeight: "bold",
+								padding: "10px 20px",
+							}}
+							component={Link}
+							to={location.pathname + "/bar"}
+						>
+							<BarChartOutlinedIcon sx={{mr: "10px"}}/>
+							Data Visualization
+						</Button>
+					</Box>
+				</Box>
+				<Box
+					margin="40px 0 0 0"
+					height="70vh"
+					sx={{
+						"& .MuiDataGrid-root": {
+							border: "none"
+						},
+						"& .MuiDataGrid-cell": {
+							borderBottom: "none"
+						},
+						"& .name-column--cell": {
+							color: "custom.steamColorE",
+							textTransform: "capitalize"
+						},
+						"& .MuiDataGrid-columnHeaders": {
+							backgroundColor: "custom.steamColorA",
+							borderBottom: "none",
+							fontSize: "16px"
+						},
+						"& .MuiDataGrid-virtualScroller": {
+							backgroundColor: colors.primary[400],
+						},
+						"& .MuiDataGrid-footerContainer": {
+							borderTop: "none",
+							backgroundColor: "custom.steamColorA"
+						},
+						"& .MuiCheckbox-root": {
+							color: `${colors.greenAccent[200]} !important`
+						},
+					}}
+				>
+					{infoLoaded && <DataGrid
+						rows={userStats.stats}
+						columns={columns}
+						getRowId={((row) => row?.weaponName)}
+						rowHeight={150}
+					/>}
+				</Box>
+				<Outlet/>
+			</Box>
+		);
+	} else if (location.pathname === "/weapons-stats/bar") {
+		return <Outlet context={[barChartData, setBarChartData]}/>
 	}
-	return (
-		<Box margin="20px">
-			<Header title="FRIENDS" subtitle="Explore information about friends"/>
-			{/* REFRESH BUTTON */}
-			{/*<Box display="flex" justifyContent="space-between" alignItems="center">*/}
-			{/*	<Box>*/}
-			{/*		<Button*/}
-			{/*			sx={{*/}
-			{/*				backgroundColor: "custom.steamColorA",*/}
-			{/*				color: "custom.steamColorD",*/}
-			{/*				fontSize: "14px",*/}
-			{/*				fontWeight: "bold",*/}
-			{/*				padding: "10px 20px",*/}
-			{/*			}}*/}
-			{/*			onClick={() => {*/}
-			{/*				setInfoLoaded(false);*/}
-			{/*				getFriendList();*/}
-			{/*			}}*/}
-			{/*		>*/}
-			{/*			<Refresh sx={{ mr: "10px" }}/>*/}
-			{/*			Refresh*/}
-			{/*		</Button>*/}
-			{/*	</Box>*/}
-			{/*</Box>*/}
-			{/*<Box*/}
-			{/*	margin="40px 0 0 0"*/}
-			{/*	height="75vh"*/}
-			{/*	sx={{*/}
-			{/*		"& .MuiDataGrid-root": {*/}
-			{/*			border: "none",*/}
-			{/*		},*/}
-			{/*		"& .MuiDataGrid-cell": {*/}
-			{/*			borderBottom: "none",*/}
-			{/*		},*/}
-			{/*		"& .name-column--cell": {*/}
-			{/*			color: "custom.steamColorE",*/}
-			{/*			textTransform: "capitalize"*/}
-			{/*		},*/}
-			{/*		"& .MuiDataGrid-columnHeaders": {*/}
-			{/*			backgroundColor: "custom.steamColorA",*/}
-			{/*			borderBottom: "none",*/}
-			{/*		},*/}
-			{/*		"& .MuiDataGrid-virtualScroller": {*/}
-			{/*			backgroundColor: colors.primary[400],*/}
-			{/*		},*/}
-			{/*		"& .MuiDataGrid-footerContainer": {*/}
-			{/*			borderTop: "none",*/}
-			{/*			backgroundColor: "custom.steamColorA",*/}
-			{/*		},*/}
-			{/*		"& .MuiCheckbox-root": {*/}
-			{/*			color: `${colors.greenAccent[200]} !important`,*/}
-			{/*		},*/}
-			{/*	}}*/}
-			{/*>*/}
-			{/*	{infoLoaded && <DataGrid*/}
-			{/*		rows={friendsList.response.players}*/}
-			{/*		columns={columns}*/}
-			{/*		getRowId={((row) => row?.steamid)}*/}
-			{/*	/>}*/}
-			{/*</Box>*/}
-		</Box>
-	);
 };
 
 export default WeaponsStats;
