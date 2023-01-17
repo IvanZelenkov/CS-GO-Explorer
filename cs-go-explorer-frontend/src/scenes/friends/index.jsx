@@ -7,14 +7,13 @@ import { useEffect, useState } from "react";
 import states from 'us-state-converter';
 import { CircularProgress } from "@mui/material";
 import Refresh from "@mui/icons-material/Refresh";
+import { motion } from "framer-motion";
 
 const Friends = () => {
 	const theme = useTheme();
 	const colors = tokens(theme.palette.mode);
 	const [infoLoaded, setInfoLoaded] = useState(false);
 	const [friendsList, setFriendsList] = useState({});
-
-	console.log(1)
 
 	const getFriendList = () => {
 		axios.get(
@@ -25,11 +24,14 @@ const Friends = () => {
 		}).catch(function (error) {
 			console.log(error);
 		});
+		setFriendsList({hello: "hello"})
 	}
 
 	useEffect(() => {
 		getFriendList();
 	}, []);
+
+	console.log(1)
 
 	const definePersonaState = (personastate, communityvisibilitystate) => {
 		if (communityvisibilitystate === 3) {
@@ -56,8 +58,7 @@ const Friends = () => {
 		}
 	}
 
-	const unixTimeTimestampConverter = (value) => {
-		let unix_timestamp = value;
+	const unixTimeTimestampConverter = (unix_timestamp) => {
 		let date = new Date(unix_timestamp * 1000);
 		let day = date.getDate();
 		let month = date.getMonth() + 1;
@@ -241,71 +242,73 @@ const Friends = () => {
 			}}>
 				<CircularProgress color="success"/>
 			</Box>
-		)
+		);
 	}
 	return (
-		<Box margin="20px">
-			<Header title="FRIENDS" subtitle="Explore information about friends"/>
-			{/* REFRESH BUTTON */}
-			<Box display="flex" justifyContent="space-between" alignItems="center">
-				<Box>
-					<Button
-						sx={{
+		<motion.div exit={{ opacity: 0 }}>
+			<Box margin="20px">
+				<Header title="FRIENDS" subtitle="Explore information about friends"/>
+				{/* REFRESH BUTTON */}
+				<Box display="flex" justifyContent="space-between" alignItems="center">
+					<Box>
+						<Button
+							sx={{
+								backgroundColor: "custom.steamColorA",
+								color: "custom.steamColorD",
+								fontSize: "14px",
+								fontWeight: "bold",
+								padding: "10px 20px",
+							}}
+							onClick={() => {
+								setInfoLoaded(false);
+								getFriendList();
+							}}
+						>
+							<Refresh sx={{ mr: "10px" }}/>
+							Refresh
+						</Button>
+					</Box>
+				</Box>
+				<Box
+					margin="40px 0 0 0"
+					height="70vh"
+					sx={{
+						"& .MuiDataGrid-root": {
+							border: "none",
+						},
+						"& .MuiDataGrid-cell": {
+							borderBottom: "none",
+						},
+						"& .name-column--cell": {
+							color: "custom.steamColorE",
+							textTransform: "capitalize"
+						},
+						"& .MuiDataGrid-columnHeaders": {
 							backgroundColor: "custom.steamColorA",
-							color: "custom.steamColorD",
-							fontSize: "14px",
-							fontWeight: "bold",
-							padding: "10px 20px",
-						}}
-						onClick={() => {
-							setInfoLoaded(false);
-							getFriendList();
-						}}
-					>
-						<Refresh sx={{ mr: "10px" }}/>
-						Refresh
-					</Button>
+							borderBottom: "none",
+							fontSize: "14px"
+						},
+						"& .MuiDataGrid-virtualScroller": {
+							backgroundColor: colors.primary[400],
+						},
+						"& .MuiDataGrid-footerContainer": {
+							borderTop: "none",
+							backgroundColor: "custom.steamColorA",
+						},
+						"& .MuiCheckbox-root": {
+							color: `${colors.greenAccent[200]} !important`,
+						},
+					}}
+				>
+					{infoLoaded && <DataGrid
+						rows={friendsList.response.players}
+						columns={columns}
+						getRowId={((row) => row?.steamid)}
+						rowHeight={100}
+					/>}
 				</Box>
 			</Box>
-			<Box
-				margin="40px 0 0 0"
-				height="70vh"
-				sx={{
-					"& .MuiDataGrid-root": {
-						border: "none",
-					},
-					"& .MuiDataGrid-cell": {
-						borderBottom: "none",
-					},
-					"& .name-column--cell": {
-						color: "custom.steamColorE",
-						textTransform: "capitalize"
-					},
-					"& .MuiDataGrid-columnHeaders": {
-						backgroundColor: "custom.steamColorA",
-						borderBottom: "none",
-						fontSize: "14px"
-					},
-					"& .MuiDataGrid-virtualScroller": {
-						backgroundColor: colors.primary[400],
-					},
-					"& .MuiDataGrid-footerContainer": {
-						borderTop: "none",
-						backgroundColor: "custom.steamColorA",
-					},
-					"& .MuiCheckbox-root": {
-						color: `${colors.greenAccent[200]} !important`,
-					},
-				}}
-			>
-				{infoLoaded && <DataGrid
-					rows={friendsList.response.players}
-					columns={columns}
-					getRowId={((row) => row?.steamid)}
-					rowHeight={100}
-				/>}
-			</Box>
-		</Box>
+		</motion.div>
 	);
 };
 

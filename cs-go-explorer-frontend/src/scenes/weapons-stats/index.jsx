@@ -9,6 +9,7 @@ import { CircularProgress } from "@mui/material";
 import Refresh from "@mui/icons-material/Refresh";
 import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 import { useLocation } from 'react-router-dom'
+import { motion } from "framer-motion";
 
 const WeaponsStats = () => {
 	const theme = useTheme();
@@ -17,6 +18,9 @@ const WeaponsStats = () => {
 	const [infoLoaded, setInfoLoaded] = useState(false);
 	const [userStats, setUserStats] = useState({});
 	const [barChartData, setBarChartData] = useState({});
+	const [barKeys, setBarKeys] = useState([]);
+	const [barColors, setBarColors] = useState({});
+	const [barKeyName, setBarKeyName] = useState("");
 
 	const getUserStats = () => {
 		axios.get(
@@ -33,13 +37,14 @@ const WeaponsStats = () => {
 		getUserStats();
 	}, []);
 
-	console.log(1)
 
 	const reformatUserStatsJson = (overallStats) => {
 		const weapons = ["ak47", "aug", "awp", "bizon", "deagle", "elite", "famas", "fiveseven",
 			             "g3sg1", "galilar", "glock", "hegrenade", "hkp2000", "knife", "m4a1", "m249",
 						 "mac10", "mag7", "molotov", "mp7", "mp9", "negev", "nova", "p90", "p250",
 						 "sawedoff", "scar20", "sg556", "ssg08", "taser", "tec9", "ump45", "xm1014"];
+		setBarKeys(weapons);
+
 		let weaponStats = [];
 		for (let i = 0; i < weapons.length; i++)
 			weaponStats.push({
@@ -74,28 +79,36 @@ const WeaponsStats = () => {
 					newJsonUserStats.stats[weapons.indexOf(weapon)].totalHits = dataItem.value;
 			}
 		}
-
-		setBarChartData(reformatUserStatsBarChart(newJsonUserStats));
-
+		reformatUserStatsBarChart(newJsonUserStats);
 		return newJsonUserStats;
 	}
 
 	const reformatUserStatsBarChart = (reformattedUserStats) => {
-		let weaponStats = [];
+		const customColors = {"ak47": "#C0392B", "aug": "#E74C3C", "awp": "#9B59B6", "bizon": "#8E44AD",
+			"deagle": "#2980B9", "elite": "#3498DB", "famas": "#1ABC9C", "fiveseven": "#16A085",
+			"g3sg1": "#27AE60", "galilar": "#2ECC71", "glock": "#F1C40F", "hegrenade": "#F39C12",
+			"hkp2000": "#D35400", "knife": "#ECF0F1", "m4a1": "#CACFD2", "m249": "#95A5A6",
+			"mac10": "#7F8C8D", "mag7": "#A93226", "molotov": "#2C3E50", "mp7": "#CB4335",
+			"mp9": "#884EA0", "negev": "#7D3C98", "nova": "#2471A3", "p90": "#2E86C1",
+			"p250": "#17A589", "sawedoff": "#138D75", "scar20": "#229954", "sg556": "#28B463",
+			"ssg08": "#D4AC0D", "taser": "#D68910", "tec9": "#CA6F1E", "ump45": "#BA4A00",
+			"xm1014": "#D0D3D4"}
+		setBarColors(customColors);
+		setBarKeyName("weaponName");
 
-		const weapons = ["ak47", "aug", "awp", "bizon", "deagle", "elite", "famas", "fiveseven",
-			"g3sg1", "galilar", "glock", "hegrenade", "hkp2000", "knife", "m4a1", "m249",
-			"mac10", "mag7", "molotov", "mp7", "mp9", "negev", "nova", "p90", "p250",
-			"sawedoff", "scar20", "sg556", "ssg08", "taser", "tec9", "ump45", "xm1014"];
+		let weaponStats = [];
+		const weapons = ["AK-47", "AUG", "AWP", "PP-Bizon", "Deagle", "Berettas", "FAMAS", "Five-seveN",
+			"G3SG1", "Galil AR", "Glock-18", "Grenade", "HK P2000", "Knife", "M4A1-S", "M249",
+			"MAC-10", "MAG-7", "Molotov", "MP7", "MP9", "Negev", "Nova", "P90", "P250",
+			"Sawed-Off", "SCAR-20", "SG 556", "SSG 08", "Zeus x27", "Tec-9", "UMP-45", "XM1014"];
 
 		for (let i = 0; i < weapons.length; i++) {
 			weaponStats.push({
-				weaponName: reformattedUserStats.stats[i].weaponName,
-				[reformattedUserStats.stats[i].weaponName]: reformattedUserStats.stats[i].totalKills,
-				[reformattedUserStats.stats[i].weaponName + "Color"]: "hsl(229, 70%, 50%)"
+				weaponName: weapons[i],
+				[reformattedUserStats.stats[i].weaponName]: reformattedUserStats.stats[i].totalKills
 			});
 		}
-
+		setBarChartData(weaponStats);
 		return weaponStats;
 	}
 
@@ -193,87 +206,94 @@ const WeaponsStats = () => {
 		);
 	} else if (location.pathname === "/weapons-stats") {
 		return (
-			<Box margin="20px">
-				<Header title="WEAPONS STATS" subtitle="Explore weapons stats"/>
-				<Box display="flex" justifyContent="space-between" alignItems="center">
-					<Box>
-						<Button
-							sx={{
-								backgroundColor: "custom.steamColorA",
-								color: "custom.steamColorD",
-								fontSize: "14px",
-								fontWeight: "bold",
-								padding: "10px 20px",
-							}}
-							onClick={() => {
-								setInfoLoaded(false);
-								getUserStats();
-							}}
-						>
-							<Refresh sx={{mr: "10px"}}/>
-							Refresh
-						</Button>
+			<motion.div exit={{ opacity: 0 }}>
+				<Box margin="20px">
+					<Header title="WEAPONS STATS" subtitle="Explore weapons stats"/>
+					<Box display="flex" justifyContent="space-between" alignItems="center">
+						<Box>
+							<Button
+								sx={{
+									backgroundColor: "custom.steamColorA",
+									color: "custom.steamColorD",
+									fontSize: "14px",
+									fontWeight: "bold",
+									padding: "10px 20px",
+								}}
+								onClick={() => {
+									setInfoLoaded(false);
+									getUserStats();
+								}}
+							>
+								<Refresh sx={{mr: "10px"}}/>
+								Refresh
+							</Button>
+						</Box>
+						<Box>
+							<Button
+								sx={{
+									backgroundColor: "custom.steamColorA",
+									color: "custom.steamColorD",
+									fontSize: "14px",
+									fontWeight: "bold",
+									padding: "10px 20px",
+								}}
+								component={Link}
+								to={location.pathname + "/bar"}
+							>
+								<BarChartOutlinedIcon sx={{mr: "10px"}}/>
+								Data Visualization
+							</Button>
+						</Box>
 					</Box>
-					<Box>
-						<Button
-							sx={{
+					<Box
+						margin="40px 0 0 0"
+						height="70vh"
+						sx={{
+							"& .MuiDataGrid-root": {
+								border: "none"
+							},
+							"& .MuiDataGrid-cell": {
+								borderBottom: "none"
+							},
+							"& .name-column--cell": {
+								color: "custom.steamColorE",
+								textTransform: "capitalize"
+							},
+							"& .MuiDataGrid-columnHeaders": {
 								backgroundColor: "custom.steamColorA",
-								color: "custom.steamColorD",
-								fontSize: "14px",
-								fontWeight: "bold",
-								padding: "10px 20px",
-							}}
-							component={Link}
-							to={location.pathname + "/bar"}
-						>
-							<BarChartOutlinedIcon sx={{mr: "10px"}}/>
-							Data Visualization
-						</Button>
+								borderBottom: "none",
+								fontSize: "16px"
+							},
+							"& .MuiDataGrid-virtualScroller": {
+								backgroundColor: colors.primary[400],
+							},
+							"& .MuiDataGrid-footerContainer": {
+								borderTop: "none",
+								backgroundColor: "custom.steamColorA"
+							},
+							"& .MuiCheckbox-root": {
+								color: `${colors.greenAccent[200]} !important`
+							}
+						}}
+					>
+						{infoLoaded && <DataGrid
+							rows={userStats.stats}
+							columns={columns}
+							getRowId={((row) => row?.weaponName)}
+							rowHeight={150}
+						/>}
 					</Box>
+					<Outlet/>
 				</Box>
-				<Box
-					margin="40px 0 0 0"
-					height="70vh"
-					sx={{
-						"& .MuiDataGrid-root": {
-							border: "none"
-						},
-						"& .MuiDataGrid-cell": {
-							borderBottom: "none"
-						},
-						"& .name-column--cell": {
-							color: "custom.steamColorE",
-							textTransform: "capitalize"
-						},
-						"& .MuiDataGrid-columnHeaders": {
-							backgroundColor: "custom.steamColorA",
-							borderBottom: "none",
-							fontSize: "16px"
-						},
-						"& .MuiDataGrid-virtualScroller": {
-							backgroundColor: colors.primary[400],
-						},
-						"& .MuiDataGrid-footerContainer": {
-							borderTop: "none",
-							backgroundColor: "custom.steamColorA"
-						},
-						"& .MuiCheckbox-root": {
-							color: `${colors.greenAccent[200]} !important`
-						},
-					}}
-				>
-					{infoLoaded && <DataGrid
-						rows={userStats.stats}
-						columns={columns}
-						getRowId={((row) => row?.weaponName)}
-						rowHeight={150}
-					/>}
-				</Box>
-				<Outlet/>
-			</Box>
+			</motion.div>
 		);
 	} else if (location.pathname === "/weapons-stats/bar") {
-		return <Outlet context={[barChartData, setBarChartData]}/>
+		return <Outlet context={{
+			barChartData, setBarChartData,
+			barKeys, setBarKeys,
+			barColors, setBarColors,
+			barKeyName, setBarKeyName
+		}}/>
 	}
 };
 

@@ -3,6 +3,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import { mockDataInvoices } from "../../data/mockData";
 import Header from "../../components/Header";
+import { motion } from "framer-motion";
 
 const Invoices = () => {
 	const theme = useTheme();
@@ -43,40 +44,42 @@ const Invoices = () => {
 	];
 
 	return (
-		<Box m="20px">
-			<Header title="INVOICES" subtitle="List of Invoice Balances" />
-			<Box
-				m="40px 0 0 0"
-				height="75vh"
-				sx={{
-					"& .MuiDataGrid-root": {
-						border: "none",
-					},
-					"& .MuiDataGrid-cell": {
-						borderBottom: "none",
-					},
-					"& .name-column--cell": {
-						color: colors.greenAccent[300],
-					},
-					"& .MuiDataGrid-columnHeaders": {
-						backgroundColor: "custom.steamColorA",
-						borderBottom: "none",
-					},
-					"& .MuiDataGrid-virtualScroller": {
-						backgroundColor: colors.primary[400],
-					},
-					"& .MuiDataGrid-footerContainer": {
-						borderTop: "none",
-						backgroundColor: "custom.steamColorA",
-					},
-					"& .MuiCheckbox-root": {
-						color: `${colors.greenAccent[200]} !important`,
-					},
-				}}
-			>
-				<DataGrid checkboxSelection rows={mockDataInvoices} columns={columns} />
+		<motion.div exit={{ opacity: 0 }}>
+			<Box margin="20px">
+				<Header title="INVOICES" subtitle="List of Invoice Balances"/>
+				<Box
+					margin="40px 0 0 0"
+					height="75vh"
+					sx={{
+						"& .MuiDataGrid-root": {
+							border: "none"
+						},
+						"& .MuiDataGrid-cell": {
+							borderBottom: "none"
+						},
+						"& .name-column--cell": {
+							color: colors.greenAccent[300]
+						},
+						"& .MuiDataGrid-columnHeaders": {
+							backgroundColor: "custom.steamColorA",
+							borderBottom: "none"
+						},
+						"& .MuiDataGrid-virtualScroller": {
+							backgroundColor: colors.primary[400]
+						},
+						"& .MuiDataGrid-footerContainer": {
+							borderTop: "none",
+							backgroundColor: "custom.steamColorA"
+						},
+						"& .MuiCheckbox-root": {
+							color: `${colors.greenAccent[200]} !important`
+						}
+					}}
+				>
+					<DataGrid checkboxSelection rows={mockDataInvoices} columns={columns}/>
+				</Box>
 			</Box>
-		</Box>
+		</motion.div>
 	);
 };
 

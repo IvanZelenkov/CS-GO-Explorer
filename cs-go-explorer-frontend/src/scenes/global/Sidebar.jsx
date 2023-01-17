@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar";
-import {Box, IconButton, Typography, Link as ProfileLink, useTheme, CircularProgress} from "@mui/material";
+import { ProSidebar, Menu, MenuItem, SidebarHeader, SidebarContent } from "react-pro-sidebar";
+import { Box, IconButton, Typography, Link as ProfileLink, useTheme, CircularProgress } from "@mui/material";
 import { Link as SidebarLink } from "react-router-dom";
 import "react-pro-sidebar/dist/css/styles.css";
 import { tokens } from "../../theme";
@@ -18,6 +18,7 @@ import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
 import { GiCrosshair } from "react-icons/gi";
 import { MdOutlineMapsHomeWork } from "react-icons/md";
 import axios from "axios";
+import { motion } from "framer-motion";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
 	const theme = useTheme();
@@ -135,60 +136,67 @@ const Sidebar = () => {
 				},
 				"& .pro-menu-item.active": {
 					color: `${colors.steamColors[6]} !important`,
+				},
+				".pro-sidebar": {
+					height: "100%"
 				}
 			}}
 		>
 			<ProSidebar collapsed={isCollapsed} width="100%">
 				<Menu iconShape="square">
-					{/* LOGO AND MENU ICON */}
-					<MenuItem
-						onClick={() => setIsCollapsed(!isCollapsed)}
-						icon={isCollapsed ? <MenuOutlinedIcon/> : undefined}
-						style={{
-							margin: "10px 0 20px 0",
-							color: colors.grey[100]
-						}}
-					>
-						{!isCollapsed && (
-							<Box
-								display="flex"
-								justifyContent="space-between"
-								alignItems="center"
-								marginLeft="15px"
-							>
-								<Box style={{marginRight: "55px"}}>
-									<Typography variant="h3" color="custom.steamColorD">
-										Status: {infoLoaded && definePersonaState()}
-									</Typography>
-									<Typography variant="h5" color="custom.steamColorE">
-										{infoLoaded && formatLastTimeOnlineData()}
-									</Typography>
-								</Box>
-								<IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
-									<MenuOutlinedIcon sx={{ color: "custom.steamColorD" }}/>
-								</IconButton>
+					<Box style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+						{!isCollapsed && <MenuItem>
+							<Box style={{ cursor: "auto" }}>
+								<Typography variant="h3" color="custom.steamColorD">
+									Status: {infoLoaded && definePersonaState()}
+								</Typography>
+								<Typography variant="h5" color="custom.steamColorE">
+									{infoLoaded && formatLastTimeOnlineData()}
+								</Typography>
 							</Box>
-						)}
-					</MenuItem>
+						</MenuItem>}
+						<MenuItem
+							onClick={() => setIsCollapsed(!isCollapsed)}
+							icon={isCollapsed ? <MenuOutlinedIcon/> : undefined}
+							style={{
+								margin: "10px 0 20px 0",
+								color: colors.grey[100]
+							}}
+						>
+							{!isCollapsed && (
+								<Box
+									display="flex"
+									justifyContent="space-between"
+									alignItems="center"
+									marginLeft="15px"
+								>
+									<IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
+										<MenuOutlinedIcon sx={{ color: "custom.steamColorD" }}/>
+									</IconButton>
+								</Box>
+							)}
+						</MenuItem>
+					</Box>
 
 					{!isCollapsed && (
-						<Box mb="25px">
+						<Box marginBottom="25px">
 							<Box display="flex" justifyContent="center" alignItems="center">
-								{infoLoaded && <ProfileLink
-									href={profile.response.players[0].profileurl}
-									target="_blank"
-									underline="none"
-									component="button"
-								>
-									<Box
-										component="img"
-										alt="profile-user"
-										width="100px"
-										height="100px"
-										src={profile.response.players[0].avatarfull}
-										style={{ cursor: "pointer", borderRadius: "50%" }}
-									/>
-								</ProfileLink>}
+								<MenuItem>
+									{infoLoaded && <ProfileLink
+										href={profile.response.players[0].profileurl}
+										target="_blank"
+										underline="none"
+									>
+										<Box
+											component="img"
+											alt="profile-user"
+											width="100px"
+											height="100px"
+											src={profile.response.players[0].avatarfull}
+											style={{ cursor: "pointer", borderRadius: "10%" }}
+										/>
+									</ProfileLink>}
+								</MenuItem>
 							</Box>
 							<Box textAlign="center">
 								<Typography
@@ -200,7 +208,7 @@ const Sidebar = () => {
 									{infoLoaded && profile.response.players[0].personaname}
 								</Typography>
 								<Typography variant="h5" color="custom.steamColorE">
-									Steam ID: XXXXXXXXXXXX
+									Steam ID: {infoLoaded && profile.response.players[0].steamid}
 								</Typography>
 							</Box>
 						</Box>
@@ -208,14 +216,18 @@ const Sidebar = () => {
 
 					{/* MENU ITEMS */}
 					<Box paddingLeft={isCollapsed ? undefined : "10%"}>
-						<Item
-							title="Dashboard"
-							to="/"
-							icon={<HomeOutlinedIcon/>}
-							selected={selected}
-							setSelected={setSelected}
-						/>
+						{/*Dashboard*/}
+						<motion.div whileHover={{ scale: 1.1 }}>
+							<Item
+								title="Dashboard"
+								to="/"
+								icon={<HomeOutlinedIcon/>}
+								selected={selected}
+								setSelected={setSelected}
+							/>
+						</motion.div>
 
+						{/*Data*/}
 						<Typography
 							variant="h6"
 							color={colors.grey[300]}
@@ -223,28 +235,35 @@ const Sidebar = () => {
 						>
 							Data
 						</Typography>
-						<Item
-							title="Friends"
-							to="/friends"
-							icon={<PeopleOutlinedIcon/>}
-							selected={selected}
-							setSelected={setSelected}
-						/>
-						<Item
-							title="Contacts Information"
-							to="/contacts"
-							icon={<ContactsOutlinedIcon/>}
-							selected={selected}
-							setSelected={setSelected}
-						/>
-						<Item
-							title="Invoices Balances"
-							to="/invoices"
-							icon={<ReceiptOutlinedIcon/>}
-							selected={selected}
-							setSelected={setSelected}
-						/>
+						<motion.div whileHover={{ scale: 1.1 }}>
+							<Item
+								title="Friends"
+								to="/friends"
+								icon={<PeopleOutlinedIcon/>}
+								selected={selected}
+								setSelected={setSelected}
+							/>
+						</motion.div>
+						<motion.div whileHover={{ scale: 1.1 }}>
+							<Item
+								title="Contacts Information"
+								to="/contacts"
+								icon={<ContactsOutlinedIcon/>}
+								selected={selected}
+								setSelected={setSelected}
+							/>
+						</motion.div>
+						<motion.div whileHover={{ scale: 1.1 }}>
+							<Item
+								title="Invoices Balances"
+								to="/invoices"
+								icon={<ReceiptOutlinedIcon/>}
+								selected={selected}
+								setSelected={setSelected}
+							/>
+						</motion.div>
 
+						{/*Pages*/}
 						<Typography
 							variant="h6"
 							color={colors.grey[300]}
@@ -252,28 +271,35 @@ const Sidebar = () => {
 						>
 							Pages
 						</Typography>
-						<Item
-							title="Profile Form"
-							to="/form"
-							icon={<PersonOutlinedIcon/>}
-							selected={selected}
-							setSelected={setSelected}
-						/>
-						<Item
-							title="Calendar"
-							to="/calendar"
-							icon={<CalendarTodayOutlinedIcon/>}
-							selected={selected}
-							setSelected={setSelected}
-						/>
-						<Item
-							title="FAQ Page"
-							to="/faq"
-							icon={<HelpOutlineOutlinedIcon/>}
-							selected={selected}
-							setSelected={setSelected}
-						/>
+						<motion.div whileHover={{ scale: 1.1 }}>
+							<Item
+								title="Profile Form"
+								to="/form"
+								icon={<PersonOutlinedIcon/>}
+								selected={selected}
+								setSelected={setSelected}
+							/>
+						</motion.div>
+						<motion.div whileHover={{ scale: 1.1 }}>
+							<Item
+								title="Calendar"
+								to="/calendar"
+								icon={<CalendarTodayOutlinedIcon/>}
+								selected={selected}
+								setSelected={setSelected}
+							/>
+						</motion.div>
+						<motion.div whileHover={{ scale: 1.1 }}>
+							<Item
+								title="FAQ Page"
+								to="/faq"
+								icon={<HelpOutlineOutlinedIcon/>}
+								selected={selected}
+								setSelected={setSelected}
+							/>
+						</motion.div>
 
+						{/*Statistics*/}
 						<Typography
 							variant="h6"
 							color={colors.grey[300]}
@@ -281,41 +307,51 @@ const Sidebar = () => {
 						>
 							Statistics
 						</Typography>
-						<Item
-							title="Weapons"
-							to="/weapons-stats"
-							icon={<GiCrosshair size={23}/>}
-							selected={selected}
-							setSelected={setSelected}
-						/>
-						<Item
-							title="Maps"
-							to="/maps-stats"
-							icon={<MdOutlineMapsHomeWork size={20}/>}
-							selected={selected}
-							setSelected={setSelected}
-						/>
-						<Item
-							title="Pie Chart"
-							to="/pie"
-							icon={<PieChartOutlineOutlinedIcon/>}
-							selected={selected}
-							setSelected={setSelected}
-						/>
-						<Item
-							title="Line Chart"
-							to="/line"
-							icon={<TimelineOutlinedIcon/>}
-							selected={selected}
-							setSelected={setSelected}
-						/>
-						<Item
-							title="Geography Chart"
-							to="/geography"
-							icon={<MapOutlinedIcon/>}
-							selected={selected}
-							setSelected={setSelected}
-						/>
+						<motion.div whileHover={{ scale: 1.1 }}>
+							<Item
+								title="Weapons"
+								to="/weapons-stats"
+								icon={<GiCrosshair size={23}/>}
+								selected={selected}
+								setSelected={setSelected}
+							/>
+						</motion.div>
+						<motion.div whileHover={{ scale: 1.1 }}>
+							<Item
+								title="Maps"
+								to="/maps-stats"
+								icon={<MdOutlineMapsHomeWork size={20}/>}
+								selected={selected}
+								setSelected={setSelected}
+							/>
+						</motion.div>
+						<motion.div whileHover={{ scale: 1.1 }}>
+							<Item
+								title="Pie Chart"
+								to="/pie"
+								icon={<PieChartOutlineOutlinedIcon/>}
+								selected={selected}
+								setSelected={setSelected}
+							/>
+						</motion.div>
+						<motion.div whileHover={{ scale: 1.1 }}>
+							<Item
+								title="Line Chart"
+								to="/line"
+								icon={<TimelineOutlinedIcon/>}
+								selected={selected}
+								setSelected={setSelected}
+							/>
+						</motion.div>
+						<motion.div whileHover={{ scale: 1.1 }}>
+							<Item
+								title="Geography Chart"
+								to="/geography"
+								icon={<MapOutlinedIcon/>}
+								selected={selected}
+								setSelected={setSelected}
+							/>
+						</motion.div>
 					</Box>
 				</Menu>
 			</ProSidebar>

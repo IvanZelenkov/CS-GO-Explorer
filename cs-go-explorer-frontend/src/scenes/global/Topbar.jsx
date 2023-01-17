@@ -8,6 +8,7 @@ import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import SearchIcon from "@mui/icons-material/Search";
+import { motion } from "framer-motion";
 
 const Topbar = () => {
 	const theme = useTheme();
@@ -30,22 +31,30 @@ const Topbar = () => {
 
 			{/* ICONS */}
 			<Box display="flex">
-				<IconButton onClick={colorMode.toggleColorMode}>
-					{theme.palette.mode === "dark" ? (
-						<DarkModeOutlinedIcon sx={{ color: "custom.steamColorD" }}/>
-					) : (
-						<LightModeOutlinedIcon/>
-					)}
-				</IconButton>
-				<IconButton>
-					<NotificationsOutlinedIcon sx={{ color: "custom.steamColorD" }}/>
-				</IconButton>
-				<IconButton>
-					<SettingsOutlinedIcon sx={{ color: "custom.steamColorD" }}/>
-				</IconButton>
-				<IconButton>
-					<PersonOutlinedIcon sx={{ color: "custom.steamColorD" }}/>
-				</IconButton>
+				<motion.div whileHover={{ scale: 1.2 }}>
+					<IconButton onClick={colorMode.toggleColorMode}>
+						{theme.palette.mode === "dark" ? (
+							<DarkModeOutlinedIcon sx={{ color: "custom.steamColorD" }}/>
+						) : (
+							<LightModeOutlinedIcon/>
+						)}
+					</IconButton>
+				</motion.div>
+				<motion.div whileHover={{ scale: 1.2 }}>
+					<IconButton>
+						<NotificationsOutlinedIcon sx={{ color: "custom.steamColorD" }}/>
+					</IconButton>
+				</motion.div>
+				<motion.div whileHover={{ scale: 1.2 }}>
+					<IconButton>
+						<SettingsOutlinedIcon sx={{ color: "custom.steamColorD" }}/>
+					</IconButton>
+				</motion.div>
+				<motion.div whileHover={{ scale: 1.2 }}>
+					<IconButton>
+						<PersonOutlinedIcon sx={{ color: "custom.steamColorD" }}/>
+					</IconButton>
+				</motion.div>
 			</Box>
 		</Box>
 	);

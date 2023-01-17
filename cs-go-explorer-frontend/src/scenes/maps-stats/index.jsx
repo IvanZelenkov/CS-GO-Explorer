@@ -6,6 +6,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { CircularProgress } from "@mui/material";
 import Refresh from "@mui/icons-material/Refresh";
+import { motion } from "framer-motion";
 
 const MapsStats = () => {
 	const theme = useTheme();
@@ -27,8 +28,6 @@ const MapsStats = () => {
 	useEffect(() => {
 		getUserStats();
 	}, []);
-
-	console.log(1)
 
 	const reformatUserStatsJson = (overallStats) => {
 		const maps = ["dust2", "inferno", "nuke", "vertigo", "office", "train", "lake", "assault",
@@ -74,8 +73,8 @@ const MapsStats = () => {
 						<Box
 							component="img"
 							alt={value}
-							width="360px"
-							height="203px"
+							width="17vw"
+							height="17vh"
 							src={require("../../images/maps/" + value + ".webp")}
 							style={{ justifyContent: "center", alignItems: "center", fontSize: "20px", borderRadius: "10px" }}
 						/>
@@ -132,78 +131,80 @@ const MapsStats = () => {
 		}
 	];
 
-	// if (infoLoaded === false || userStats.length === 0) {
-	// 	return (
-	// 		<Box sx={{
-	// 			position: 'absolute', left: '50%', top: '50%',
-	// 			transform: 'translate(-50%, -50%)'
-	// 		}}>
-	// 			<CircularProgress color="success"/>
-	// 		</Box>
-	// 	)
-	// }
+	if (infoLoaded === false || userStats.length === 0) {
+		return (
+			<Box sx={{
+				position: 'absolute', left: '50%', top: '50%',
+				transform: 'translate(-50%, -50%)'
+			}}>
+				<CircularProgress color="success"/>
+			</Box>
+		)
+	}
 	return (
-		<Box margin="20px">
-			<Header title="MAP STATS" subtitle="Explore map stats"/>
-			<Box display="flex" justifyContent="space-between" alignItems="center">
-				<Box>
-					<Button
-						sx={{
+		<motion.div exit={{ opacity: 0 }}>
+			<Box margin="20px">
+				<Header title="MAP STATS" subtitle="Explore map stats"/>
+				<Box display="flex" justifyContent="space-between" alignItems="center">
+					<Box>
+						<Button
+							sx={{
+								backgroundColor: "custom.steamColorA",
+								color: "custom.steamColorD",
+								fontSize: "14px",
+								fontWeight: "bold",
+								padding: "10px 20px",
+							}}
+							onClick={() => {
+								setInfoLoaded(false);
+								getUserStats();
+							}}
+						>
+							<Refresh sx={{ mr: "10px" }}/>
+							Refresh
+						</Button>
+					</Box>
+				</Box>
+				<Box
+					margin="40px 0 0 0"
+					height="70vh"
+					sx={{
+						"& .MuiDataGrid-root": {
+							border: "none"
+						},
+						"& .MuiDataGrid-cell": {
+							borderBottom: "none"
+						},
+						"& .name-column--cell": {
+							color: "custom.steamColorE",
+							textTransform: "capitalize"
+						},
+						"& .MuiDataGrid-columnHeaders": {
 							backgroundColor: "custom.steamColorA",
-							color: "custom.steamColorD",
-							fontSize: "14px",
-							fontWeight: "bold",
-							padding: "10px 20px",
-						}}
-						onClick={() => {
-							setInfoLoaded(false);
-							getUserStats();
-						}}
-					>
-						<Refresh sx={{ mr: "10px" }}/>
-						Refresh
-					</Button>
+							borderBottom: "none",
+							fontSize: "16px"
+						},
+						"& .MuiDataGrid-virtualScroller": {
+							backgroundColor: colors.primary[400]
+						},
+						"& .MuiDataGrid-footerContainer": {
+							borderTop: "none",
+							backgroundColor: "custom.steamColorA"
+						},
+						"& .MuiCheckbox-root": {
+							color: `${colors.greenAccent[200]} !important`
+						}
+					}}
+				>
+					{infoLoaded && <DataGrid
+						rows={userStats.stats}
+						columns={columns}
+						getRowId={((row) => row?.mapName)}
+						rowHeight={250}
+					/>}
 				</Box>
 			</Box>
-			<Box
-				margin="40px 0 0 0"
-				height="70vh"
-				sx={{
-					"& .MuiDataGrid-root": {
-						border: "none"
-					},
-					"& .MuiDataGrid-cell": {
-						borderBottom: "none"
-					},
-					"& .name-column--cell": {
-						color: "custom.steamColorE",
-						textTransform: "capitalize"
-					},
-					"& .MuiDataGrid-columnHeaders": {
-						backgroundColor: "custom.steamColorA",
-						borderBottom: "none",
-						fontSize: "16px"
-					},
-					"& .MuiDataGrid-virtualScroller": {
-						backgroundColor: colors.primary[400],
-					},
-					"& .MuiDataGrid-footerContainer": {
-						borderTop: "none",
-						backgroundColor: "custom.steamColorA"
-					},
-					"& .MuiCheckbox-root": {
-						color: `${colors.greenAccent[200]} !important`
-					},
-				}}
-			>
-				{infoLoaded && <DataGrid
-					rows={userStats.stats}
-					columns={columns}
-					getRowId={((row) => row?.mapName)}
-					rowHeight={250}
-				/>}
-			</Box>
-		</Box>
+		</motion.div>
 	);
 };
 

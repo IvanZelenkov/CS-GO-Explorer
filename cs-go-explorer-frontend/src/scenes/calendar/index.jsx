@@ -8,6 +8,7 @@ import listPlugin from "@fullcalendar/list";
 import { Box, List, ListItem, ListItemText, Typography, useTheme } from "@mui/material";
 import Header from "../../components/Header";
 import { tokens } from "../../theme";
+import { motion } from "framer-motion";
 
 const Calendar = () => {
 	const theme = useTheme();
@@ -37,86 +38,88 @@ const Calendar = () => {
 	};
 
 	return (
-		<Box m="20px">
-			<Header title="Calendar" subtitle="Full Calendar Interactive Page" />
+		<motion.div exit={{ opacity: 0 }}>
+			<Box m="20px">
+				<Header title="Calendar" subtitle="Full Calendar Interactive Page" />
 
-			<Box display="flex" justifyContent="space-between">
-				{/* CALENDAR SIDEBAR */}
-				<Box
-					flex="1 1 20%"
-					backgroundColor="custom.steamColorA"
-					padding="15px"
-					borderRadius="5px"
-				>
-					<Typography variant="h5">Events</Typography>
-					<List>
-						{currentEvents.map((event) => (
-							<ListItem
-								key={event.id}
-								sx={{
-									backgroundColor: "custom.steamColorF",
-									margin: "10px 0",
-									borderRadius: "2px",
-								}}
-							>
-								<ListItemText
-									primary={event.title}
-									secondary={
-										<Typography color="custom.steamColorA">
-											{formatDate(event.start, {
-												year: "numeric",
-												month: "short",
-												day: "numeric",
-											})}
-										</Typography>
-									}
-								/>
-							</ListItem>
-						))}
-					</List>
-				</Box>
+				<Box display="flex" justifyContent="space-between">
+					{/* CALENDAR SIDEBAR */}
+					<Box
+						flex="1 1 20%"
+						backgroundColor="custom.steamColorA"
+						padding="15px"
+						borderRadius="5px"
+					>
+						<Typography variant="h5">Events</Typography>
+						<List>
+							{currentEvents.map((event) => (
+								<ListItem
+									key={event.id}
+									sx={{
+										backgroundColor: "custom.steamColorF",
+										margin: "10px 0",
+										borderRadius: "2px",
+									}}
+								>
+									<ListItemText
+										primary={event.title}
+										secondary={
+											<Typography color="custom.steamColorA">
+												{formatDate(event.start, {
+													year: "numeric",
+													month: "short",
+													day: "numeric",
+												})}
+											</Typography>
+										}
+									/>
+								</ListItem>
+							))}
+						</List>
+					</Box>
 
-				{/* CALENDAR */}
-				<Box flex="1 1 100%" ml="15px">
-					<FullCalendar
-						height="75vh"
-						plugins={[
-							dayGridPlugin,
-							timeGridPlugin,
-							interactionPlugin,
-							listPlugin,
-						]}
-						headerToolbar={{
-							left: "prev,next today",
-							center: "title",
-							right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth",
-						}}
-						eventBackgroundColor={colors.steamColors[5]}
-						eventTextColor={colors.steamColors[1]}
-						initialView="dayGridMonth"
-						editable={true}
-						selectable={true}
-						selectMirror={true}
-						dayMaxEvents={true}
-						select={handleDateClick}
-						eventClick={handleEventClick}
-						eventsSet={(events) => setCurrentEvents(events)}
-						initialEvents={[
-							{
-								id: "12315",
-								title: "All-day event",
-								date: "2022-09-14",
-							},
-							{
-								id: "5123",
-								title: "Timed event",
-								date: "2023-01-12",
-							},
-						]}
-					/>
+					{/* CALENDAR */}
+					<Box flex="1 1 100%" ml="15px">
+						<FullCalendar
+							height="75vh"
+							plugins={[
+								dayGridPlugin,
+								timeGridPlugin,
+								interactionPlugin,
+								listPlugin,
+							]}
+							headerToolbar={{
+								left: "prev,next today",
+								center: "title",
+								right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth",
+							}}
+							eventBackgroundColor={colors.steamColors[5]}
+							eventTextColor={colors.steamColors[1]}
+							initialView="dayGridMonth"
+							editable={true}
+							selectable={true}
+							selectMirror={true}
+							dayMaxEvents={true}
+							select={handleDateClick}
+							eventClick={handleEventClick}
+							eventsSet={(events) => setCurrentEvents(events)}
+							initialEvents={[
+								{
+									id: "12315",
+									title: "All-day event",
+									date: "2022-09-14",
+								},
+								{
+									id: "5123",
+									title: "Timed event",
+									date: "2023-01-12",
+								},
+							]}
+						/>
+					</Box>
 				</Box>
 			</Box>
-		</Box>
+		</motion.div>
 	);
 }
 

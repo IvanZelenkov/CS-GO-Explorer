@@ -6,6 +6,7 @@ import { useTheme } from "@mui/material";
 import axios from "axios";
 import Refresh from "@mui/icons-material/Refresh";
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 const Contacts = () => {
 	const theme = useTheme();
@@ -69,71 +70,73 @@ const Contacts = () => {
 	];
 
 	return (
-		<Box m="20px">
-			<Header
-				title="CONTACTS"
-				subtitle="List of Contacts for Future Reference"
-			/>
-			{/* REFRESH BUTTON */}
-			<Box display="flex" justifyContent="space-between" alignItems="center">
-				<Box>
-					<Button
-						sx={{
+		<motion.div exit={{ opacity: 0 }}>
+			<Box m="20px">
+				<Header
+					title="CONTACTS"
+					subtitle="List of Contacts for Future Reference"
+				/>
+				{/* REFRESH BUTTON */}
+				<Box display="flex" justifyContent="space-between" alignItems="center">
+					<Box>
+						<Button
+							sx={{
+								backgroundColor: "custom.steamColorA",
+								color: "custom.steamColorD",
+								fontSize: "14px",
+								fontWeight: "bold",
+								padding: "10px 20px",
+							}}
+							onClick={() => {
+								getAllTableItems();
+							}}
+						>
+							<Refresh sx={{ mr: "10px" }}/>
+							Refresh
+						</Button>
+					</Box>
+				</Box>
+				<Box
+					m="40px 0 0 0"
+					height="75vh"
+					sx={{
+						"& .MuiDataGrid-root": {
+							border: "none"
+						},
+						"& .MuiDataGrid-cell": {
+							borderBottom: "none"
+						},
+						"& .name-column--cell": {
+							color: colors.greenAccent[300]
+						},
+						"& .MuiDataGrid-columnHeaders": {
 							backgroundColor: "custom.steamColorA",
-							color: "custom.steamColorD",
-							fontSize: "14px",
-							fontWeight: "bold",
-							padding: "10px 20px",
-						}}
-						onClick={() => {
-							getAllTableItems();
-						}}
-					>
-						<Refresh sx={{ mr: "10px" }}/>
-						Refresh
-					</Button>
+							borderBottom: "none"
+						},
+						"& .MuiDataGrid-virtualScroller": {
+							backgroundColor: colors.primary[400]
+						},
+						"& .MuiDataGrid-footerContainer": {
+							borderTop: "none",
+							backgroundColor: "custom.steamColorA"
+						},
+						"& .MuiCheckbox-root": {
+							color: `${colors.greenAccent[200]} !important`
+						},
+						"& .MuiDataGrid-toolbarContainer .MuiButton-text": {
+							color: `${colors.grey[100]} !important`
+						},
+					}}
+				>
+					{infoLoaded && tableData.length !== 0 && <DataGrid
+						rows={tableData}
+						getRowId={(row) => row?.studentID}
+						columns={columns}
+						components={{ Toolbar: GridToolbar }}
+					/>}
 				</Box>
 			</Box>
-			<Box
-				m="40px 0 0 0"
-				height="75vh"
-				sx={{
-					"& .MuiDataGrid-root": {
-						border: "none"
-					},
-					"& .MuiDataGrid-cell": {
-						borderBottom: "none"
-					},
-					"& .name-column--cell": {
-						color: colors.greenAccent[300]
-					},
-					"& .MuiDataGrid-columnHeaders": {
-						backgroundColor: "custom.steamColorA",
-						borderBottom: "none"
-					},
-					"& .MuiDataGrid-virtualScroller": {
-						backgroundColor: colors.primary[400]
-					},
-					"& .MuiDataGrid-footerContainer": {
-						borderTop: "none",
-						backgroundColor: "custom.steamColorA"
-					},
-					"& .MuiCheckbox-root": {
-						color: `${colors.greenAccent[200]} !important`
-					},
-					"& .MuiDataGrid-toolbarContainer .MuiButton-text": {
-						color: `${colors.grey[100]} !important`
-					},
-				}}
-			>
-				{infoLoaded && tableData.length !== 0 && <DataGrid
-					rows={tableData}
-					getRowId={(row) => row?.studentID}
-					columns={columns}
-					components={{ Toolbar: GridToolbar }}
-				/>}
-			</Box>
-		</Box>
+		</motion.div>
 	);
 };
 
