@@ -1,15 +1,15 @@
-import { useTheme } from "@mui/material";
+import { Box, Typography, useTheme } from "@mui/material";
 import { ResponsiveBar } from "@nivo/bar";
 import { tokens } from "../theme";
 
-const BarChart = ({ barChartData, barKeys, barColors, barKeyName, isDashboard = false }) => {
+const BarChart = ({ chartData, chartKeys, chartColors, chartKeyName, isDashboard = false }) => {
 	const theme = useTheme();
 	const colors = tokens(theme.palette.mode);
-	const getColor = bar => barColors[bar.id];
+	const getColor = bar => chartColors[bar.id];
 
 	return (
 		<ResponsiveBar
-			data={barChartData}
+			data={chartData}
 			theme={{
 				axis: {
 					domain: {
@@ -39,73 +39,38 @@ const BarChart = ({ barChartData, barKeys, barColors, barKeyName, isDashboard = 
 				},
 				fontSize: "0.75vh"
 			}}
-			keys={barKeys}
-			indexBy={barKeyName}
-			// tooltip={barChartData}
-			// tooltipLabel={barChartData.weaponName}
+			keys={chartKeys}
+			indexBy={chartKeyName}
 			tooltip={(item) => {
-				console.log(item)
 				return (
-					<div
-						style={{
-							background: "white",
-							padding: "9px 12px",
-							border: "1px solid #ccc",
-							color: "black",
-							fontWeight: "bold"
-						}}
-					>
-						<div>{item.indexValue}</div>
-						<div>{item.value} kills</div>
-					</div>
+					<Box style={{ background: "white", padding: "9px 12px", border: "1px solid #CCC" }}>
+						<Typography sx={{ color: "black", fontWeight: "bold" }}>{item.indexValue}</Typography>
+						<Typography sx={{ color: "black", fontWeight: "bold" }}>{item.value} kills</Typography>
+					</Box>
 				)
 			}}
 			margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
-			padding={0.3}
+			padding={0.4}
 			valueScale={{ type: "linear" }}
 			indexScale={{ type: "band", round: true }}
 			colors={getColor}
-			defs={[
-				{
-					id: "dots",
-					type: "patternDots",
-					background: "inherit",
-					color: "#38bcb2",
-					size: 4,
-					padding: 1,
-					stagger: true,
-				},
-				{
-					id: "lines",
-					type: "patternLines",
-					background: "inherit",
-					color: "#eed312",
-					rotation: -45,
-					lineWidth: 6,
-					spacing: 10,
-				},
-			]}
-			borderColor={{
-				from: "color",
-				modifiers: [["darker", "1.6"]],
-			}}
 			axisTop={null}
 			axisRight={null}
 			axisBottom={{
-				tickSize: 5,
+				tickSize: 10,
 				tickPadding: 5,
 				tickRotation: 0,
-				legend: isDashboard ? undefined : "Weapon",
+				legend: isDashboard ? undefined : "Weapons",
 				legendPosition: "middle",
-				legendOffset: 32,
+				legendOffset: 42
 			}}
 			axisLeft={{
-				tickSize: 5,
+				tickSize: 10,
 				tickPadding: 5,
 				tickRotation: 0,
 				legend: isDashboard ? undefined : "Kills",
 				legendPosition: "middle",
-				legendOffset: -40,
+				legendOffset: -50
 			}}
 			enableLabel={true}
 			labelSkipWidth={12}
@@ -114,7 +79,7 @@ const BarChart = ({ barChartData, barKeys, barColors, barKeyName, isDashboard = 
 				from: "",
 				modifiers: [["darker", 1.6]]
 			}}
-			// Commented out the right hand side color bar for now
+			// Right-hand side color bar
 			// legends={[
 			// 	{
 			// 		dataFrom: "keys",

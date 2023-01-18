@@ -31,7 +31,7 @@ const Invoices = () => {
 			headerName: "Cost",
 			flex: 1,
 			renderCell: (params) => (
-				<Typography color={colors.greenAccent[500]}>
+				<Typography color={colors.steamColors[6]}>
 					${params.row.cost}
 				</Typography>
 			),
@@ -45,7 +45,7 @@ const Invoices = () => {
 
 	return (
 		<motion.div exit={{ opacity: 0 }}>
-			<Box margin="20px">
+			<Box margin="1.5vh">
 				<Header title="INVOICES" subtitle="List of Invoice Balances"/>
 				<Box
 					margin="40px 0 0 0"
@@ -58,7 +58,7 @@ const Invoices = () => {
 							borderBottom: "none"
 						},
 						"& .name-column--cell": {
-							color: colors.greenAccent[300]
+							color: colors.steamColors[6]
 						},
 						"& .MuiDataGrid-columnHeaders": {
 							backgroundColor: "custom.steamColorA",
@@ -72,7 +72,7 @@ const Invoices = () => {
 							backgroundColor: "custom.steamColorA"
 						},
 						"& .MuiCheckbox-root": {
-							color: `${colors.greenAccent[200]} !important`
+							color: `${colors.steamColors[6]} !important`
 						}
 					}}
 				>

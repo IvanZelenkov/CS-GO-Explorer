@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { ProSidebar, Menu, MenuItem, SidebarHeader, SidebarContent } from "react-pro-sidebar";
+import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { Box, IconButton, Typography, Link as ProfileLink, useTheme, CircularProgress } from "@mui/material";
-import { Link as SidebarLink } from "react-router-dom";
+import { GiCrosshair } from "react-icons/gi";
+import { MdOutlineMapsHomeWork } from "react-icons/md";
 import "react-pro-sidebar/dist/css/styles.css";
-import { tokens } from "../../theme";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
@@ -11,32 +11,12 @@ import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
-import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutlined";
-import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
-import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
-import { GiCrosshair } from "react-icons/gi";
-import { MdOutlineMapsHomeWork } from "react-icons/md";
 import axios from "axios";
 import { motion } from "framer-motion";
-
-const Item = ({ title, to, icon, selected, setSelected }) => {
-	const theme = useTheme();
-	const colors = tokens(theme.palette.mode);
-	return (
-		<MenuItem
-			active={selected === title}
-			style={{
-				color: colors.steamColors[4]
-			}}
-			onClick={() => setSelected(title)}
-			icon={icon}
-		>
-			<Typography>{title}</Typography>
-			<SidebarLink to={to}/>
-		</MenuItem>
-	);
-};
+import { tokens } from "../../theme";
+import SidebarItem from "../../components/SidebarItem";
+import SidebarBackgroundImage from "../../images/sidebar/background.jpeg";
 
 const Sidebar = () => {
 	const theme = useTheme();
@@ -87,21 +67,21 @@ const Sidebar = () => {
 			if (communityVisibilityState === 3) {
 				switch (stateNumber) {
 					case 0:
-						return "Offline";
+						return "OFFLINE";
 					case 1:
-						return "Online";
+						return "ONLINE";
 					case 2:
-						return "Busy";
+						return "BUSY";
 					case 3:
-						return "Away";
+						return "AWAY";
 					case 4:
-						return "Snooze";
+						return "SNOOZE";
 					case 5:
-						return "Looking to trade";
+						return "LOOKING TO TRADE";
 					case 6:
-						return "Looking to play"
+						return "LOOKING TO PLAY"
 					default:
-						return "Offline";
+						return "OFFLINE";
 				}
 			} else {
 				return "Private";
@@ -123,19 +103,22 @@ const Sidebar = () => {
 		<Box
 			sx={{
 				"& .pro-sidebar-inner": {
-					background: `${colors.steamColors[2]} !important`,
+					backgroundImage: `url(${SidebarBackgroundImage}) !important`,
+					backgroundSize: 'cover',
+					backgroundRepeat  : 'no-repeat',
+					backgroundPosition: 'center'
 				},
 				"& .pro-icon-wrapper": {
-					backgroundColor: "transparent !important",
+					backgroundColor: "transparent !important"
 				},
 				"& .pro-inner-item": {
-					padding: "5px 35px 5px 20px !important",
+					padding: "0 3vh 0.7vh 2vh !important"
 				},
 				"& .pro-inner-item:hover": {
-					color: `${colors.steamColors[6]} !important`,
+					color: `${colors.steamColors[5]} !important`
 				},
 				"& .pro-menu-item.active": {
-					color: `${colors.steamColors[6]} !important`,
+					color: `${colors.steamColors[5]} !important`
 				},
 				".pro-sidebar": {
 					height: "100%"
@@ -147,10 +130,10 @@ const Sidebar = () => {
 					<Box style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
 						{!isCollapsed && <MenuItem>
 							<Box style={{ cursor: "auto" }}>
-								<Typography variant="h3" color="custom.steamColorD">
+								<Typography variant="h3" color="primary.main" letterSpacing="0.1vw" fontWeight="bold">
 									Status: {infoLoaded && definePersonaState()}
 								</Typography>
-								<Typography variant="h5" color="custom.steamColorE">
+								<Typography variant="h5" color="primary.main">
 									{infoLoaded && formatLastTimeOnlineData()}
 								</Typography>
 							</Box>
@@ -159,7 +142,7 @@ const Sidebar = () => {
 							onClick={() => setIsCollapsed(!isCollapsed)}
 							icon={isCollapsed ? <MenuOutlinedIcon/> : undefined}
 							style={{
-								margin: "10px 0 20px 0",
+								margin: "1.5vh 0 1vh 0",
 								color: colors.grey[100]
 							}}
 						>
@@ -168,10 +151,10 @@ const Sidebar = () => {
 									display="flex"
 									justifyContent="space-between"
 									alignItems="center"
-									marginLeft="15px"
+									marginLeft="1vw"
 								>
 									<IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
-										<MenuOutlinedIcon sx={{ color: "custom.steamColorD" }}/>
+										<MenuOutlinedIcon sx={{ color: "primary" }}/>
 									</IconButton>
 								</Box>
 							)}
@@ -203,11 +186,12 @@ const Sidebar = () => {
 									variant="h2"
 									color="primary.main"
 									fontWeight="bold"
-									sx={{ m: "10px 0 0 0" }}
+									letterSpacing="0.1vw"
+									margin="10px 0 0 0"
 								>
 									{infoLoaded && profile.response.players[0].personaname}
 								</Typography>
-								<Typography variant="h5" color="custom.steamColorE">
+								<Typography variant="h5" color="custom.steamColorE" fontWeight="bold" letterSpacing="0.1vw">
 									Steam ID: {infoLoaded && profile.response.players[0].steamid}
 								</Typography>
 							</Box>
@@ -218,7 +202,7 @@ const Sidebar = () => {
 					<Box paddingLeft={isCollapsed ? undefined : "10%"}>
 						{/*Dashboard*/}
 						<motion.div whileHover={{ scale: 1.1 }}>
-							<Item
+							<SidebarItem
 								title="Dashboard"
 								to="/"
 								icon={<HomeOutlinedIcon/>}
@@ -230,13 +214,15 @@ const Sidebar = () => {
 						{/*Data*/}
 						<Typography
 							variant="h6"
-							color={colors.grey[300]}
-							margin={"15px 0 5px 20px"}
+							color="custom.steamColorE"
+							fontWeight="bold"
+							fontSize="1.3vh"
+							margin="15px 0 5px 15px"
 						>
 							Data
 						</Typography>
 						<motion.div whileHover={{ scale: 1.1 }}>
-							<Item
+							<SidebarItem
 								title="Friends"
 								to="/friends"
 								icon={<PeopleOutlinedIcon/>}
@@ -245,7 +231,7 @@ const Sidebar = () => {
 							/>
 						</motion.div>
 						<motion.div whileHover={{ scale: 1.1 }}>
-							<Item
+							<SidebarItem
 								title="Contacts Information"
 								to="/contacts"
 								icon={<ContactsOutlinedIcon/>}
@@ -254,7 +240,7 @@ const Sidebar = () => {
 							/>
 						</motion.div>
 						<motion.div whileHover={{ scale: 1.1 }}>
-							<Item
+							<SidebarItem
 								title="Invoices Balances"
 								to="/invoices"
 								icon={<ReceiptOutlinedIcon/>}
@@ -266,22 +252,24 @@ const Sidebar = () => {
 						{/*Pages*/}
 						<Typography
 							variant="h6"
-							color={colors.grey[300]}
-							sx={{ m: "15px 0 5px 20px" }}
+							color="custom.steamColorE"
+							fontWeight="bold"
+							fontSize="1.3vh"
+							margin="15px 0 5px 15px"
 						>
 							Pages
 						</Typography>
 						<motion.div whileHover={{ scale: 1.1 }}>
-							<Item
-								title="Profile Form"
-								to="/form"
+							<SidebarItem
+								title="Profile"
+								to="/profile"
 								icon={<PersonOutlinedIcon/>}
 								selected={selected}
 								setSelected={setSelected}
 							/>
 						</motion.div>
 						<motion.div whileHover={{ scale: 1.1 }}>
-							<Item
+							<SidebarItem
 								title="Calendar"
 								to="/calendar"
 								icon={<CalendarTodayOutlinedIcon/>}
@@ -290,7 +278,7 @@ const Sidebar = () => {
 							/>
 						</motion.div>
 						<motion.div whileHover={{ scale: 1.1 }}>
-							<Item
+							<SidebarItem
 								title="FAQ Page"
 								to="/faq"
 								icon={<HelpOutlineOutlinedIcon/>}
@@ -302,52 +290,27 @@ const Sidebar = () => {
 						{/*Statistics*/}
 						<Typography
 							variant="h6"
-							color={colors.grey[300]}
-							sx={{ m: "15px 0 5px 20px" }}
+							color="custom.steamColorE"
+							fontWeight="bold"
+							fontSize="1.3vh"
+							margin="15px 0 5px 15px"
 						>
 							Statistics
 						</Typography>
 						<motion.div whileHover={{ scale: 1.1 }}>
-							<Item
+							<SidebarItem
 								title="Weapons"
-								to="/weapons-stats"
+								to="/weapon-stats"
 								icon={<GiCrosshair size={23}/>}
 								selected={selected}
 								setSelected={setSelected}
 							/>
 						</motion.div>
 						<motion.div whileHover={{ scale: 1.1 }}>
-							<Item
+							<SidebarItem
 								title="Maps"
-								to="/maps-stats"
+								to="/map-stats"
 								icon={<MdOutlineMapsHomeWork size={20}/>}
-								selected={selected}
-								setSelected={setSelected}
-							/>
-						</motion.div>
-						<motion.div whileHover={{ scale: 1.1 }}>
-							<Item
-								title="Pie Chart"
-								to="/pie"
-								icon={<PieChartOutlineOutlinedIcon/>}
-								selected={selected}
-								setSelected={setSelected}
-							/>
-						</motion.div>
-						<motion.div whileHover={{ scale: 1.1 }}>
-							<Item
-								title="Line Chart"
-								to="/line"
-								icon={<TimelineOutlinedIcon/>}
-								selected={selected}
-								setSelected={setSelected}
-							/>
-						</motion.div>
-						<motion.div whileHover={{ scale: 1.1 }}>
-							<Item
-								title="Geography Chart"
-								to="/geography"
-								icon={<MapOutlinedIcon/>}
 								selected={selected}
 								setSelected={setSelected}
 							/>

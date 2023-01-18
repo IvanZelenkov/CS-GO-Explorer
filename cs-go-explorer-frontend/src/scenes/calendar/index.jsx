@@ -1,14 +1,14 @@
 import { useState } from "react";
+import { Box, List, ListItem, ListItemText, Typography, useTheme } from "@mui/material";
 import FullCalendar from "@fullcalendar/react";
 import { formatDate } from '@fullcalendar/core'
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
-import { Box, List, ListItem, ListItemText, Typography, useTheme } from "@mui/material";
-import Header from "../../components/Header";
-import { tokens } from "../../theme";
 import { motion } from "framer-motion";
+import { tokens } from "../../theme";
+import Header from "../../components/Header";
 
 const Calendar = () => {
 	const theme = useTheme();
@@ -19,7 +19,6 @@ const Calendar = () => {
 		const title = prompt("Please enter a new title for your event");
 		const calendarApi = selected.view.calendar;
 		calendarApi.unselect();
-
 		if (title) {
 			calendarApi.addEvent({
 				id: `${selected.dateStr}-${title}`,
@@ -32,16 +31,14 @@ const Calendar = () => {
 	};
 
 	const handleEventClick = (selected) => {
-		if (window.confirm(`Are you sure you want to delete the event '${selected.event.title}'`)){
+		if (window.confirm(`Are you sure you want to delete the event '${selected.event.title}'`))
 			selected.event.remove();
-		}
 	};
 
 	return (
 		<motion.div exit={{ opacity: 0 }}>
-			<Box m="20px">
-				<Header title="Calendar" subtitle="Full Calendar Interactive Page" />
-
+			<Box margin="1.5vh">
+				<Header title="Calendar" subtitle="Full Calendar Interactive Page"/>
 				<Box display="flex" justifyContent="space-between">
 					{/* CALENDAR SIDEBAR */}
 					<Box
@@ -58,7 +55,7 @@ const Calendar = () => {
 									sx={{
 										backgroundColor: "custom.steamColorF",
 										margin: "10px 0",
-										borderRadius: "2px",
+										borderRadius: "2px"
 									}}
 								>
 									<ListItemText
@@ -68,7 +65,7 @@ const Calendar = () => {
 												{formatDate(event.start, {
 													year: "numeric",
 													month: "short",
-													day: "numeric",
+													day: "numeric"
 												})}
 											</Typography>
 										}
@@ -79,19 +76,19 @@ const Calendar = () => {
 					</Box>
 
 					{/* CALENDAR */}
-					<Box flex="1 1 100%" ml="15px">
+					<Box flex="1 1 100%" marginLeft="15px">
 						<FullCalendar
 							height="75vh"
 							plugins={[
 								dayGridPlugin,
 								timeGridPlugin,
 								interactionPlugin,
-								listPlugin,
+								listPlugin
 							]}
 							headerToolbar={{
 								left: "prev,next today",
 								center: "title",
-								right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth",
+								right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth"
 							}}
 							eventBackgroundColor={colors.steamColors[5]}
 							eventTextColor={colors.steamColors[1]}
@@ -107,13 +104,13 @@ const Calendar = () => {
 								{
 									id: "12315",
 									title: "All-day event",
-									date: "2022-09-14",
+									date: "2022-09-14"
 								},
 								{
 									id: "5123",
 									title: "Timed event",
-									date: "2023-01-12",
-								},
+									date: "2023-01-12"
+								}
 							]}
 						/>
 					</Box>

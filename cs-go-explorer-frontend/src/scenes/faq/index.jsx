@@ -1,20 +1,17 @@
-import { Box, useTheme } from "@mui/material";
+import { Box } from "@mui/material";
 import Header from "../../components/Header";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { tokens } from "../../theme";
 import { motion } from "framer-motion";
 
 const FAQ = () => {
-	const theme = useTheme();
-	const colors = tokens(theme.palette.mode);
 
 	return (
 		<motion.div exit={{ opacity: 0 }}>
-			<Box m="20px">
+			<Box margin="1.5vh">
 				<Header title="FAQ" subtitle="Frequently Asked Questions Page"/>
 
 				<Accordion>

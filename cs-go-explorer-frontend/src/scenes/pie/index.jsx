@@ -1,15 +1,41 @@
-import { Box } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import Header from "../../components/Header";
 import PieChart from "../../components/PieChart";
+import { useNavigate } from "react-router-dom";
+import { useOutletContext } from "react-router-dom";
 import { motion } from "framer-motion";
+import KeyboardBackspaceRoundedIcon from "@mui/icons-material/KeyboardBackspaceRounded";
 
 const Pie = () => {
+	let navigation = useNavigate();
+	const { chartData, chartKeys, chartColors, chartKeyName, chartSubtitle } = useOutletContext();
+
 	return (
 		<motion.div exit={{ opacity: 0 }}>
-			<Box m="20px">
-				<Header title="Pie Chart" subtitle="Simple Pie Chart"/>
-				<Box height="75vh">
-					<PieChart/>
+			<Box margin="1.5vh">
+				<Box display="flex" alignItems="center" flexDirection="row">
+					<Button
+						sx={{
+							backgroundColor: "custom.steamColorA",
+							color: "custom.steamColorD",
+							fontWeight: "bold",
+							margin: "0 2.5vh 2.5vh 0",
+							width: "2vw",
+							height: "3vh"
+						}}
+						onClick={() => navigation(-1)}
+					>
+						<KeyboardBackspaceRoundedIcon fontSize="large"/>
+					</Button>
+					<Header title="Pie Chart" subtitle={chartSubtitle}/>
+				</Box>
+				<Box height="80vh">
+					<PieChart
+						chartData={chartData}
+						chartKeys={chartKeys}
+						chartColors={chartColors}
+						chartKeyName={chartKeyName}
+					/>
 				</Box>
 			</Box>
 		</motion.div>

@@ -1,11 +1,11 @@
 {
   "swagger" : "2.0",
   "info" : {
-    "description" : "REST API for Steam Client application",
-    "version" : "2023-01-13T00:51:03Z",
-    "title" : "steam-client-rest-api"
+    "description" : "REST API for CS:GO Explorer application",
+    "version" : "2023-01-15T06:14:45Z",
+    "title" : "cs-go-explorer-rest-api"
   },
-  "host" : "g2zu2a1p91.execute-api.us-east-1.amazonaws.com",
+  "host" : "auidpp9d1a.execute-api.us-east-1.amazonaws.com",
   "basePath" : "/ProductionStage",
   "schemes" : [ "https" ],
   "paths" : {
@@ -58,6 +58,30 @@
       }
     },
     "/GetPlayerSummaries" : {
+      "get" : {
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "200 response",
+            "schema" : {
+              "$ref" : "#/definitions/Empty"
+            }
+          }
+        }
+      },
+      "options" : {
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "200 response",
+            "schema" : {
+              "$ref" : "#/definitions/Empty"
+            }
+          }
+        }
+      }
+    },
+    "/GetUserStatsForGame" : {
       "get" : {
         "produces" : [ "application/json" ],
         "responses" : {

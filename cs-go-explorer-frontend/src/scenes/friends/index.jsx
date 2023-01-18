@@ -1,13 +1,13 @@
+import { useEffect, useState } from "react";
 import { Box, Button, Link as ProfileLink, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { tokens } from "../../theme";
-import Header from "../../components/Header";
-import axios from "axios";
-import { useEffect, useState } from "react";
-import states from 'us-state-converter';
 import { CircularProgress } from "@mui/material";
 import Refresh from "@mui/icons-material/Refresh";
+import axios from "axios";
+import states from 'us-state-converter';
 import { motion } from "framer-motion";
+import { tokens } from "../../theme";
+import Header from "../../components/Header";
 
 const Friends = () => {
 	const theme = useTheme();
@@ -24,14 +24,11 @@ const Friends = () => {
 		}).catch(function (error) {
 			console.log(error);
 		});
-		setFriendsList({hello: "hello"})
 	}
 
 	useEffect(() => {
 		getFriendList();
 	}, []);
-
-	console.log(1)
 
 	const definePersonaState = (personastate, communityvisibilitystate) => {
 		if (communityvisibilitystate === 3) {
@@ -76,15 +73,14 @@ const Friends = () => {
 
 	const formatLastTimeOnlineData = (lastlogoff, personastate, communityvisibilitystate) => {
 		let state = definePersonaState(personastate, communityvisibilitystate);
-		if (state === "Online") {
-			return "Currently online"
-		} else {
+		if (state === "Online")
+			return "Currently online";
+		else
 			return unixTimeTimestampConverter(lastlogoff);
-		}
 	}
 
 	const regionNames = new Intl.DisplayNames(
-		['en'], {type: 'region'}
+		['en'], { type: 'region' }
 	);
 
 	const columns = [
@@ -92,6 +88,8 @@ const Friends = () => {
 			field: "avatar",
 			headerName: "Avatar",
 			flex: 1,
+			headerAlign: "center",
+			align: "center",
 			// cellClassName: "name-column--cell",
 			renderCell: ({ row }) => {
 				return (
@@ -104,133 +102,130 @@ const Friends = () => {
 							<Box
 								component="img"
 								alt="profile-user"
-								width="80px"
-								height="80px"
+								width="3vw"
+								height="5.5vh"
 								src={row.avatarfull}
-								style={{ cursor: "pointer", borderRadius: "50%" }}
+								style={{ cursor: "pointer", borderRadius: "10%" }}
 							/>
 						</ProfileLink>
 					</Box>
 				);
-			},
-			headerAlign: "center",
-			align: "center"
+			}
 		},
 		{
 			field: "personaname",
 			headerName: "Nickname",
 			flex: 1,
+			headerAlign: "center",
+			align: "center",
 			renderCell: ({ row }) => {
 				if (row.personaname === undefined)
 					return "";
 				else
 					return (
-						<Box sx={{fontSize: "14px"}}>
+						<Box sx={{ fontSize: "1.2vh" }}>
 							{row.personaname}
 						</Box>
 					);
-			},
-			headerAlign: "center",
-			align: "center"
+			}
 		},
 		{
 			field: "steamid",
 			headerName: "Steam ID",
 			flex: 1,
+			headerAlign: "center",
+			align: "center",
 			renderCell: ({ row }) => {
 				if (row.steamid === undefined)
 					return "";
 				else
 					return (
-						<Box sx={{fontSize: "14px"}}>
+						<Box sx={{ fontSize: "1.2vh" }}>
 							{row.steamid}
 						</Box>
 					);
-			},
-			headerAlign: "center",
-			align: "center"
+			}
 		},
 		{
 			field: "communityvisibilitystate",
 			headerName: "Status",
 			flex: 1,
+			headerAlign: "center",
+			align: "center",
 			// type: "number",
-			// headerAlign: "left",
-			// align: "left",
 			renderCell: ({ row }) => {
 				return (
-					<Box sx={{fontSize: "14px"}}>
+					<Box sx={{ fontSize: "1.2vh" }}>
 						{definePersonaState(row.personastate, row.communityvisibilitystate)}
 					</Box>
 				);
-			},
-			headerAlign: "center",
-			align: "center"
+			}
 		},
 		{
 			field: "lastlogoff",
 			headerName: "Last time online",
 			flex: 1,
-			// type: "number",
-			// headerAlign: "left",
-			// align: "left",
+			headerAlign: "center",
+			align: "center",
 			renderCell: ({ row }) => {
 				if (row.lastlogoff === undefined || row.personastate === undefined || row.communityvisibilitystate === undefined)
 					return "";
 				else
 					return (
-						<Box sx={{fontSize: "14px"}}>
+						<Box sx={{ fontSize: "1.2vh" }}>
 							{formatLastTimeOnlineData(row.lastlogoff, row.personastate, row.communityvisibilitystate)}
 						</Box>
 					);
-			},
-			headerAlign: "center",
-			align: "center"
+			}
 		},
 		{
 			field: "timecreated",
 			headerName: "Account created",
 			flex: 1,
+			headerAlign: "center",
+			align: "center",
 			renderCell: ({ row }) => {
 				if (row.timecreated === undefined)
 					return "";
 				else
 					return (
-						<Box sx={{fontSize: "14px"}}>
+						<Box sx={{ fontSize: "1.2vh" }}>
 							{unixTimeTimestampConverter(row.timecreated)}
 						</Box>
 					);
-			},
-			headerAlign: "center",
-			align: "center"
+			}
 		},
 		{
 			field: "loccountrycode",
 			headerName: "Country",
 			flex: 1,
+			headerAlign: "center",
+			align: "center",
 			renderCell: ({ row }) => {
 				if (row.loccountrycode === undefined)
 					return "";
 				else
-					return <Box sx={{fontSize: "14px"}}>{regionNames.of(row.loccountrycode)}</Box>
-			},
-			headerAlign: "center",
-			align: "center"
+					return (
+						<Box sx={{ fontSize: "1.2vh" }}>
+							{regionNames.of(row.loccountrycode)}
+						</Box>
+					);
+			}
 		},
 		{
 			field: "locstatecode",
 			headerName: "State",
 			flex: 1,
+			headerAlign: "center",
+			align: "center",
 			renderCell: ({ row }) => {
 				if (row.locstatecode === undefined)
 					return "";
 				else {
 					const stateObject = states(row.locstatecode);
-					return <Box sx={{fontSize: "14px"}}>{stateObject.name}</Box>
+					return <Box sx={{ fontSize: "1.2vh" }}>{stateObject.name}</Box>
 				}
-			},
-			headerAlign: "center",
-			align: "center"
+			}
 		}
 	];
 
@@ -246,7 +241,7 @@ const Friends = () => {
 	}
 	return (
 		<motion.div exit={{ opacity: 0 }}>
-			<Box margin="20px">
+			<Box margin="1.5vh">
 				<Header title="FRIENDS" subtitle="Explore information about friends"/>
 				{/* REFRESH BUTTON */}
 				<Box display="flex" justifyContent="space-between" alignItems="center">
@@ -255,22 +250,22 @@ const Friends = () => {
 							sx={{
 								backgroundColor: "custom.steamColorA",
 								color: "custom.steamColorD",
-								fontSize: "14px",
+								fontSize: "1vh",
 								fontWeight: "bold",
-								padding: "10px 20px",
+								padding: "0.8vh 1.2vh"
 							}}
 							onClick={() => {
 								setInfoLoaded(false);
 								getFriendList();
 							}}
 						>
-							<Refresh sx={{ mr: "10px" }}/>
+							<Refresh sx={{ marginRight: "0.5vh" }}/>
 							Refresh
 						</Button>
 					</Box>
 				</Box>
 				<Box
-					margin="40px 0 0 0"
+					margin="2vh 0 0 0"
 					height="70vh"
 					sx={{
 						"& .MuiDataGrid-root": {
@@ -286,7 +281,7 @@ const Friends = () => {
 						"& .MuiDataGrid-columnHeaders": {
 							backgroundColor: "custom.steamColorA",
 							borderBottom: "none",
-							fontSize: "14px"
+							fontSize: "1.2vh"
 						},
 						"& .MuiDataGrid-virtualScroller": {
 							backgroundColor: colors.primary[400],
@@ -296,14 +291,14 @@ const Friends = () => {
 							backgroundColor: "custom.steamColorA",
 						},
 						"& .MuiCheckbox-root": {
-							color: `${colors.greenAccent[200]} !important`,
+							color: `${colors.steamColors[6]} !important`,
 						},
 					}}
 				>
 					{infoLoaded && <DataGrid
 						rows={friendsList.response.players}
-						columns={columns}
 						getRowId={((row) => row?.steamid)}
+						columns={columns}
 						rowHeight={100}
 					/>}
 				</Box>

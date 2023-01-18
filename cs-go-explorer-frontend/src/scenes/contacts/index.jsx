@@ -60,44 +60,42 @@ const Contacts = () => {
 			field: "dateOfBirth",
 			headerName: "Date of Birth",
 			flex: 1,
-			cellClassName: "name-column--cell",
+			cellClassName: "name-column--cell"
 		},
 		{
 			field: "email",
 			headerName: "Email",
-			flex: 1,
+			flex: 1
 		}
 	];
 
 	return (
 		<motion.div exit={{ opacity: 0 }}>
-			<Box m="20px">
+			<Box margin="1.5vh">
 				<Header
 					title="CONTACTS"
 					subtitle="List of Contacts for Future Reference"
 				/>
 				{/* REFRESH BUTTON */}
 				<Box display="flex" justifyContent="space-between" alignItems="center">
-					<Box>
-						<Button
-							sx={{
-								backgroundColor: "custom.steamColorA",
-								color: "custom.steamColorD",
-								fontSize: "14px",
-								fontWeight: "bold",
-								padding: "10px 20px",
-							}}
-							onClick={() => {
-								getAllTableItems();
-							}}
-						>
-							<Refresh sx={{ mr: "10px" }}/>
-							Refresh
-						</Button>
-					</Box>
+					<Button
+						sx={{
+							backgroundColor: "custom.steamColorA",
+							color: "custom.steamColorD",
+							fontSize: "1vh",
+							fontWeight: "bold",
+							padding: "0.8vh 1.2vh"
+						}}
+						onClick={() => {
+							getAllTableItems();
+						}}
+					>
+						<Refresh sx={{ marginRight: "0.5vh" }}/>
+						Refresh
+					</Button>
 				</Box>
 				<Box
-					m="40px 0 0 0"
+					margin="2vh 0 0 0"
 					height="75vh"
 					sx={{
 						"& .MuiDataGrid-root": {
@@ -107,7 +105,7 @@ const Contacts = () => {
 							borderBottom: "none"
 						},
 						"& .name-column--cell": {
-							color: colors.greenAccent[300]
+							color: colors.steamColors[6]
 						},
 						"& .MuiDataGrid-columnHeaders": {
 							backgroundColor: "custom.steamColorA",
@@ -121,11 +119,11 @@ const Contacts = () => {
 							backgroundColor: "custom.steamColorA"
 						},
 						"& .MuiCheckbox-root": {
-							color: `${colors.greenAccent[200]} !important`
+							color: `${colors.steamColors[6]} !important`
 						},
 						"& .MuiDataGrid-toolbarContainer .MuiButton-text": {
 							color: `${colors.grey[100]} !important`
-						},
+						}
 					}}
 				>
 					{infoLoaded && tableData.length !== 0 && <DataGrid
