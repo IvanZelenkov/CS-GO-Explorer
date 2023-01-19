@@ -33,25 +33,50 @@ const Topbar = () => {
 				<motion.div whileHover={{ scale: 1.2 }}>
 					<IconButton onClick={colorMode.toggleColorMode}>
 						{theme.palette.mode === "dark" ? (
-							<DarkModeOutlinedIcon sx={{ color: "custom.steamColorD" }}/>
+							<DarkModeOutlinedIcon sx={{
+								color: "custom.steamColorD",
+								":hover": {
+									color: "custom.steamColorF"
+								}
+							}}/>
 						) : (
-							<LightModeOutlinedIcon/>
+							<LightModeOutlinedIcon sx={{
+								color: "custom.steamColorD",
+								":hover": {
+									color: "custom.steamColorF"
+								}
+							}}/>
 						)}
 					</IconButton>
 				</motion.div>
 				<motion.div whileHover={{ scale: 1.2 }}>
 					<IconButton>
-						<NotificationsOutlinedIcon sx={{ color: "custom.steamColorD" }}/>
+						<NotificationsOutlinedIcon sx={{
+							color: "custom.steamColorD",
+							":hover": {
+								color: "custom.steamColorF"
+							}
+						}}/>
 					</IconButton>
 				</motion.div>
 				<motion.div whileHover={{ scale: 1.2 }}>
 					<IconButton>
-						<SettingsOutlinedIcon sx={{ color: "custom.steamColorD" }}/>
+						<SettingsOutlinedIcon sx={{
+							color: "custom.steamColorD",
+							":hover": {
+								color: "custom.steamColorF"
+							}
+						}}/>
 					</IconButton>
 				</motion.div>
 				<motion.div whileHover={{ scale: 1.2 }}>
 					<IconButton>
-						<PersonOutlinedIcon sx={{ color: "custom.steamColorD" }}/>
+						<PersonOutlinedIcon sx={{
+							color: "custom.steamColorD",
+							":hover": {
+								color: "custom.steamColorF"
+							}
+						}}/>
 					</IconButton>
 				</motion.div>
 			</Box>

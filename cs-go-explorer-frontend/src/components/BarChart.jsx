@@ -2,52 +2,86 @@ import { Box, Typography, useTheme } from "@mui/material";
 import { ResponsiveBar } from "@nivo/bar";
 import { tokens } from "../theme";
 
-const BarChart = ({ chartData, chartKeys, chartColors, chartKeyName, isDashboard = false }) => {
+const BarChart = ({ chartState, chartSubtitle }) => {
 	const theme = useTheme();
 	const colors = tokens(theme.palette.mode);
-	const getColor = bar => chartColors[bar.id];
+	const getColor = bar => bar.data.backgroundColor;
 
 	return (
 		<ResponsiveBar
-			data={chartData}
+			data={chartState.chartData}
 			theme={{
 				axis: {
 					domain: {
 						line: {
-							stroke: colors.grey[100]
+							stroke: colors.steamColors[4]
 						}
 					},
 					legend: {
 						text: {
-							fill: colors.grey[100]
+							fill: colors.steamColors[6],
+							fontSize: "14px",
+							fontWeight: "bold"
 						}
 					},
 					ticks: {
 						line: {
-							stroke: colors.grey[100],
+							stroke: colors.steamColors[4],
 							strokeWidth: 1
 						},
 						text: {
-							fill: colors.grey[100]
+							fill: colors.steamColors[4]
 						}
 					}
 				},
 				legends: {
 					text: {
-						fill: colors.grey[100]
+						fill: colors.steamColors[4]
 					}
 				},
 				fontSize: "0.75vh"
 			}}
-			keys={chartKeys}
-			indexBy={chartKeyName}
+			keys={chartState.chartKeys}
+			indexBy={chartState.chartKeyName}
 			tooltip={(item) => {
-				return (
-					<Box style={{ background: "white", padding: "9px 12px", border: "1px solid #CCC" }}>
-						<Typography sx={{ color: "black", fontWeight: "bold" }}>{item.indexValue}</Typography>
-						<Typography sx={{ color: "black", fontWeight: "bold" }}>{item.value} kills</Typography>
-					</Box>
-				)
+				if (chartSubtitle === "Kill amount stats") {
+					if (item.indexValue === "Knife" || item.indexValue === "M4A1-S" || item.indexValue === "XM1014") {
+						return (
+							<Box style={{ background: "white", padding: "9px 12px", border: "1px solid #CCC" }}>
+								<Typography sx={{ color: "black", fontWeight: "bold", fontSize: "16px" }}>
+									{item.indexValue}
+								</Typography>
+								<Typography sx={{ color: "black", fontWeight: "bold" }}>{item.value} kills</Typography>
+							</Box>
+						);
+					}
+					return (
+						<Box style={{ background: "white", padding: "9px 12px", border: "1px solid #CCC" }}>
+							<Typography sx={{ color: item.color, fontWeight: "bold", fontSize: "16px" }}>{item.indexValue}</Typography>
+							<Typography sx={{ color: "black", fontWeight: "bold" }}>{item.value} kills</Typography>
+						</Box>
+					);
+				} else if (chartSubtitle === "Map round win rates") {
+					if (item.indexValue === "St. Marc") {
+						return (
+							<Box style={{ background: "white", padding: "9px 12px", border: "1px solid #CCC" }}>
+								<Typography sx={{ color: "black", fontWeight: "bold", fontSize: "16px" }}>
+									{item.indexValue}
+								</Typography>
+								<Typography sx={{ color: "black", fontWeight: "bold" }}>{item.value} %</Typography>
+							</Box>
+						);
+					} else {
+						return (
+							<Box style={{ background: "white", padding: "9px 12px", border: "1px solid #CCC" }}>
+								<Typography sx={{ color: item.color, fontWeight: "bold", fontSize: "16px" }}>
+									{item.indexValue}
+								</Typography>
+								<Typography sx={{ color: "black", fontWeight: "bold" }}>{item.value} %</Typography>
+							</Box>
+						);
+					}
+				}
 			}}
 			margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
 			padding={0.4}
@@ -60,7 +94,7 @@ const BarChart = ({ chartData, chartKeys, chartColors, chartKeyName, isDashboard
 				tickSize: 10,
 				tickPadding: 5,
 				tickRotation: 0,
-				legend: isDashboard ? undefined : "Weapons",
+				legend: chartSubtitle === "Kill amount stats" ? "Weapons" : "Maps",
 				legendPosition: "middle",
 				legendOffset: 42
 			}}
@@ -68,7 +102,7 @@ const BarChart = ({ chartData, chartKeys, chartColors, chartKeyName, isDashboard
 				tickSize: 10,
 				tickPadding: 5,
 				tickRotation: 0,
-				legend: isDashboard ? undefined : "Kills",
+				legend: chartSubtitle === "Kill amount stats" ? "Kills" : "Map round win rates %",
 				legendPosition: "middle",
 				legendOffset: -50
 			}}
@@ -77,7 +111,7 @@ const BarChart = ({ chartData, chartKeys, chartColors, chartKeyName, isDashboard
 			labelSkipHeight={12}
 			labelTextColor={{
 				from: "",
-				modifiers: [["darker", 1.6]]
+				modifiers: [["darker", 1.2]]
 			}}
 			// Right-hand side color bar
 			// legends={[

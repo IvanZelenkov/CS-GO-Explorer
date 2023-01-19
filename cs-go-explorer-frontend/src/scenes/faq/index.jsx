@@ -8,7 +8,6 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { motion } from "framer-motion";
 
 const FAQ = () => {
-
 	return (
 		<motion.div exit={{ opacity: 0 }}>
 			<Box margin="1.5vh">
@@ -27,7 +26,7 @@ const FAQ = () => {
 						</Typography>
 					</AccordionDetails>
 				</Accordion>
-				<Accordion sx={{marginTop: "2%"}}>
+				<Accordion>
 					<AccordionSummary expandIcon={<ExpandMoreIcon />}>
 						<Typography color="custom.steamColorF" variant="h5">
 							Another Important Question
@@ -40,7 +39,7 @@ const FAQ = () => {
 						</Typography>
 					</AccordionDetails>
 				</Accordion>
-				<Accordion sx={{marginTop: "2%"}}>
+				<Accordion>
 					<AccordionSummary expandIcon={<ExpandMoreIcon />}>
 						<Typography color="custom.steamColorF" variant="h5">
 							Your Favorite Question
@@ -53,7 +52,7 @@ const FAQ = () => {
 						</Typography>
 					</AccordionDetails>
 				</Accordion>
-				<Accordion sx={{marginTop: "2%"}}>
+				<Accordion>
 					<AccordionSummary expandIcon={<ExpandMoreIcon />}>
 						<Typography color="custom.steamColorF" variant="h5">
 							Some Random Question
@@ -66,7 +65,7 @@ const FAQ = () => {
 						</Typography>
 					</AccordionDetails>
 				</Accordion>
-				<Accordion sx={{marginTop: "2%"}}>
+				<Accordion>
 					<AccordionSummary expandIcon={<ExpandMoreIcon />}>
 						<Typography color="custom.steamColorF" variant="h5">
 							The Final Question

@@ -1,3 +1,4 @@
+import { useReducer } from "react";
 import { Box, Button, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { Link, Outlet, useLocation } from "react-router-dom";
@@ -12,19 +13,35 @@ import Header from "../../components/Header";
 import SidebarBackgroundImage from "../../images/sidebar/background.jpeg";
 import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutlined";
 
+function chartReducer(chartState, action) {
+	switch (action.type) {
+		case 'setChartData':
+			return { ...chartState, chartData: action.payload }
+		case 'setChartKeys':
+			return { ...chartState, chartKeys: chartState.chartKeys = action.payload }
+		case 'setChartKeyName':
+			return { ...chartState, chartKeyName: chartState.chartKeyName = action.payload }
+		case 'setChartColors':
+			return { ...chartState, chartColors: chartState.chartColors = action.payload }
+	}
+}
+
 const MapStats = () => {
 	const theme = useTheme();
 	const colors = tokens(theme.palette.mode);
 	const location = useLocation();
 	const [infoLoaded, setInfoLoaded] = useState(false);
 	const [userStats, setUserStats] = useState({});
-	const [chartData, setChartData] = useState({});
-	const [chartKeys, setChartKeys] = useState([]);
-	const [chartKeyName, setChartKeyName] = useState("");
-	const [chartColors, setChartColors] = useState({});
-	const [chartSubtitle, setChartSubtitle] = useState("");
+	const [chartState, dispatch] = useReducer(chartReducer, {
+		chartData: {},
+		chartKeys: [],
+		chartKeyName: "",
+		chartColors: {}
+	});
 	const maps = ["Dust II", "Inferno", "Nuke", "Vertigo", "Office", "Train", "Lake", "Assault",
 		"Cobblestone", "Italy", "Monastery", "Safehouse", "Shoots", "St. Marc"];
+	const mapKeys = ["dust2", "inferno", "nuke", "vertigo", "office", "train", "lake", "assault",
+		"cbble", "italy", "monastery", "safehouse", "shoots", "stmarc"];
 	const customColors = { "dust2": "#C0392B", "inferno": "#E74C3C", "nuke": "#9B59B6", "vertigo": "#8E44AD",
 		"office": "#2980B9", "train": "#3498DB", "lake": "#1ABC9C", "assault": "#16A085",
 		"cbble": "#27AE60", "italy": "#2ECC71", "monastery": "#F1C40F", "safehouse": "#F39C12",
@@ -46,14 +63,12 @@ const MapStats = () => {
 	}, []);
 
 	const reformatUserStatsJson = (overallStats) => {
-		const maps = ["dust2", "inferno", "nuke", "vertigo", "office", "train", "lake", "assault",
-					  "cbble", "italy", "monastery", "safehouse", "shoots", "stmarc"];
-		setChartKeys(maps);
+		dispatch({ type: 'setChartKeys', payload: mapKeys });
 
 		let mapStats = [];
-		for (let i = 0; i < maps.length; i++)
+		for (let i = 0; i < mapKeys.length; i++)
 			mapStats.push({
-				mapName: maps[i],
+				mapName: mapKeys[i],
 				totalRounds: "",
 				totalWins: ""
 			});
@@ -69,49 +84,32 @@ const MapStats = () => {
 			if (!dataItem.name.includes("total_wins_map") && !dataItem.name.includes("total_rounds_map"))
 				continue;
 
-			let map = maps.find((mapName) => dataItem.name.includes(mapName));
+			let map = mapKeys.find((mapName) => dataItem.name.includes(mapName));
 			if (map !== undefined)
-				if (dataItem.name.includes("total_rounds_map"))
-					newJsonUserStats.stats[maps.indexOf(map)].totalRounds = dataItem.value;
-				else if (dataItem.name.includes("total_wins_map"))
-					newJsonUserStats.stats[maps.indexOf(map)].totalWins = dataItem.value;
+				if (dataItem.name.includes("total_wins_map"))
+					newJsonUserStats.stats[mapKeys.indexOf(map)].totalWins = dataItem.value;
+				else if (dataItem.name.includes("total_rounds_map"))
+					newJsonUserStats.stats[mapKeys.indexOf(map)].totalRounds = dataItem.value;
 		}
-		reformatUserStatsBarChart(newJsonUserStats);
-		// reformatUserStatsPieChart(newJsonUserStats);
+		reformatUserStatsForChart(newJsonUserStats);
 		return newJsonUserStats;
 	}
 
-	const reformatUserStatsBarChart = (reformattedUserStats) => {
+	const reformatUserStatsForChart = (reformattedUserStats) => {
 		let mapStats = [];
 		for (let i = 0; i < maps.length; i++)
 			mapStats.push({
+				id: mapKeys[i],
+				value: reformattedUserStats.stats[i].totalRounds,
 				mapName: maps[i],
 				[reformattedUserStats.stats[i].mapName]: (reformattedUserStats.stats[i].totalWins /
-					reformattedUserStats.stats[i].totalRounds * 100).toFixed(2)
+					reformattedUserStats.stats[i].totalRounds * 100).toFixed(2),
+				backgroundColor: customColors[mapKeys[i]]
 			});
 
-		setChartKeyName("mapName");
-		setChartData(mapStats);
-		setChartColors(customColors);
-		setChartSubtitle("Map win stats");
-
-		return mapStats;
-	}
-
-	const reformatUserStatsPieChart = (reformattedUserStats) => {
-		let mapStats = [];
-		for (let i = 0; i < maps.length; i++)
-			mapStats.push({
-				id: maps[i],
-				value: reformattedUserStats.stats[i].totalWins
-			});
-
-		setChartKeyName("mapName");
-		setChartData(mapStats);
-		setChartColors(customColors);
-		setChartSubtitle("Map win stats");
-
-		return mapStats;
+		dispatch({ type: 'setChartKeyName', payload: "mapName" });
+		dispatch({ type: 'setChartData', payload: mapStats });
+		dispatch({ type: 'setChartColors', payload: customColors });
 	}
 
 	const columns = [
@@ -138,7 +136,7 @@ const MapStats = () => {
 		},
 		{
 			field: "totalWins",
-			headerName: "Total Wins",
+			headerName: "Total Round Wins",
 			flex: 1,
 			headerAlign: "center",
 			align: "center",
@@ -166,7 +164,7 @@ const MapStats = () => {
 		},
 		{
 			field: "totalWins/totalRounds",
-			headerName: "Round Win Rate",
+			headerName: "Round Win Rates %",
 			flex: 1,
 			headerAlign: "center",
 			align: "center",
@@ -202,7 +200,10 @@ const MapStats = () => {
 								color: "custom.steamColorD",
 								fontSize: "1vh",
 								fontWeight: "bold",
-								padding: "0.8vh 1.2vh"
+								padding: "0.8vh 1.2vh",
+								":hover": {
+									backgroundColor: "custom.steamColorF"
+								}
 							}}
 							onClick={() => {
 								setInfoLoaded(false);
@@ -220,13 +221,16 @@ const MapStats = () => {
 									fontSize: "1vh",
 									fontWeight: "bold",
 									padding: "0.8vh 1.2vh",
-									marginRight: "2vh"
+									marginRight: "2vh",
+									":hover": {
+										backgroundColor: "custom.steamColorF"
+									}
 								}}
 								component={Link}
 								to={location.pathname + "/bar"}
 							>
 								<BarChartOutlinedIcon sx={{ marginRight: "0.5vh" }}/>
-								NUMBER OF ROUNDS STATS
+								Map round win rates
 							</Button>
 							<Button
 								sx={{
@@ -234,13 +238,16 @@ const MapStats = () => {
 									color: "custom.steamColorD",
 									fontSize: "1vh",
 									fontWeight: "bold",
-									padding: "0.8vh 1.2vh"
+									padding: "0.8vh 1.2vh",
+									":hover": {
+										backgroundColor: "custom.steamColorF"
+									}
 								}}
 								component={Link}
 								to={location.pathname + "/pie"}
 							>
 								<PieChartOutlineOutlinedIcon sx={{ marginRight: "0.5vh" }}/>
-								MAP WIN STATS
+								Total rounds played
 							</Button>
 						</Box>
 					</Box>
@@ -291,15 +298,13 @@ const MapStats = () => {
 				</Box>
 			</motion.div>
 		);
-	} else if (location.pathname === "/map-stats/bar" || location.pathname === "/map-stats/pie") {
+	} else if (location.pathname === "/map-stats/bar") {
 		return (
-			<Outlet context={{
-				chartData, setChartData,
-				chartKeys, setChartKeys,
-				chartColors, setChartColors,
-				chartKeyName, setChartKeyName,
-				chartSubtitle, setChartSubtitle
-			}}/>
+			<Outlet context={{ chartState, chartSubtitle: "Map round win rates" }}/>
+		);
+	} else if (location.pathname === "/map-stats/pie") {
+		return (
+			<Outlet context={{ chartState, chartSubtitle: "Total rounds played" }}/>
 		);
 	}
 };

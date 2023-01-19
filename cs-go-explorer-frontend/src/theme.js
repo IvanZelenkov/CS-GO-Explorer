@@ -109,16 +109,16 @@ export const themeSettings = (mode) => {
 						main: colors.grey[900]
 					},
 					custom: {
-						steamColorA: colors.steamColors[1],
-						steamColorB: colors.steamColors[2],
-						steamColorC: colors.steamColors[3],
-						steamColorD: colors.steamColors[4],
-						steamColorE: colors.steamColors[5],
+						steamColorA: colors.steamColors[4],
+						steamColorB: colors.steamColors[4],
+						steamColorC: colors.steamColors[4],
+						steamColorD: colors.steamColors[2],
+						steamColorE: colors.steamColors[3],
 						steamColorF: colors.steamColors[6],
 						steamColorG: colors.steamColors[7]
 					},
 					background: {
-						default: colors.steamColors[4]
+						default: colors.steamColors[7]
 					}
 				})
 		},

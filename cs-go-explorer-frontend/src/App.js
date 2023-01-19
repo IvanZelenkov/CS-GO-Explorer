@@ -9,7 +9,6 @@ import Dashboard from './scenes/dashboard';
 import Topbar from "./scenes/global/Topbar";
 import Friends from './scenes/friends';
 import Contacts from './scenes/contacts';
-import Invoices from './scenes/invoices';
 import Profile from './scenes/profile';
 import Calendar from './scenes/calendar';
 import FAQ from './scenes/faq';
@@ -36,7 +35,6 @@ function App() {
 									<Route exact path="/" element={<Dashboard/>}/>
 									<Route exact path="/friends" element={<Friends/>}/>
 									<Route exact path="/contacts" element={<Contacts/>}/>
-									<Route exact path="/invoices" element={<Invoices/>}/>
 									<Route exact path="/profile" element={<Profile/>}/>
 									<Route exact path="/calendar" element={<Calendar/>}/>
 									<Route exact path="/faq" element={<FAQ/>}/>

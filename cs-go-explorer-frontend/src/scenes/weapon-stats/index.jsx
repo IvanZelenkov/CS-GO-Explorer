@@ -1,3 +1,4 @@
+import { useReducer } from "react";
 import { Box, Button, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { Link, Outlet, useLocation } from "react-router-dom";
@@ -12,17 +13,48 @@ import axios from "axios";
 import Header from "../../components/Header";
 import SidebarBackgroundImage from "../../images/sidebar/background.jpeg";
 
+function chartReducer(chartState, action) {
+	switch (action.type) {
+		case 'setChartData':
+			return { ...chartState, chartData: action.payload }
+		case 'setChartKeys':
+			return { ...chartState, chartKeys: chartState.chartKeys = action.payload }
+		case 'setChartKeyName':
+			return { ...chartState, chartKeyName: chartState.chartKeyName = action.payload }
+		case 'setChartColors':
+			return { ...chartState, chartColors: chartState.chartColors = action.payload }
+	}
+}
+
 const WeaponStats = () => {
 	const theme = useTheme();
 	const colors = tokens(theme.palette.mode);
 	const location = useLocation();
 	const [infoLoaded, setInfoLoaded] = useState(false);
 	const [userStats, setUserStats] = useState({});
-	const [chartData, setChartData] = useState({});
-	const [chartKeys, setChartKeys] = useState([]);
-	const [chartKeyName, setChartKeyName] = useState("");
-	const [chartColors, setChartColors] = useState({});
-	const [chartSubtitle, setChartSubtitle] = useState("");
+	const [chartState, dispatch] = useReducer(chartReducer, {
+		chartData: {},
+		chartKeys: [],
+		chartKeyName: "",
+		chartColors: {}
+	});
+	const weapons = ["AK-47", "AUG", "AWP", "PP-Bizon", "Deagle", "Berettas", "FAMAS", "Five-seveN",
+		"G3SG1", "Galil AR", "Glock-18", "Grenade", "HK P2000", "Knife", "M4A1-S", "M249",
+		"MAC-10", "MAG-7", "Molotov", "MP7", "MP9", "Negev", "Nova", "P90", "P250",
+		"Sawed-Off", "SCAR-20", "SG 556", "SSG 08", "Zeus x27", "Tec-9", "UMP-45", "XM1014"];
+	const weaponKeys = ["ak47", "aug", "awp", "bizon", "deagle", "elite", "famas", "fiveseven",
+		"g3sg1", "galilar", "glock", "hegrenade", "hkp2000", "knife", "m4a1", "m249",
+		"mac10", "mag7", "molotov", "mp7", "mp9", "negev", "nova", "p90", "p250",
+		"sawedoff", "scar20", "sg556", "ssg08", "taser", "tec9", "ump45", "xm1014"];
+	const customColors = { "ak47": "#C0392B", "aug": "#E74C3C", "awp": "#9B59B6", "bizon": "#8E44AD",
+		"deagle": "#2980B9", "elite": "#3498DB", "famas": "#1ABC9C", "fiveseven": "#16A085",
+		"g3sg1": "#27AE60", "galilar": "#2ECC71", "glock": "#F1C40F", "hegrenade": "#F39C12",
+		"hkp2000": "#D35400", "knife": "#ECF0F1", "m4a1": "#CACFD2", "m249": "#95A5A6",
+		"mac10": "#7F8C8D", "mag7": "#A93226", "molotov": "#2C3E50", "mp7": "#CB4335",
+		"mp9": "#884EA0", "negev": "#7D3C98", "nova": "#2471A3", "p90": "#2E86C1",
+		"p250": "#17A589", "sawedoff": "#138D75", "scar20": "#229954", "sg556": "#28B463",
+		"ssg08": "#D4AC0D", "taser": "#D68910", "tec9": "#CA6F1E", "ump45": "#BA4A00",
+		"xm1014": "#D0D3D4" };
 
 	const getUserStats = () => {
 		axios.get(
@@ -41,16 +73,12 @@ const WeaponStats = () => {
 
 
 	const reformatUserStatsJson = (overallStats) => {
-		const weapons = ["ak47", "aug", "awp", "bizon", "deagle", "elite", "famas", "fiveseven",
-			             "g3sg1", "galilar", "glock", "hegrenade", "hkp2000", "knife", "m4a1", "m249",
-						 "mac10", "mag7", "molotov", "mp7", "mp9", "negev", "nova", "p90", "p250",
-						 "sawedoff", "scar20", "sg556", "ssg08", "taser", "tec9", "ump45", "xm1014"];
-		setChartKeys(weapons);
+		dispatch({ type: 'setChartKeys', payload: weaponKeys });
 
 		let weaponStats = [];
-		for (let i = 0; i < weapons.length; i++)
+		for (let i = 0; i < weaponKeys.length; i++)
 			weaponStats.push({
-				weaponName: weapons[i],
+				weaponName: weaponKeys[i],
 				totalKills: "",
 				totalShots: "",
 				totalHits: ""
@@ -69,51 +97,36 @@ const WeaponStats = () => {
 				!dataItem.name.includes("total_hits")) {
 				continue;
 			}
-			let weapon = weapons.find((weaponName) => dataItem.name.includes(weaponName));
+			let weapon = weaponKeys.find((weaponName) => dataItem.name.includes(weaponName));
 			if (weapon !== undefined) {
 				if (dataItem.name.includes("total_kills")) {
-					newJsonUserStats.stats[weapons.indexOf(weapon)].totalKills = dataItem.value;
-					newJsonUserStats.stats[weapons.indexOf(weapon)].value = dataItem.value;
+					newJsonUserStats.stats[weaponKeys.indexOf(weapon)].totalKills = dataItem.value;
+					newJsonUserStats.stats[weaponKeys.indexOf(weapon)].value = dataItem.value;
 				}
 				else if (dataItem.name.includes("total_shots"))
-					newJsonUserStats.stats[weapons.indexOf(weapon)].totalShots = dataItem.value;
+					newJsonUserStats.stats[weaponKeys.indexOf(weapon)].totalShots = dataItem.value;
 				else if (dataItem.name.includes("total_hits"))
-					newJsonUserStats.stats[weapons.indexOf(weapon)].totalHits = dataItem.value;
+					newJsonUserStats.stats[weaponKeys.indexOf(weapon)].totalHits = dataItem.value;
 			}
 		}
-		reformatUserStatsBarChart(newJsonUserStats);
+		reformatUserStatsForChart(newJsonUserStats);
 		return newJsonUserStats;
 	}
 
-	const reformatUserStatsBarChart = (reformattedUserStats) => {
-		const customColors = { "ak47": "#C0392B", "aug": "#E74C3C", "awp": "#9B59B6", "bizon": "#8E44AD",
-							   "deagle": "#2980B9", "elite": "#3498DB", "famas": "#1ABC9C", "fiveseven": "#16A085",
-							   "g3sg1": "#27AE60", "galilar": "#2ECC71", "glock": "#F1C40F", "hegrenade": "#F39C12",
-							   "hkp2000": "#D35400", "knife": "#ECF0F1", "m4a1": "#CACFD2", "m249": "#95A5A6",
-							   "mac10": "#7F8C8D", "mag7": "#A93226", "molotov": "#2C3E50", "mp7": "#CB4335",
-							   "mp9": "#884EA0", "negev": "#7D3C98", "nova": "#2471A3", "p90": "#2E86C1",
-							   "p250": "#17A589", "sawedoff": "#138D75", "scar20": "#229954", "sg556": "#28B463",
-							   "ssg08": "#D4AC0D", "taser": "#D68910", "tec9": "#CA6F1E", "ump45": "#BA4A00",
-							   "xm1014": "#D0D3D4" };
-
-		const weapons = ["AK-47", "AUG", "AWP", "PP-Bizon", "Deagle", "Berettas", "FAMAS", "Five-seveN",
-						 "G3SG1", "Galil AR", "Glock-18", "Grenade", "HK P2000", "Knife", "M4A1-S", "M249",
-						 "MAC-10", "MAG-7", "Molotov", "MP7", "MP9", "Negev", "Nova", "P90", "P250",
-						 "Sawed-Off", "SCAR-20", "SG 556", "SSG 08", "Zeus x27", "Tec-9", "UMP-45", "XM1014"];
-
+	const reformatUserStatsForChart = (reformattedUserStats) => {
 		let weaponStats = [];
 		for (let i = 0; i < weapons.length; i++)
 			weaponStats.push({
+				id: weapons[i],
+				value: reformattedUserStats.stats[i].totalShots,
 				weaponName: weapons[i],
-				[reformattedUserStats.stats[i].weaponName]: reformattedUserStats.stats[i].totalKills
+				[reformattedUserStats.stats[i].weaponName]: reformattedUserStats.stats[i].totalKills,
+				backgroundColor: customColors[weaponKeys[i]]
 			});
 
-		setChartKeyName("weaponName");
-		setChartData(weaponStats);
-		setChartColors(customColors);
-		setChartSubtitle("Kill stats");
-
-		return weaponStats;
+		dispatch({ type: 'setChartKeyName', payload: "weaponName" });
+		dispatch({ type: 'setChartData', payload: weaponStats });
+		dispatch({ type: 'setChartColors', payload: customColors });
 	}
 
 	const columns = [
@@ -198,6 +211,25 @@ const WeaponStats = () => {
 					);
 				}
 			}
+		},
+		{
+			field: "shotsAvgToKill",
+			headerName: "Amount of bullets to kill",
+			flex: 1,
+			headerAlign: "center",
+			align: "center",
+			renderCell: ({ row }) => {
+				if (row.totalHits.length === 0 || row.totalShots.length === 0) {
+					return "";
+				}
+				else {
+					return (
+						<Box display="flex" justifyContent="center" alignItems="center" sx={{ fontSize: "1.2vh" }}>
+							{(row.totalShots / row.totalKills).toFixed(2)}
+						</Box>
+					);
+				}
+			}
 		}
 	];
 
@@ -219,7 +251,10 @@ const WeaponStats = () => {
 								color: "custom.steamColorD",
 								fontSize: "1vh",
 								fontWeight: "bold",
-								padding: "0.8vh 1.2vh"
+								padding: "0.8vh 1.2vh",
+								":hover": {
+									backgroundColor: "custom.steamColorF"
+								}
 							}}
 							onClick={() => {
 								setInfoLoaded(false);
@@ -237,13 +272,16 @@ const WeaponStats = () => {
 									fontSize: "1vh",
 									fontWeight: "bold",
 									padding: "0.8vh 1.2vh",
-									marginRight: "2vh"
+									marginRight: "2vh",
+									":hover": {
+										backgroundColor: "custom.steamColorF"
+									}
 								}}
 								component={Link}
 								to={location.pathname + "/bar"}
 							>
 								<BarChartOutlinedIcon sx={{ marginRight: "0.5vh" }}/>
-								KILL STATS
+								Kill amount stats
 							</Button>
 							<Button
 								sx={{
@@ -251,13 +289,16 @@ const WeaponStats = () => {
 									color: "custom.steamColorD",
 									fontSize: "1vh",
 									fontWeight: "bold",
-									padding: "0.8vh 1.2vh"
+									padding: "0.8vh 1.2vh",
+									":hover": {
+										backgroundColor: "custom.steamColorF"
+									}
 								}}
 								component={Link}
 								to={location.pathname + "/pie"}
 							>
 								<PieChartOutlineOutlinedIcon sx={{ marginRight: "0.5vh" }}/>
-								SHOOTING STATS
+								Weapon shots comparison
 							</Button>
 						</Box>
 					</Box>
@@ -309,15 +350,13 @@ const WeaponStats = () => {
 				</Box>
 			</motion.div>
 		);
-	} else if (location.pathname === "/weapon-stats/bar" || location.pathname === "/weapon-stats/pie") {
+	} else if (location.pathname === "/weapon-stats/bar") {
 		return (
-			<Outlet context={{
-				chartData, setChartData,
-				chartKeys, setChartKeys,
-				chartColors, setChartColors,
-				chartKeyName, setChartKeyName,
-				chartSubtitle, setChartSubtitle
-			}}/>
+			<Outlet context={{ chartState, chartSubtitle: "Kill amount stats" }}/>
+		);
+	} else if (location.pathname === "/weapon-stats/pie") {
+		return (
+			<Outlet context={{ chartState, chartSubtitle: "Weapon shots comparison" }}/>
 		);
 	}
 };

@@ -8,6 +8,7 @@ import states from 'us-state-converter';
 import { motion } from "framer-motion";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
+import SidebarBackgroundImage from "../../images/sidebar/background.jpeg";
 
 const Friends = () => {
 	const theme = useTheme();
@@ -279,7 +280,10 @@ const Friends = () => {
 							textTransform: "capitalize"
 						},
 						"& .MuiDataGrid-columnHeaders": {
-							backgroundColor: "custom.steamColorA",
+							backgroundImage: `url(${SidebarBackgroundImage}) !important`,
+							backgroundSize: 'cover',
+							backgroundRepeat  : 'no-repeat',
+							backgroundPosition: 'center',
 							borderBottom: "none",
 							fontSize: "1.2vh"
 						},
@@ -287,8 +291,11 @@ const Friends = () => {
 							backgroundColor: colors.primary[400],
 						},
 						"& .MuiDataGrid-footerContainer": {
-							borderTop: "none",
-							backgroundColor: "custom.steamColorA",
+							backgroundImage: `url(${SidebarBackgroundImage}) !important`,
+							backgroundSize: 'cover',
+							backgroundRepeat  : 'no-repeat',
+							backgroundPosition: 'center',
+							borderTop: "none"
 						},
 						"& .MuiCheckbox-root": {
 							color: `${colors.steamColors[6]} !important`,

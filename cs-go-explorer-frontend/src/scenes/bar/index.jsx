@@ -8,7 +8,7 @@ import KeyboardBackspaceRoundedIcon from '@mui/icons-material/KeyboardBackspaceR
 
 const Bar = () => {
 	let navigation = useNavigate();
-	const { chartData, chartKeys, chartColors, chartKeyName, chartSubtitle } = useOutletContext();
+	const { chartState, chartSubtitle } = useOutletContext();
 
 	return (
 		<motion.div exit={{ opacity: 0 }}>
@@ -30,12 +30,7 @@ const Bar = () => {
 					<Header title="Bar Chart" subtitle={chartSubtitle}/>
 				</Box>
 				<Box height="80vh">
-					<BarChart
-						chartData={chartData}
-						chartKeys={chartKeys}
-						chartColors={chartColors}
-						chartKeyName={chartKeyName}
-					/>
+					<BarChart chartState={chartState} chartSubtitle={chartSubtitle}/>
 				</Box>
 			</Box>
 		</motion.div>
