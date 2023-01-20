@@ -16,13 +16,15 @@ import SidebarBackgroundImage from "../../images/sidebar/background.jpeg";
 function chartReducer(chartState, action) {
 	switch (action.type) {
 		case 'setChartData':
-			return { ...chartState, chartData: action.payload }
+			return { ...chartState, chartData: action.payload };
 		case 'setChartKeys':
-			return { ...chartState, chartKeys: chartState.chartKeys = action.payload }
+			return { ...chartState, chartKeys: chartState.chartKeys = action.payload };
 		case 'setChartKeyName':
-			return { ...chartState, chartKeyName: chartState.chartKeyName = action.payload }
+			return { ...chartState, chartKeyName: chartState.chartKeyName = action.payload };
 		case 'setChartColors':
-			return { ...chartState, chartColors: chartState.chartColors = action.payload }
+			return { ...chartState, chartColors: chartState.chartColors = action.payload };
+		default:
+			return { ...chartState };
 	}
 }
 
@@ -56,15 +58,17 @@ const WeaponStats = () => {
 		"ssg08": "#D4AC0D", "taser": "#D68910", "tec9": "#CA6F1E", "ump45": "#BA4A00",
 		"xm1014": "#D0D3D4" };
 
-	const getUserStats = () => {
-		axios.get(
-			"https://" + process.env.REACT_APP_REST_API_ID + ".execute-api.us-east-1.amazonaws.com/ProductionStage/GetUserStatsForGame"
-		).then(function (response) {
+	const getUserStats = async () => {
+		try {
+			const response = await axios.get(
+				"https://" +
+				process.env.REACT_APP_REST_API_ID +
+				".execute-api.us-east-1.amazonaws.com/ProductionStage/GetUserStatsForGame"
+			);
 			setUserStats(reformatUserStatsJson(JSON.parse(response.data.body)));
-			setInfoLoaded(true);
-		}).catch(function (error) {
+		} catch (error) {
 			console.log(error);
-		});
+		}
 	}
 
 	useEffect(() => {
@@ -73,56 +77,66 @@ const WeaponStats = () => {
 
 
 	const reformatUserStatsJson = (overallStats) => {
-		dispatch({ type: 'setChartKeys', payload: weaponKeys });
+		if (overallStats.hasOwnProperty('playerstats')) {
+			dispatch({type: 'setChartKeys', payload: weaponKeys});
 
-		let weaponStats = [];
-		for (let i = 0; i < weaponKeys.length; i++)
-			weaponStats.push({
-				weaponName: weaponKeys[i],
-				totalKills: "",
-				totalShots: "",
-				totalHits: ""
-			});
+			let weaponStats = [];
+			for (let i = 0; i < weaponKeys.length; i++)
+				weaponStats.push({
+					weaponName: weaponKeys[i],
+					totalKills: "",
+					totalShots: "",
+					totalHits: ""
+				});
 
-		let newJsonUserStats = {
-			steamID: overallStats.playerstats.steamID,
-			gameName: "CS:GO",
-			stats: weaponStats
-		};
+			let newJsonUserStats = {
+				steamID: overallStats.playerstats.steamID,
+				gameName: "CS:GO",
+				stats: weaponStats
+			};
 
-		for (let i = 0; i < overallStats.playerstats.stats.length; i++) {
-			let dataItem = overallStats.playerstats.stats[i];
-			if (!dataItem.name.includes("total_kills") &&
-				!dataItem.name.includes("total_shots") &&
-				!dataItem.name.includes("total_hits")) {
-				continue;
-			}
-			let weapon = weaponKeys.find((weaponName) => dataItem.name.includes(weaponName));
-			if (weapon !== undefined) {
-				if (dataItem.name.includes("total_kills")) {
-					newJsonUserStats.stats[weaponKeys.indexOf(weapon)].totalKills = dataItem.value;
-					newJsonUserStats.stats[weaponKeys.indexOf(weapon)].value = dataItem.value;
+			for (let i = 0; i < overallStats.playerstats.stats.length; i++) {
+				let dataItem = overallStats.playerstats.stats[i];
+				if (!dataItem.name.includes("total_kills") &&
+					!dataItem.name.includes("total_shots") &&
+					!dataItem.name.includes("total_hits")) {
+					continue;
 				}
-				else if (dataItem.name.includes("total_shots"))
-					newJsonUserStats.stats[weaponKeys.indexOf(weapon)].totalShots = dataItem.value;
-				else if (dataItem.name.includes("total_hits"))
-					newJsonUserStats.stats[weaponKeys.indexOf(weapon)].totalHits = dataItem.value;
+				let weapon = weaponKeys.find((weaponName) => dataItem.name.includes(weaponName));
+				if (weapon !== undefined) {
+					if (dataItem.name.includes("total_kills")) {
+						newJsonUserStats.stats[weaponKeys.indexOf(weapon)].totalKills = dataItem.value;
+						newJsonUserStats.stats[weaponKeys.indexOf(weapon)].value = dataItem.value;
+					} else if (dataItem.name.includes("total_shots"))
+						newJsonUserStats.stats[weaponKeys.indexOf(weapon)].totalShots = dataItem.value;
+					else if (dataItem.name.includes("total_hits"))
+						newJsonUserStats.stats[weaponKeys.indexOf(weapon)].totalHits = dataItem.value;
+				}
 			}
+			reformatUserStatsForChart(newJsonUserStats);
+			setInfoLoaded(true);
+			return newJsonUserStats;
+		} else {
+			setInfoLoaded(false);
+			return {};
 		}
-		reformatUserStatsForChart(newJsonUserStats);
-		return newJsonUserStats;
 	}
 
 	const reformatUserStatsForChart = (reformattedUserStats) => {
 		let weaponStats = [];
-		for (let i = 0; i < weapons.length; i++)
-			weaponStats.push({
-				id: weapons[i],
-				value: reformattedUserStats.stats[i].totalShots,
-				weaponName: weapons[i],
-				[reformattedUserStats.stats[i].weaponName]: reformattedUserStats.stats[i].totalKills,
-				backgroundColor: customColors[weaponKeys[i]]
-			});
+		for (let i = 0; i < weapons.length; i++) {
+			let totalShots = reformattedUserStats.stats[i].totalShots;
+
+			if (totalShots.length !== 0) {
+				weaponStats.push({
+					id: weapons[i],
+					value: totalShots,
+					weaponName: weapons[i],
+					[reformattedUserStats.stats[i].weaponName]: reformattedUserStats.stats[i].totalKills,
+					backgroundColor: customColors[weaponKeys[i]]
+				});
+			}
+		}
 
 		dispatch({ type: 'setChartKeyName', payload: "weaponName" });
 		dispatch({ type: 'setChartData', payload: weaponStats });
@@ -233,11 +247,15 @@ const WeaponStats = () => {
 		}
 	];
 
-	if (infoLoaded === false || userStats.length === 0) {
+	if (infoLoaded === false || userStats === {}) {
 		return (
-			<Box sx={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
-				<CircularProgress color="success"/>
-			</Box>
+			<motion.div exit={{ opacity: 0 }}>
+				<Box margin="1.5vh">
+					<Box sx={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
+						<CircularProgress color="success"/>
+					</Box>
+				</Box>
+			</motion.div>
 		);
 	} else if (location.pathname === "/weapon-stats") {
 		return (

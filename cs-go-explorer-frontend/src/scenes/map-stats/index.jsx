@@ -16,13 +16,15 @@ import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutl
 function chartReducer(chartState, action) {
 	switch (action.type) {
 		case 'setChartData':
-			return { ...chartState, chartData: action.payload }
+			return { ...chartState, chartData: action.payload };
 		case 'setChartKeys':
-			return { ...chartState, chartKeys: chartState.chartKeys = action.payload }
+			return { ...chartState, chartKeys: chartState.chartKeys = action.payload };
 		case 'setChartKeyName':
-			return { ...chartState, chartKeyName: chartState.chartKeyName = action.payload }
+			return { ...chartState, chartKeyName: chartState.chartKeyName = action.payload };
 		case 'setChartColors':
-			return { ...chartState, chartColors: chartState.chartColors = action.payload }
+			return { ...chartState, chartColors: chartState.chartColors = action.payload };
+		default:
+			return { ...chartState };
 	}
 }
 
@@ -39,23 +41,26 @@ const MapStats = () => {
 		chartColors: {}
 	});
 	const maps = ["Dust II", "Inferno", "Nuke", "Vertigo", "Office", "Train", "Lake", "Assault",
-		"Cobblestone", "Italy", "Monastery", "Safehouse", "Shoots", "St. Marc"];
+		"Cobblestone", "Italy", "Monastery", "Safehouse", "Shoots", "St. Marc", "Bank", "Sugarcane",
+		"Baggage", "Aztec"];
 	const mapKeys = ["dust2", "inferno", "nuke", "vertigo", "office", "train", "lake", "assault",
-		"cbble", "italy", "monastery", "safehouse", "shoots", "stmarc"];
+		"cbble", "italy", "monastery", "safehouse", "shoots", "stmarc", "bank", "sugarcane", "baggage", "aztec"];
 	const customColors = { "dust2": "#C0392B", "inferno": "#E74C3C", "nuke": "#9B59B6", "vertigo": "#8E44AD",
-		"office": "#2980B9", "train": "#3498DB", "lake": "#1ABC9C", "assault": "#16A085",
-		"cbble": "#27AE60", "italy": "#2ECC71", "monastery": "#F1C40F", "safehouse": "#F39C12",
-		"shoots": "#D35400", "stmarc": "#ECF0F1" };
+		"office": "#2980B9", "train": "#3498DB", "lake": "#1ABC9C", "assault": "#16A085", "cbble": "#27AE60",
+		"italy": "#2ECC71", "monastery": "#F1C40F", "safehouse": "#F39C12", "shoots": "#D35400",
+		"stmarc": "#ECF0F1", "bank": "#00BFFF", "sugarcane": "#005CFF", "baggage": "#BCFF00", "aztec": "#46E4E8" };
 
-	const getUserStats = () => {
-		axios.get(
-			"https://" + process.env.REACT_APP_REST_API_ID + ".execute-api.us-east-1.amazonaws.com/ProductionStage/GetUserStatsForGame"
-		).then(function (response) {
+	const getUserStats = async () => {
+		try {
+			const response = await axios.get(
+				"https://" +
+				process.env.REACT_APP_REST_API_ID +
+				".execute-api.us-east-1.amazonaws.com/ProductionStage/GetUserStatsForGame"
+			);
 			setUserStats(reformatUserStatsJson(JSON.parse(response.data.body)));
-			setInfoLoaded(true);
-		}).catch(function (error) {
+		} catch (error) {
 			console.log(error);
-		});
+		}
 	}
 
 	useEffect(() => {
@@ -63,49 +68,59 @@ const MapStats = () => {
 	}, []);
 
 	const reformatUserStatsJson = (overallStats) => {
-		dispatch({ type: 'setChartKeys', payload: mapKeys });
+		if (overallStats.hasOwnProperty('playerstats')) {
+			dispatch({type: 'setChartKeys', payload: mapKeys});
 
-		let mapStats = [];
-		for (let i = 0; i < mapKeys.length; i++)
-			mapStats.push({
-				mapName: mapKeys[i],
-				totalRounds: "",
-				totalWins: ""
-			});
+			let mapStats = [];
+			for (let i = 0; i < mapKeys.length; i++)
+				mapStats.push({
+					mapName: mapKeys[i],
+					totalRoundWins: "",
+					totalRounds: ""
+				});
 
-		let newJsonUserStats = {
-			steamID: overallStats.playerstats.steamID,
-			gameName: "CS:GO",
-			stats: mapStats
-		};
+			let newJsonUserStats = {
+				stats: mapStats
+			};
 
-		for (let i = 0; i < overallStats.playerstats.stats.length; i++) {
-			let dataItem = overallStats.playerstats.stats[i];
-			if (!dataItem.name.includes("total_wins_map") && !dataItem.name.includes("total_rounds_map"))
-				continue;
+			for (let i = 0; i < overallStats.playerstats.stats.length; i++) {
+				let dataItem = overallStats.playerstats.stats[i];
+				if (!dataItem.name.includes("total_wins_map")
+					&& !dataItem.name.includes("total_rounds_map"))
+					continue;
 
-			let map = mapKeys.find((mapName) => dataItem.name.includes(mapName));
-			if (map !== undefined)
-				if (dataItem.name.includes("total_wins_map"))
-					newJsonUserStats.stats[mapKeys.indexOf(map)].totalWins = dataItem.value;
-				else if (dataItem.name.includes("total_rounds_map"))
-					newJsonUserStats.stats[mapKeys.indexOf(map)].totalRounds = dataItem.value;
+				let map = mapKeys.find((mapName) => dataItem.name.includes(mapName));
+				if (map !== undefined)
+					if (dataItem.name.includes("total_wins_map"))
+						newJsonUserStats.stats[mapKeys.indexOf(map)].totalRoundWins = dataItem.value;
+					else if (dataItem.name.includes("total_rounds_map"))
+						newJsonUserStats.stats[mapKeys.indexOf(map)].totalRounds = dataItem.value;
+			}
+			reformatUserStatsForChart(newJsonUserStats);
+			setInfoLoaded(true);
+			return newJsonUserStats;
+		} else {
+			setInfoLoaded(false);
+			return {};
 		}
-		reformatUserStatsForChart(newJsonUserStats);
-		return newJsonUserStats;
 	}
 
 	const reformatUserStatsForChart = (reformattedUserStats) => {
 		let mapStats = [];
-		for (let i = 0; i < maps.length; i++)
-			mapStats.push({
-				id: mapKeys[i],
-				value: reformattedUserStats.stats[i].totalRounds,
-				mapName: maps[i],
-				[reformattedUserStats.stats[i].mapName]: (reformattedUserStats.stats[i].totalWins /
-					reformattedUserStats.stats[i].totalRounds * 100).toFixed(2),
-				backgroundColor: customColors[mapKeys[i]]
-			});
+		for (let i = 0; i < maps.length; i++) {
+			let totalRounds = reformattedUserStats.stats[i].totalRounds;
+
+			if (totalRounds.length !== 0) {
+				mapStats.push({
+					id: mapKeys[i],
+					value: totalRounds,
+					mapName: maps[i],
+					[reformattedUserStats.stats[i].mapName]: (reformattedUserStats.stats[i].totalRoundWins
+						/ totalRounds * 100).toFixed(2),
+					backgroundColor: customColors[mapKeys[i]]
+				});
+			}
+		}
 
 		dispatch({ type: 'setChartKeyName', payload: "mapName" });
 		dispatch({ type: 'setChartData', payload: mapStats });
@@ -135,7 +150,7 @@ const MapStats = () => {
 			}
 		},
 		{
-			field: "totalWins",
+			field: "totalRoundWins",
 			headerName: "Total Round Wins",
 			flex: 1,
 			headerAlign: "center",
@@ -163,18 +178,18 @@ const MapStats = () => {
 			}
 		},
 		{
-			field: "totalWins/totalRounds",
+			field: "totalRoundWins/totalRounds",
 			headerName: "Round Win Rates %",
 			flex: 1,
 			headerAlign: "center",
 			align: "center",
 			renderCell: ({ row }) => {
-				if (row.totalRounds.length === 0 || row.totalWins.length === 0) {
+				if (row.totalRounds.length === 0 || row.totalRoundWins.length === 0) {
 					return "";
 				} else {
 					return (
 						<Box display="flex" justifyContent="center" alignItems="center" sx={{ fontSize: "1.2vh" }}>
-							{(row.totalWins / row.totalRounds * 100).toFixed(2)} %
+							{(row.totalRoundWins / row.totalRounds * 100).toFixed(2)} %
 						</Box>
 					);
 				}
@@ -182,11 +197,15 @@ const MapStats = () => {
 		}
 	];
 
-	if (infoLoaded === false || userStats.length === 0) {
+	if (infoLoaded === false || userStats === {}) {
 		return (
-			<Box sx={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
-				<CircularProgress color="success"/>
-			</Box>
+			<motion.div exit={{ opacity: 0 }}>
+				<Box margin="1.5vh">
+					<Box sx={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
+						<CircularProgress color="success"/>
+					</Box>
+				</Box>
+			</motion.div>
 		);
 	} else if (location.pathname === "/map-stats") {
 		return (

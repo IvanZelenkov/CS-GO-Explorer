@@ -16,15 +16,16 @@ const Friends = () => {
 	const [infoLoaded, setInfoLoaded] = useState(false);
 	const [friendsList, setFriendsList] = useState({});
 
-	const getFriendList = () => {
-		axios.get(
-			"https://" + process.env.REACT_APP_REST_API_ID + ".execute-api.us-east-1.amazonaws.com/ProductionStage/GetFriendList"
-		).then(function (response) {
+	const getFriendList = async () => {
+		try {
+			const response = await axios.get(
+				"https://" + process.env.REACT_APP_REST_API_ID + ".execute-api.us-east-1.amazonaws.com/ProductionStage/GetFriendList"
+			);
 			setFriendsList(JSON.parse(response.data.body));
 			setInfoLoaded(true);
-		}).catch(function (error) {
+		} catch (error) {
 			console.log(error);
-		});
+		}
 	}
 
 	useEffect(() => {
@@ -230,14 +231,15 @@ const Friends = () => {
 		}
 	];
 
-	if (infoLoaded === false || friendsList.length === 0) {
+	if (infoLoaded === false || friendsList === undefined) {
 		return (
-			<Box sx={{
-				position: 'absolute', left: '50%', top: '50%',
-				transform: 'translate(-50%, -50%)'
-			}}>
-				<CircularProgress color="success"/>
-			</Box>
+			<motion.div exit={{ opacity: 0 }}>
+				<Box margin="1.5vh">
+					<Box sx={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
+						<CircularProgress color="success"/>
+					</Box>
+				</Box>
+			</motion.div>
 		);
 	}
 	return (

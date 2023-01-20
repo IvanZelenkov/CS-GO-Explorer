@@ -65,7 +65,7 @@ const PieChart = ({ chartState, chartSubtitle }) => {
 						</Box>
 					);
 				} else if (chartSubtitle === "Total rounds played") {
-					if (item.id === "St. Marc") {
+					if (item.datum.id === "St. Marc") {
 						return (
 							<Box style={{ background: "white", padding: "9px 12px", border: "1px solid #CCC" }}>
 								<Typography sx={{ color: "black", fontWeight: "bold", fontSize: "16px" }}>
@@ -93,7 +93,7 @@ const PieChart = ({ chartState, chartSubtitle }) => {
 				from: "color",
 				modifiers: [["darker", 0.2]]
 			}}
-			arcLinkLabelsSkipAngle={0}
+			arcLinkLabelsSkipAngle={2}
 			arcLinkLabelsDiagonalLength={25}
 			arcLinkLabelsStraightLength={25}
 			arcLinkLabelsTextColor={colors.steamColors[4]}

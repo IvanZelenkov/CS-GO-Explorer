@@ -14,16 +14,18 @@ const Contacts = () => {
 	const [infoLoaded, setInfoLoaded] = useState(false);
 	const [tableData, setTableData] = useState([]);
 
-	const getAllTableItems = () => {
-		axios.post(
-			"https://" + process.env.REACT_APP_REST_API_ID + ".execute-api.us-east-1.amazonaws.com/ProductionStage/GetAllTableItems",
-			JSON.stringify({"ENTIRE_TABLE": "EmptyBody"})
-		).then(function (response) {
-			setTableData(response.data.body);
-			setInfoLoaded(true);
-		}).catch(function (error) {
+	const getAllTableItems = async () => {
+		try {
+			await axios.post(
+				"https://" + process.env.REACT_APP_REST_API_ID + ".execute-api.us-east-1.amazonaws.com/ProductionStage/GetAllTableItems",
+				JSON.stringify({"ENTIRE_TABLE": "EmptyBody"})
+			).then(function (response) {
+				setTableData(response.data.body);
+				setInfoLoaded(true);
+			});
+		} catch (error) {
 			console.log(error);
-		});
+		}
 	};
 
 	useEffect(() => {

@@ -12,7 +12,6 @@ const FAQ = () => {
 		<motion.div exit={{ opacity: 0 }}>
 			<Box margin="1.5vh">
 				<Header title="FAQ" subtitle="Frequently Asked Questions Page"/>
-
 				<Accordion>
 					<AccordionSummary expandIcon={<ExpandMoreIcon />}>
 						<Typography color="custom.steamColorF" variant="h5">

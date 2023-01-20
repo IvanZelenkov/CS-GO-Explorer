@@ -64,7 +64,7 @@ export const tokens = (mode) => ({
 				1: "#171a21",
 				2: "#1b2838",
 				3: "#2a475e",
-				4: "#c7d5e0",
+				4: "#FFFFFF",
 				5: "#66c0f4",
 				6: "#7da10e",
 				7: "#ccba7c"

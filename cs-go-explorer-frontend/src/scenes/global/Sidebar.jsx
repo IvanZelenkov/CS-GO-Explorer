@@ -25,15 +25,18 @@ const Sidebar = () => {
 	const [infoLoaded, setInfoLoaded] = useState(false);
 	const [profile, setProfile] = useState({});
 
-	const getPlayerSummaries = () => {
-		axios.get(
-			"https://" + process.env.REACT_APP_REST_API_ID + ".execute-api.us-east-1.amazonaws.com/ProductionStage/GetPlayerSummaries"
-		).then(function (response) {
+	const getPlayerSummaries = async () => {
+		try {
+			const response =  await axios.get(
+				"https://" +
+				process.env.REACT_APP_REST_API_ID +
+				".execute-api.us-east-1.amazonaws.com/ProductionStage/GetPlayerSummaries"
+			);
 			setProfile(JSON.parse(response.data.body));
 			setInfoLoaded(true);
-		}).catch(function (error) {
+		} catch (error) {
 			console.log(error);
-		});
+		}
 	}
 
 	useEffect(() => {
@@ -90,13 +93,14 @@ const Sidebar = () => {
 
 	if (infoLoaded === false || profile.length === 0) {
 		return (
-			<Box sx={{
-				position: 'absolute', left: '50%', top: '50%',
-				transform: 'translate(-50%, -50%)'
-			}}>
-				<CircularProgress color="success"/>
-			</Box>
-		)
+			<motion.div exit={{ opacity: 0 }}>
+				<Box margin="1.5vh">
+					<Box sx={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
+						<CircularProgress color="success"/>
+					</Box>
+				</Box>
+			</motion.div>
+		);
 	}
 	return (
 		<Box
@@ -129,10 +133,10 @@ const Sidebar = () => {
 					<Box style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
 						{!isCollapsed && <MenuItem>
 							<Box style={{ cursor: "auto" }}>
-								<Typography variant="h3" color="primary.main" letterSpacing="0.1vw" fontWeight="bold">
+								<Typography variant="h3" color="custom.steamColorD" letterSpacing="0.1vw" fontWeight="bold">
 									Status: {infoLoaded && definePersonaState()}
 								</Typography>
-								<Typography variant="h5" color="primary.main">
+								<Typography variant="h5" color="custom.steamColorD">
 									{infoLoaded && formatLastTimeOnlineData()}
 								</Typography>
 							</Box>
@@ -140,10 +144,7 @@ const Sidebar = () => {
 						<MenuItem
 							onClick={() => setIsCollapsed(!isCollapsed)}
 							icon={isCollapsed ? <MenuOutlinedIcon/> : undefined}
-							style={{
-								margin: "1.5vh 0 1vh 0",
-								color: colors.grey[100]
-							}}
+							style={{ margin: "1.5vh 0 1vh 0", color: colors.steamColors[4] }}
 						>
 							{!isCollapsed && (
 								<Box
@@ -153,7 +154,7 @@ const Sidebar = () => {
 									marginLeft="1vw"
 								>
 									<IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
-										<MenuOutlinedIcon sx={{ color: "primary" }}/>
+										<MenuOutlinedIcon sx={{ color: "custom.steamColorD" }}/>
 									</IconButton>
 								</Box>
 							)}
@@ -285,7 +286,7 @@ const Sidebar = () => {
 							fontSize="1.3vh"
 							margin="15px 0 5px 15px"
 						>
-							Statistics
+							Stats
 						</Typography>
 						<motion.div whileHover={{ scale: 1.1 }}>
 							<SidebarItem
