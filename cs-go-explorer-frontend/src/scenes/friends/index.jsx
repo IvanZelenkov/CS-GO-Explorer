@@ -8,7 +8,7 @@ import states from 'us-state-converter';
 import { motion } from "framer-motion";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
-import SidebarBackgroundImage from "../../images/sidebar/background.jpeg";
+import SidebarBackgroundImage from "../../images/backgrounds/sidebar_and_tables_background.jpeg";
 
 const Friends = () => {
 	const theme = useTheme();

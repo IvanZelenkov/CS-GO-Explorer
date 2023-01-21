@@ -10,7 +10,7 @@ import Refresh from "@mui/icons-material/Refresh";
 import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 import axios from "axios";
 import Header from "../../components/Header";
-import SidebarBackgroundImage from "../../images/sidebar/background.jpeg";
+import SidebarBackgroundImage from "../../images/backgrounds/sidebar_and_tables_background.jpeg";
 import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutlined";
 
 function chartReducer(chartState, action) {

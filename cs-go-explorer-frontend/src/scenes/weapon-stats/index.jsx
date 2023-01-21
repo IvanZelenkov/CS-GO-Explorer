@@ -11,7 +11,7 @@ import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutlined";
 import axios from "axios";
 import Header from "../../components/Header";
-import SidebarBackgroundImage from "../../images/sidebar/background.jpeg";
+import SidebarBackgroundImage from "../../images/backgrounds/sidebar_and_tables_background.jpeg";
 
 function chartReducer(chartState, action) {
 	switch (action.type) {

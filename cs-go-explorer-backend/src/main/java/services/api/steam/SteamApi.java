@@ -17,6 +17,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import services.api.ApiGateway;
 import services.api.ApiGatewayProxyResponse;
+import software.amazon.awssdk.services.apigateway.model.ApiGatewayResponse;
 
 public class SteamApi {
 
@@ -75,7 +76,11 @@ public class SteamApi {
             // Get response
             httpResponse = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            if (resourceName.equals("/GetFriendList")) {
+            if (resourceName.equals("/GetUserStatsForGame")) {
+                return ApiGateway.generateResponseForPostOrGetRequest(httpResponse.body());
+            } else if (resourceName.equals("/GetPlayerSummaries")) {
+                return ApiGateway.generateResponseForPostOrGetRequest(httpResponse.body());
+            } else if (resourceName.equals("/GetFriendList")) {
                 JSONParser jsonParser = new JSONParser();
                 JSONObject jsonResponse = (JSONObject) jsonParser.parse(httpResponse.body());
                 JSONObject friendsList = (JSONObject) jsonParser.parse(jsonResponse.get("friendslist").toString());
@@ -100,8 +105,6 @@ public class SteamApi {
 
                 HttpResponse<String> friendProfileResponse = client.send(friendProfileRequest, HttpResponse.BodyHandlers.ofString());
                 return ApiGateway.generateResponseForPostOrGetRequest(friendProfileResponse.body());
-            } else {
-                return ApiGateway.generateResponseForPostOrGetRequest(httpResponse.body());
             }
         } catch (IOException | InterruptedException | ParseException error) {
             error.printStackTrace();

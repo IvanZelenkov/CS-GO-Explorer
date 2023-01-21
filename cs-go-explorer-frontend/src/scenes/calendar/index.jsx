@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Box, List, ListItem, ListItemText, Typography, useTheme } from "@mui/material";
+import { useState, useEffect } from "react";
+import { Box, CircularProgress, List, ListItem, ListItemText, Typography, useTheme } from "@mui/material";
 import FullCalendar from "@fullcalendar/react";
 import { formatDate } from '@fullcalendar/core'
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -9,11 +9,26 @@ import listPlugin from "@fullcalendar/list";
 import { motion } from "framer-motion";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
+import SidebarBackgroundImage from "../../images/backgrounds/calendar_events_background.jpg";
 
 const Calendar = () => {
 	const theme = useTheme();
 	const colors = tokens(theme.palette.mode);
+	const [infoLoaded, setInfoLoaded] = useState(false);
 	const [currentEvents, setCurrentEvents] = useState([]);
+
+	// Setting local storage for current events
+	useEffect(() => {
+		const storedCurrentEvents = JSON.parse(localStorage.getItem("current_events"));
+		if (storedCurrentEvents)
+			setCurrentEvents(storedCurrentEvents);
+
+		setInfoLoaded(true);
+	}, []);
+
+	useEffect(() => {
+		localStorage.setItem("current_events", JSON.stringify(currentEvents));
+	}, [currentEvents]);
 
 	const handleDateClick = (selected) => {
 		const title = prompt("Please enter a new title for your event");
@@ -35,17 +50,33 @@ const Calendar = () => {
 			selected.event.remove();
 	};
 
+	if (infoLoaded === false) {
+		return (
+			<motion.div exit={{ opacity: 0 }}>
+				<Box margin="1.5vh">
+					<Box sx={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
+						<CircularProgress color="success"/>
+					</Box>
+				</Box>
+			</motion.div>
+		);
+	}
 	return (
 		<motion.div exit={{ opacity: 0 }}>
 			<Box margin="1.5vh">
-				<Header title="Calendar" subtitle="Full Calendar Interactive Page"/>
+				<Header title="Calendar" subtitle="Set the events you are planning in CS:GO"/>
 				<Box display="flex" justifyContent="space-between">
 					{/* CALENDAR SIDEBAR */}
 					<Box
 						flex="1 1 20%"
-						backgroundColor="custom.steamColorA"
 						padding="15px"
 						borderRadius="5px"
+						sx={{
+							backgroundImage: `url(${SidebarBackgroundImage}) !important`,
+							backgroundSize: 'cover',
+							backgroundRepeat  : 'no-repeat',
+							backgroundPosition: 'center',
+						}}
 					>
 						<Typography variant="h5">Events</Typography>
 						<List>
@@ -100,18 +131,7 @@ const Calendar = () => {
 							select={handleDateClick}
 							eventClick={handleEventClick}
 							eventsSet={(events) => setCurrentEvents(events)}
-							initialEvents={[
-								{
-									id: "12315",
-									title: "All-day event",
-									date: "2022-09-14"
-								},
-								{
-									id: "5123",
-									title: "Timed event",
-									date: "2023-01-12"
-								}
-							]}
+							initialEvents={currentEvents}
 						/>
 					</Box>
 				</Box>

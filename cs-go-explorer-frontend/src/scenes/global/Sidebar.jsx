@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar";
-import { Box, IconButton, Typography, Link as ProfileLink, useTheme, CircularProgress } from "@mui/material";
+import {Box, IconButton, Typography, Link as ProfileLink, useTheme, CircularProgress, TextField} from "@mui/material";
 import { GiCrosshair } from "react-icons/gi";
 import { MdOutlineMapsHomeWork } from "react-icons/md";
 import "react-pro-sidebar/dist/css/styles.css";
-import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
+import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
-import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
+import SpeedIcon from '@mui/icons-material/Speed';
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
@@ -15,15 +15,26 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import { tokens } from "../../theme";
 import SidebarItem from "../../components/SidebarItem";
-import SidebarBackgroundImage from "../../images/sidebar/background.jpeg";
+import SidebarBackgroundImage from "../../images/backgrounds/sidebar_and_tables_background.jpeg";
 
 const Sidebar = () => {
 	const theme = useTheme();
 	const colors = tokens(theme.palette.mode);
 	const [isCollapsed, setIsCollapsed] = useState(false);
-	const [selected, setSelected] = useState("Dashboard");
+	const [selected, setSelected] = useState("News");
 	const [infoLoaded, setInfoLoaded] = useState(false);
 	const [profile, setProfile] = useState({});
+
+	// Setting local storage for the selected menu item
+	useEffect(() => {
+		const selectedMenuItem = JSON.parse(localStorage.getItem("selected_menu_item"));
+		if (selectedMenuItem)
+			setSelected(selectedMenuItem);
+	}, []);
+
+	useEffect(() => {
+		localStorage.setItem("selected_menu_item", JSON.stringify(selected));
+	}, [selected]);
 
 	const getPlayerSummaries = async () => {
 		try {
@@ -200,12 +211,21 @@ const Sidebar = () => {
 
 					{/* MENU ITEMS */}
 					<Box paddingLeft={isCollapsed ? undefined : "10%"}>
-						{/*Dashboard*/}
+						{/*News*/}
+						<Typography
+							variant="h6"
+							color="custom.steamColorE"
+							fontWeight="bold"
+							fontSize="1.3vh"
+							margin="15px 0 5px 15px"
+						>
+							News
+						</Typography>
 						<motion.div whileHover={{ scale: 1.1 }}>
 							<SidebarItem
-								title="Dashboard"
+								title="CS:GO News"
 								to="/"
-								icon={<HomeOutlinedIcon/>}
+								icon={<ArticleOutlinedIcon/>}
 								selected={selected}
 								setSelected={setSelected}
 							/>
@@ -223,35 +243,6 @@ const Sidebar = () => {
 						</Typography>
 						<motion.div whileHover={{ scale: 1.1 }}>
 							<SidebarItem
-								title="Friends"
-								to="/friends"
-								icon={<PeopleOutlinedIcon/>}
-								selected={selected}
-								setSelected={setSelected}
-							/>
-						</motion.div>
-						<motion.div whileHover={{ scale: 1.1 }}>
-							<SidebarItem
-								title="Contacts Information"
-								to="/contacts"
-								icon={<ContactsOutlinedIcon/>}
-								selected={selected}
-								setSelected={setSelected}
-							/>
-						</motion.div>
-
-						{/*Pages*/}
-						<Typography
-							variant="h6"
-							color="custom.steamColorE"
-							fontWeight="bold"
-							fontSize="1.3vh"
-							margin="15px 0 5px 15px"
-						>
-							Pages
-						</Typography>
-						<motion.div whileHover={{ scale: 1.1 }}>
-							<SidebarItem
 								title="Profile"
 								to="/profile"
 								icon={<PersonOutlinedIcon/>}
@@ -261,18 +252,9 @@ const Sidebar = () => {
 						</motion.div>
 						<motion.div whileHover={{ scale: 1.1 }}>
 							<SidebarItem
-								title="Calendar"
-								to="/calendar"
-								icon={<CalendarTodayOutlinedIcon/>}
-								selected={selected}
-								setSelected={setSelected}
-							/>
-						</motion.div>
-						<motion.div whileHover={{ scale: 1.1 }}>
-							<SidebarItem
-								title="FAQ Page"
-								to="/faq"
-								icon={<HelpOutlineOutlinedIcon/>}
+								title="Friends"
+								to="/friends"
+								icon={<PeopleOutlinedIcon/>}
 								selected={selected}
 								setSelected={setSelected}
 							/>
@@ -302,6 +284,44 @@ const Sidebar = () => {
 								title="Maps"
 								to="/map-stats"
 								icon={<MdOutlineMapsHomeWork size={20}/>}
+								selected={selected}
+								setSelected={setSelected}
+							/>
+						</motion.div>
+						<motion.div whileHover={{ scale: 1.1 }}>
+							<SidebarItem
+								title="Playtime Booster"
+								to="/playtime-booster"
+								icon={<SpeedIcon/>}
+								selected={selected}
+								setSelected={setSelected}
+							/>
+						</motion.div>
+
+						{/*Guides*/}
+						<Typography
+							variant="h6"
+							color="custom.steamColorE"
+							fontWeight="bold"
+							fontSize="1.3vh"
+							margin="15px 0 5px 15px"
+						>
+							Guides
+						</Typography>
+						<motion.div whileHover={{ scale: 1.1 }}>
+							<SidebarItem
+								title="Calendar"
+								to="/calendar"
+								icon={<CalendarTodayOutlinedIcon/>}
+								selected={selected}
+								setSelected={setSelected}
+							/>
+						</motion.div>
+						<motion.div whileHover={{ scale: 1.1 }}>
+							<SidebarItem
+								title="FAQ Page"
+								to="/faq"
+								icon={<HelpOutlineOutlinedIcon/>}
 								selected={selected}
 								setSelected={setSelected}
 							/>

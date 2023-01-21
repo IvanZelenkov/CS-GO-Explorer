@@ -1,4 +1,4 @@
-import { createContext, useState, useMemo } from "react";
+import { createContext, useState, useMemo, useEffect } from "react";
 import { createTheme } from "@mui/material/styles";
 
 // Color design tokens
@@ -113,7 +113,7 @@ export const themeSettings = (mode) => {
 						steamColorB: colors.steamColors[4],
 						steamColorC: colors.steamColors[4],
 						steamColorD: colors.steamColors[2],
-						steamColorE: colors.steamColors[3],
+						steamColorE: colors.steamColors[5],
 						steamColorF: colors.steamColors[6],
 						steamColorG: colors.steamColors[7]
 					},
@@ -160,6 +160,17 @@ export const ColorModeContext = createContext({
 
 export const useMode = () => {
 	const [mode, setMode] = useState("dark");
+
+	// Setting local storage for theme mode
+	useEffect(() => {
+		const theme = JSON.parse(localStorage.getItem("theme"));
+		if (theme)
+			setMode(theme);
+	}, []);
+
+	useEffect(() => {
+		localStorage.setItem("theme", JSON.stringify(mode));
+	}, [mode]);
 
 	const colorMode = useMemo(() => ({
 			toggleColorMode: () =>
