@@ -20,8 +20,7 @@ const FAQ = () => {
 					</AccordionSummary>
 					<AccordionDetails>
 						<Typography color="custom.steamColorD">
-							Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-							malesuada lacus ex, sit amet blandit leo lobortis eget.
+							Currently under development.
 						</Typography>
 					</AccordionDetails>
 				</Accordion>
@@ -33,8 +32,7 @@ const FAQ = () => {
 					</AccordionSummary>
 					<AccordionDetails>
 						<Typography color="custom.steamColorD">
-							Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-							malesuada lacus ex, sit amet blandit leo lobortis eget.
+							Currently under development.
 						</Typography>
 					</AccordionDetails>
 				</Accordion>
@@ -46,8 +44,7 @@ const FAQ = () => {
 					</AccordionSummary>
 					<AccordionDetails>
 						<Typography color="custom.steamColorD">
-							Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-							malesuada lacus ex, sit amet blandit leo lobortis eget.
+							Currently under development.
 						</Typography>
 					</AccordionDetails>
 				</Accordion>
@@ -59,8 +56,7 @@ const FAQ = () => {
 					</AccordionSummary>
 					<AccordionDetails>
 						<Typography color="custom.steamColorD">
-							Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-							malesuada lacus ex, sit amet blandit leo lobortis eget.
+							Currently under development.
 						</Typography>
 					</AccordionDetails>
 				</Accordion>
@@ -72,8 +68,7 @@ const FAQ = () => {
 					</AccordionSummary>
 					<AccordionDetails>
 						<Typography color="custom.steamColorD">
-							Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-							malesuada lacus ex, sit amet blandit leo lobortis eget.
+							Currently under development.
 						</Typography>
 					</AccordionDetails>
 				</Accordion>

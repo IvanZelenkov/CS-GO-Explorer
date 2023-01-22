@@ -36,16 +36,15 @@ public class AppLauncher {
     public static void main(String[] args) throws Exception {
         final String usage = "\n" +
                 "Usage:\n" +
-                "    java -jar <accessKey> <secretAccessKey> <awsAppDeploymentRegion> <userEmail> <steamId> <steamApiKey>\n\n" +
+                "    java -jar <accessKey> <secretAccessKey> <awsAppDeploymentRegion> <steamApiKey>\n\n" +
                 "Where:\n" +
                 "    accessKey - used to sign programmatic requests that you make to AWS.\n" +
                 "    secretAccessKey - used to sign programmatic requests that you make to AWS.\n" +
                 "    awsAppDeploymentRegion - The AWS Region where the application will be deployed.\n" +
-                "    userEmail - user's email address to which notifications about changes in the database will be sent.\n" +
-                "    steamId - unique identifier of your Steam account.\n" +
+//                "    userEmail - user's email address to which notifications about changes in the database will be sent.\n" +
                 "    steamApiKey - API key is a unique identifier used to connect to, or perform, an API call.";
 
-        if (args.length != 6) {
+        if (args.length != 4) {
             System.out.println(usage);
             System.exit(1);
         }
@@ -54,9 +53,8 @@ public class AppLauncher {
         final String accessKey = args[0];
         final String secretAccessKey = args[1];
         final String awsAppDeploymentRegion = args[2];
-        final String userEmail = args[3];
-        final String steamId = args[4];
-        final String steamApiKey = args[5];
+//        final String userEmail = args[3];
+        final String steamApiKey = args[3];
 
         // Predefined configuration variables. The creation of services follows this order
         final String roleName = "CsGoExplorerRole"; // IAM
@@ -167,10 +165,9 @@ public class AppLauncher {
             put("AWS_APP_REGION", appRegion.toString());
             put("DYNAMO_DB_TABLE_NAME", tableName);
             put("SNS_TOPIC_ARN", topicArn);
-            put("USER_EMAIL", userEmail);
+//            put("USER_EMAIL", userEmail);
             put("S3_BUCKET_NAME", s3BucketName);
             put("APP_URL", "https://main." + appDefaultDomain);
-            put("STEAM_ID", steamId);
             put("STEAM_API_KEY", steamApiKey);
             put("CS_GO_APP_ID", "730");
         }}).build();

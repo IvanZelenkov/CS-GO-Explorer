@@ -76,7 +76,7 @@ public class Amplify {
             CustomRule customRule = CustomRule
                     .builder()
                     .status("200")
-                    .source("</^[^.]+$|\\.(?!(css|gif|ico|jpg|js|png|txt|svg|woff|woff2|ttf|map|json)$)([^.]+$)/>")
+                    .source("</^[^.]+$|\\.(?!(css|gif|ico|jpg|jpeg|webp|js|png|txt|svg|woff|woff2|ttf|map|json)$)([^.]+$)/>")
                     .target("/")
                     .build();
 

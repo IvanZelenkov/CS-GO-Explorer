@@ -29,3 +29,11 @@ html, body, #root, .app, .content {
 ::-webkit-scrollbar-track:hover {
   background: #555;
 }
+
+.input {
+  height: 4vh;
+}
+
+.button {
+  height: 4vh;
+}

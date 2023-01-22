@@ -39,11 +39,13 @@ const Profile = () => {
 		try {
 			const profileResponse =  await axios.get("https://" +
 				process.env.REACT_APP_REST_API_ID +
-				".execute-api.us-east-1.amazonaws.com/ProductionStage/GetPlayerSummaries"
+				".execute-api.us-east-1.amazonaws.com/ProductionStage/GetPlayerSummaries?steamid="
+				+ JSON.parse(localStorage.getItem("steam_id"))
 			);
 			const userStatsResponse = await axios.get("https://" +
 				process.env.REACT_APP_REST_API_ID +
-				".execute-api.us-east-1.amazonaws.com/ProductionStage/GetUserStatsForGame"
+				".execute-api.us-east-1.amazonaws.com/ProductionStage/GetUserStatsForGame?steamid="
+				+ JSON.parse(localStorage.getItem("steam_id"))
 			);
 			setProfile(JSON.parse(profileResponse.data.body));
 			setUserStats(reformatGeneralStatsJson(JSON.parse(userStatsResponse.data.body)));
@@ -76,22 +78,6 @@ const Profile = () => {
 			setInfoLoaded(false);
 			return {};
 		}
-	}
-
-	const formatPlayedTimeInHours = (unix_timestamp) => {
-		let date = new Date(unix_timestamp * 1000);
-		let day = date.getDate();
-		let month = date.getMonth() + 1;
-		let year = date.getFullYear();
-		let hours = date.getHours();
-		let minutes = date.getMinutes();
-		let seconds = date.getSeconds();
-
-		minutes = minutes.toString().length === 2 ? date.getMinutes() : "0" + date.getMinutes();
-		seconds = seconds.toString().length === 2 ? date.getSeconds() : "0" + date.getSeconds();
-
-		// Displays the information in "mm/dd/yyyy - 10:30:23" format
-		return month + "/" + day + "/" + year + " - " + hours + ':' + minutes + ':' + seconds;
 	}
 
 	if (infoLoaded === false || profile === {} || userStats === {}) {

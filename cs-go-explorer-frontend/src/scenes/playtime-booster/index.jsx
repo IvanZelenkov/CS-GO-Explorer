@@ -28,9 +28,9 @@ const PlaytimeBooster = () => {
 		}
 	};
 
-	useEffect(() => {
-		getAllTableItems();
-	}, []);
+	// useEffect(() => {
+	// 	getAllTableItems();
+	// }, []);
 
 	const columns = [
 		{

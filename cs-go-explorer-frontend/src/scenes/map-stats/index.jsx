@@ -55,7 +55,8 @@ const MapStats = () => {
 			const response = await axios.get(
 				"https://" +
 				process.env.REACT_APP_REST_API_ID +
-				".execute-api.us-east-1.amazonaws.com/ProductionStage/GetUserStatsForGame"
+				".execute-api.us-east-1.amazonaws.com/ProductionStage/GetUserStatsForGame?steamid="
+				+ JSON.parse(localStorage.getItem("steam_id"))
 			);
 			setUserStats(reformatUserStatsJson(JSON.parse(response.data.body)));
 		} catch (error) {

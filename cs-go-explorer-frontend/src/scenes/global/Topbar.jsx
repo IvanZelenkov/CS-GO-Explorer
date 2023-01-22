@@ -3,16 +3,22 @@ import { Box, IconButton, useTheme } from "@mui/material";
 import InputBase from "@mui/material/InputBase";
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
 import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
-import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
-import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
+import LogoutIcon from '@mui/icons-material/Logout';
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { ColorModeContext } from "../../theme";
 
-const Topbar = () => {
+const Topbar = ({ userDenied }) => {
 	const theme = useTheme();
 	const colorMode = useContext(ColorModeContext);
+	const navigate = useNavigate();
+
+	const signOut = () => {
+		localStorage.setItem("is_user_allowed", "deny");
+		userDenied(localStorage.getItem("is_user_allowed"));
+	}
 
 	return (
 		<Box display="flex" justifyContent="space-between" padding={2}>
@@ -30,6 +36,16 @@ const Topbar = () => {
 
 			{/* ICONS */}
 			<Box display="flex">
+				<motion.div whileHover={{ scale: 1.2 }}>
+					<IconButton onClick={signOut}>
+						<LogoutIcon sx={{
+							color: "custom.steamColorD",
+							":hover": {
+								color: "custom.steamColorF"
+							}
+						}}/>
+					</IconButton>
+				</motion.div>
 				<motion.div whileHover={{ scale: 1.2 }}>
 					<IconButton onClick={colorMode.toggleColorMode}>
 						{theme.palette.mode === "dark" ? (
@@ -50,27 +66,7 @@ const Topbar = () => {
 					</IconButton>
 				</motion.div>
 				<motion.div whileHover={{ scale: 1.2 }}>
-					<IconButton>
-						<NotificationsOutlinedIcon sx={{
-							color: "custom.steamColorD",
-							":hover": {
-								color: "custom.steamColorF"
-							}
-						}}/>
-					</IconButton>
-				</motion.div>
-				<motion.div whileHover={{ scale: 1.2 }}>
-					<IconButton>
-						<SettingsOutlinedIcon sx={{
-							color: "custom.steamColorD",
-							":hover": {
-								color: "custom.steamColorF"
-							}
-						}}/>
-					</IconButton>
-				</motion.div>
-				<motion.div whileHover={{ scale: 1.2 }}>
-					<IconButton>
+					<IconButton onClick={() => navigate("/profile")}>
 						<PersonOutlinedIcon sx={{
 							color: "custom.steamColorD",
 							":hover": {

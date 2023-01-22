@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar";
-import {Box, IconButton, Typography, Link as ProfileLink, useTheme, CircularProgress, TextField} from "@mui/material";
+import { Box, IconButton, Typography, Link as ProfileLink, useTheme, CircularProgress } from "@mui/material";
 import { GiCrosshair } from "react-icons/gi";
 import { MdOutlineMapsHomeWork } from "react-icons/md";
 import "react-pro-sidebar/dist/css/styles.css";
@@ -21,7 +21,8 @@ const Sidebar = () => {
 	const theme = useTheme();
 	const colors = tokens(theme.palette.mode);
 	const [isCollapsed, setIsCollapsed] = useState(false);
-	const [selected, setSelected] = useState("News");
+	// const [selected, setSelected] = useState("CS:GO News");
+	const [selected, setSelected] = useState("Profile");
 	const [infoLoaded, setInfoLoaded] = useState(false);
 	const [profile, setProfile] = useState({});
 
@@ -41,7 +42,8 @@ const Sidebar = () => {
 			const response =  await axios.get(
 				"https://" +
 				process.env.REACT_APP_REST_API_ID +
-				".execute-api.us-east-1.amazonaws.com/ProductionStage/GetPlayerSummaries"
+				".execute-api.us-east-1.amazonaws.com/ProductionStage/GetPlayerSummaries?steamid="
+				+ JSON.parse(localStorage.getItem("steam_id"))
 			);
 			setProfile(JSON.parse(response.data.body));
 			setInfoLoaded(true);
@@ -224,7 +226,7 @@ const Sidebar = () => {
 						<motion.div whileHover={{ scale: 1.1 }}>
 							<SidebarItem
 								title="CS:GO News"
-								to="/"
+								to="/news"
 								icon={<ArticleOutlinedIcon/>}
 								selected={selected}
 								setSelected={setSelected}
