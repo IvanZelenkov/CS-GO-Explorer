@@ -497,8 +497,8 @@ public class ApiGateway {
         // Response headers
         JSONObject responseHeaders = new JSONObject();
         responseHeaders.put("Access-Control-Allow-Headers", "Content-Type");
-        responseHeaders.put("Access-Control-Allow-Origin", System.getenv("APP_URL"));
-//        responseHeaders.put("Access-Control-Allow-Origin", "http://localhost:3000");
+//        responseHeaders.put("Access-Control-Allow-Origin", System.getenv("APP_URL"));
+        responseHeaders.put("Access-Control-Allow-Origin", "http://localhost:3000");
         responseHeaders.put("Access-Control-Allow-Methods", "OPTIONS");
         responseHeaders.put("Access-Control-Allow-Credentials", "true");
 
@@ -523,8 +523,8 @@ public class ApiGateway {
         // Response headers
         JSONObject responseHeaders = new JSONObject();
         responseHeaders.put("Access-Control-Allow-Headers", "Content-Type");
-        responseHeaders.put("Access-Control-Allow-Origin", System.getenv("APP_URL"));
-//        responseHeaders.put("Access-Control-Allow-Origin", "http://localhost:3000");
+//        responseHeaders.put("Access-Control-Allow-Origin", System.getenv("APP_URL"));
+        responseHeaders.put("Access-Control-Allow-Origin", "http://localhost:3000");
         responseHeaders.put("Access-Control-Allow-Methods", "OPTIONS, POST, GET");
         responseHeaders.put("Access-Control-Allow-Credentials", "true");
 

@@ -27,25 +27,32 @@ public class SteamApi {
     public static ApiGatewayProxyResponse steamApiRouter(Map<String, Object> event, String resourceName) {
         Map<String, Object> queryStringParameters = (Map<String, Object>) event.get("queryStringParameters");
         System.out.println("Query String Parameters: " + queryStringParameters);
-        String steamId = (String) queryStringParameters.get("steamid");
+        String steamId;
         switch (resourceName) {
             case "/GetPlayerSummaries":
+                steamId = (String) queryStringParameters.get("steamid");
                 // Returns basic profile information for a list of 64-bit Steam IDs.
                 return getSteamApiData(event, "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?" +
                         "key=" + System.getenv("STEAM_API_KEY") + "&" +
                         "steamids=" + steamId,
                         "/GetPlayerSummaries");
             case "/GetFriendList":
+                steamId = (String) queryStringParameters.get("steamid");
                 // Returns the friend list of any Steam user, provided their Steam Community profile visibility is set to "Public".
                 return getSteamApiData(event, "http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?" +
                         "key=" + System.getenv("STEAM_API_KEY") + "&" +
                         "steamid=" + steamId + "&" +
                         "relationship=friend", "/GetFriendList");
             case "/GetUserStatsForGame":
+                steamId = (String) queryStringParameters.get("steamid");
                 // Returns a list of achievements for this user by app id.
                 return getSteamApiData(event, "http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?" +
                         "appid=" + System.getenv("CS_GO_APP_ID") + "&key=" + System.getenv("STEAM_API_KEY") + "&" +
                         "steamid=" + steamId, "/GetUserStatsForGame");
+            case "/GetCsGoNews":
+                // Returns a list of achievements for this user by app id.
+                return getSteamApiData(event, "https://api.steampowered.com/ISteamNews/GetNewsForApp/v2?" +
+                        "appid=" + System.getenv("CS_GO_APP_ID") + "&key=" + System.getenv("STEAM_API_KEY"), "/GetCsGoNews");
         }
         return new ApiGatewayProxyResponse();
     }
@@ -80,7 +87,9 @@ public class SteamApi {
                 return ApiGateway.generateResponseForPostOrGetRequest(httpResponse.body());
             } else if (resourceName.equals("/GetPlayerSummaries")) {
                 return ApiGateway.generateResponseForPostOrGetRequest(httpResponse.body());
-            } else if (resourceName.equals("/GetFriendList")) {
+            } else if (resourceName.equals("/GetCsGoNews")) {
+                return ApiGateway.generateResponseForPostOrGetRequest(httpResponse.body());
+            }else if (resourceName.equals("/GetFriendList")) {
                 JSONParser jsonParser = new JSONParser();
                 JSONObject jsonResponse = (JSONObject) jsonParser.parse(httpResponse.body());
                 JSONObject friendsList = (JSONObject) jsonParser.parse(jsonResponse.get("friendslist").toString());

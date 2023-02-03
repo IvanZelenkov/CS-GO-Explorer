@@ -13,7 +13,7 @@ const FAQ = () => {
 			<Box margin="1.5vh">
 				<Header title="FAQ" subtitle="Frequently Asked Questions Page"/>
 				<Accordion>
-					<AccordionSummary expandIcon={<ExpandMoreIcon />}>
+					<AccordionSummary expandIcon={<ExpandMoreIcon/>}>
 						<Typography color="custom.steamColorF" variant="h5">
 							An Important Question
 						</Typography>
@@ -25,7 +25,7 @@ const FAQ = () => {
 					</AccordionDetails>
 				</Accordion>
 				<Accordion>
-					<AccordionSummary expandIcon={<ExpandMoreIcon />}>
+					<AccordionSummary expandIcon={<ExpandMoreIcon/>}>
 						<Typography color="custom.steamColorF" variant="h5">
 							Another Important Question
 						</Typography>
@@ -37,7 +37,7 @@ const FAQ = () => {
 					</AccordionDetails>
 				</Accordion>
 				<Accordion>
-					<AccordionSummary expandIcon={<ExpandMoreIcon />}>
+					<AccordionSummary expandIcon={<ExpandMoreIcon/>}>
 						<Typography color="custom.steamColorF" variant="h5">
 							Your Favorite Question
 						</Typography>
@@ -49,7 +49,7 @@ const FAQ = () => {
 					</AccordionDetails>
 				</Accordion>
 				<Accordion>
-					<AccordionSummary expandIcon={<ExpandMoreIcon />}>
+					<AccordionSummary expandIcon={<ExpandMoreIcon/>}>
 						<Typography color="custom.steamColorF" variant="h5">
 							Some Random Question
 						</Typography>
@@ -61,7 +61,7 @@ const FAQ = () => {
 					</AccordionDetails>
 				</Accordion>
 				<Accordion>
-					<AccordionSummary expandIcon={<ExpandMoreIcon />}>
+					<AccordionSummary expandIcon={<ExpandMoreIcon/>}>
 						<Typography color="custom.steamColorF" variant="h5">
 							The Final Question
 						</Typography>

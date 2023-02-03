@@ -2,10 +2,10 @@
   "swagger" : "2.0",
   "info" : {
     "description" : "REST API for CS:GO Explorer application",
-    "version" : "2023-01-15T06:14:45Z",
+    "version" : "2023-01-21T23:51:10Z",
     "title" : "cs-go-explorer-rest-api"
   },
-  "host" : "auidpp9d1a.execute-api.us-east-1.amazonaws.com",
+  "host" : "fvbzo69y26.execute-api.us-east-1.amazonaws.com",
   "basePath" : "/ProductionStage",
   "schemes" : [ "https" ],
   "paths" : {
