@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import { Box, Button, Link as ProfileLink, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { CircularProgress } from "@mui/material";
 import Refresh from "@mui/icons-material/Refresh";
 import axios from "axios";
 import states from 'us-state-converter';
 import { motion } from "framer-motion";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
-import SidebarBackgroundImage from "../../images/backgrounds/sidebar_and_tables_background.jpeg";
+import SidebarBackgroundImage from "../../images/backgrounds/sidebar_and_tables_background.jpg";
+import UseAnimations from 'react-useanimations';
+import loading from 'react-useanimations/lib/loading';
 
 const Friends = () => {
 	const theme = useTheme();
@@ -236,8 +237,9 @@ const Friends = () => {
 		return (
 			<motion.div exit={{ opacity: 0 }}>
 				<Box margin="1.5vh">
+					<Header title="Friends" subtitle="Explore information about friends"/>
 					<Box sx={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
-						<CircularProgress color="success"/>
+						<UseAnimations animation={loading} size={50} fillColor={"#7da10e"} strokeColor={"#7da10e"}/>
 					</Box>
 				</Box>
 			</motion.div>
@@ -246,7 +248,7 @@ const Friends = () => {
 	return (
 		<motion.div exit={{ opacity: 0 }}>
 			<Box margin="1.5vh">
-				<Header title="FRIENDS" subtitle="Explore information about friends"/>
+				<Header title="Friends" subtitle="Explore information about friends"/>
 				{/* REFRESH BUTTON */}
 				<Box display="flex" justifyContent="space-between" alignItems="center">
 					<Box>

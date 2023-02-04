@@ -1,4 +1,4 @@
-import {Box, Button, CircularProgress} from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
@@ -7,6 +7,8 @@ import axios from "axios";
 import Refresh from "@mui/icons-material/Refresh";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import loading from "react-useanimations/lib/loading";
+import UseAnimations from "react-useanimations";
 
 const PlaytimeBooster = () => {
 	const theme = useTheme();
@@ -77,7 +79,7 @@ const PlaytimeBooster = () => {
 				<Box margin="1.5vh">
 					<Header title="Currently under development"/>
 					<Box sx={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
-						<CircularProgress color="success"/>
+						<UseAnimations animation={loading} size={50} fillColor={"#7da10e"} strokeColor={"#7da10e"}/>
 					</Box>
 				</Box>
 			</motion.div>
@@ -86,10 +88,7 @@ const PlaytimeBooster = () => {
 	return (
 		<motion.div exit={{ opacity: 0 }}>
 			<Box margin="1.5vh">
-				<Header
-					title="CONTACTS"
-					subtitle="List of Contacts for Future Reference"
-				/>
+				<Header title="Playtime Booster" subtitle="List of Contacts for Future Reference"/>
 				{/* REFRESH BUTTON */}
 				<Box display="flex" justifyContent="space-between" alignItems="center">
 					<Button

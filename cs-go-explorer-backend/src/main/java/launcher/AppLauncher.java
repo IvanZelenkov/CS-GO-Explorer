@@ -195,8 +195,8 @@ public class AppLauncher {
         // Create 'GetUserStatsForGame' resource
         String getUserStatsForGameResourceParentId = ApiGateway.createAndConfigureRestApiResource(apiGatewayClient, restApiId, roleArn, lambdaArn, awsAppDeploymentRegion, getAllTableItemsResourceParentId, "GetUserStatsForGame", true, "GET", "NONE");
 
-        // Create 'GetCsGoNews' resource
-        String getCsGoNewsResourceParentId = ApiGateway.createAndConfigureRestApiResource(apiGatewayClient, restApiId, roleArn, lambdaArn, awsAppDeploymentRegion, getAllTableItemsResourceParentId, "GetCsGoNews", true, "GET", "NONE");
+        // Create 'GetNewsForApp' resource
+        String getNewsForAppParentId = ApiGateway.createAndConfigureRestApiResource(apiGatewayClient, restApiId, roleArn, lambdaArn, awsAppDeploymentRegion, getAllTableItemsResourceParentId, "GetNewsForApp", true, "GET", "NONE");
 
         // Create a deployment stage
         String stageName = "ProductionStage";

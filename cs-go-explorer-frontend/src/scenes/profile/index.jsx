@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { Box, CircularProgress, Link as ProfileLink, Typography, useTheme } from "@mui/material";
+import { Box, Link as ProfileLink, Typography, useTheme } from "@mui/material";
 import { motion } from "framer-motion";
 import axios from "axios";
-import Header from "../../components/Header";
 import { tokens } from "../../theme";
+import loading from "react-useanimations/lib/loading";
+import UseAnimations from "react-useanimations";
 
 const StatHeader = ({ title, textColor }) => {
 	return (
@@ -85,7 +86,7 @@ const Profile = () => {
 			<motion.div exit={{ opacity: 0 }}>
 				<Box margin="1.5vh">
 					<Box sx={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
-						<CircularProgress color="success"/>
+						<UseAnimations animation={loading} size={50} fillColor={"#7da10e"} strokeColor={"#7da10e"}/>
 					</Box>
 				</Box>
 			</motion.div>
@@ -94,7 +95,6 @@ const Profile = () => {
 	return (
 		<motion.div exit={{ opacity: 0 }}>
 			<Box margin="1.5vh">
-				<Header title="YOUR PROFILE"/>
 				<Box>
 					<Box display="flex" justifyContent="center" alignItems="center">
 						<Box>

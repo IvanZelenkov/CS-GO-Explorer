@@ -49,10 +49,10 @@ public class SteamApi {
                 return getSteamApiData(event, "http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?" +
                         "appid=" + System.getenv("CS_GO_APP_ID") + "&key=" + System.getenv("STEAM_API_KEY") + "&" +
                         "steamid=" + steamId, "/GetUserStatsForGame");
-            case "/GetCsGoNews":
+            case "/GetNewsForApp":
                 // Returns a list of achievements for this user by app id.
                 return getSteamApiData(event, "https://api.steampowered.com/ISteamNews/GetNewsForApp/v2?" +
-                        "appid=" + System.getenv("CS_GO_APP_ID") + "&key=" + System.getenv("STEAM_API_KEY"), "/GetCsGoNews");
+                        "appid=" + System.getenv("CS_GO_APP_ID") + "&key=" + System.getenv("STEAM_API_KEY"), "/GetNewsForApp");
         }
         return new ApiGatewayProxyResponse();
     }
@@ -87,7 +87,7 @@ public class SteamApi {
                 return ApiGateway.generateResponseForPostOrGetRequest(httpResponse.body());
             } else if (resourceName.equals("/GetPlayerSummaries")) {
                 return ApiGateway.generateResponseForPostOrGetRequest(httpResponse.body());
-            } else if (resourceName.equals("/GetCsGoNews")) {
+            } else if (resourceName.equals("/GetNewsForApp")) {
                 return ApiGateway.generateResponseForPostOrGetRequest(httpResponse.body());
             }else if (resourceName.equals("/GetFriendList")) {
                 JSONParser jsonParser = new JSONParser();

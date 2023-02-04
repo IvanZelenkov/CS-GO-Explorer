@@ -3,15 +3,16 @@ import { Box, Button, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { CircularProgress } from "@mui/material";
 import { motion } from "framer-motion";
 import { tokens } from "../../theme";
 import Refresh from "@mui/icons-material/Refresh";
 import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 import axios from "axios";
 import Header from "../../components/Header";
-import SidebarBackgroundImage from "../../images/backgrounds/sidebar_and_tables_background.jpeg";
+import SidebarBackgroundImage from "../../images/backgrounds/sidebar_and_tables_background.jpg";
 import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutlined";
+import UseAnimations from 'react-useanimations';
+import loading from 'react-useanimations/lib/loading';
 
 function chartReducer(chartState, action) {
 	switch (action.type) {
@@ -70,7 +71,7 @@ const MapStats = () => {
 
 	const reformatUserStatsJson = (overallStats) => {
 		if (overallStats.hasOwnProperty('playerstats')) {
-			dispatch({type: 'setChartKeys', payload: mapKeys});
+			dispatch({ type: 'setChartKeys', payload: mapKeys });
 
 			let mapStats = [];
 			for (let i = 0; i < mapKeys.length; i++)
@@ -202,8 +203,9 @@ const MapStats = () => {
 		return (
 			<motion.div exit={{ opacity: 0 }}>
 				<Box margin="1.5vh">
+					<Header title="Map Stats" subtitle="Explore map stats"/>
 					<Box sx={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
-						<CircularProgress color="success"/>
+						<UseAnimations animation={loading} size={50} fillColor={"#7da10e"} strokeColor={"#7da10e"}/>
 					</Box>
 				</Box>
 			</motion.div>
@@ -212,7 +214,7 @@ const MapStats = () => {
 		return (
 			<motion.div exit={{ opacity: 0 }}>
 				<Box margin="1.5vh">
-					<Header title="MAP STATS" subtitle="Explore map stats"/>
+					<Header title="Map Stats" subtitle="Explore map stats"/>
 					<Box display="flex" justifyContent="space-between" alignItems="center">
 						<Button
 							sx={{

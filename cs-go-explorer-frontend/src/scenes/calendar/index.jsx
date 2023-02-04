@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Box, CircularProgress, List, ListItem, ListItemText, Typography, useTheme } from "@mui/material";
+import { Box, List, ListItem, ListItemText, Typography, useTheme } from "@mui/material";
 import FullCalendar from "@fullcalendar/react";
 import { formatDate } from '@fullcalendar/core'
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -10,6 +10,8 @@ import { motion } from "framer-motion";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import SidebarBackgroundImage from "../../images/backgrounds/calendar_events_background.jpg";
+import UseAnimations from "react-useanimations";
+import loading from "react-useanimations/lib/loading";
 
 const Calendar = () => {
 	const theme = useTheme();
@@ -54,8 +56,9 @@ const Calendar = () => {
 		return (
 			<motion.div exit={{ opacity: 0 }}>
 				<Box margin="1.5vh">
+					<Header title="Calendar" subtitle="Set the events you are planning in CS:GO"/>
 					<Box sx={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
-						<CircularProgress color="success"/>
+						<UseAnimations animation={loading} size={50} fillColor={"#7da10e"} strokeColor={"#7da10e"}/>
 					</Box>
 				</Box>
 			</motion.div>

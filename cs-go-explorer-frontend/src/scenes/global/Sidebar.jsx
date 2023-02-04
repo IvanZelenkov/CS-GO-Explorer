@@ -1,27 +1,29 @@
 import { useState, useEffect } from "react";
 import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar";
-import { Box, IconButton, Typography, Link as ProfileLink, useTheme, CircularProgress } from "@mui/material";
+import { Box, IconButton, Typography, Link as ProfileLink, useTheme } from "@mui/material";
 import { GiCrosshair } from "react-icons/gi";
 import { MdOutlineMapsHomeWork } from "react-icons/md";
 import "react-pro-sidebar/dist/css/styles.css";
+import UseAnimations from 'react-useanimations';
+import loading from 'react-useanimations/lib/loading';
 import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import SpeedIcon from '@mui/icons-material/Speed';
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
-import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
+import WallpaperIcon from '@mui/icons-material/Wallpaper';
 import axios from "axios";
 import { motion } from "framer-motion";
 import { tokens } from "../../theme";
 import SidebarItem from "../../components/SidebarItem";
-import SidebarBackgroundImage from "../../images/backgrounds/sidebar_and_tables_background.jpeg";
+import SidebarBackgroundImage from "../../images/backgrounds/sidebar_and_tables_background.jpg";
 
 const Sidebar = () => {
 	const theme = useTheme();
 	const colors = tokens(theme.palette.mode);
 	const [isCollapsed, setIsCollapsed] = useState(false);
-	// const [selected, setSelected] = useState("CS:GO News");
 	const [selected, setSelected] = useState("Profile");
 	const [infoLoaded, setInfoLoaded] = useState(false);
 	const [profile, setProfile] = useState({});
@@ -109,7 +111,7 @@ const Sidebar = () => {
 			<motion.div exit={{ opacity: 0 }}>
 				<Box margin="1.5vh">
 					<Box sx={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
-						<CircularProgress color="success"/>
+						<UseAnimations animation={loading} size={50} fillColor={"#7da10e"} strokeColor={"#7da10e"}/>
 					</Box>
 				</Box>
 			</motion.div>
@@ -213,26 +215,6 @@ const Sidebar = () => {
 
 					{/* MENU ITEMS */}
 					<Box paddingLeft={isCollapsed ? undefined : "10%"}>
-						{/*News*/}
-						<Typography
-							variant="h6"
-							color="custom.steamColorE"
-							fontWeight="bold"
-							fontSize="1.3vh"
-							margin="15px 0 5px 15px"
-						>
-							News
-						</Typography>
-						<motion.div whileHover={{ scale: 1.1 }}>
-							<SidebarItem
-								title="CS:GO News"
-								to="/news"
-								icon={<ArticleOutlinedIcon/>}
-								selected={selected}
-								setSelected={setSelected}
-							/>
-						</motion.div>
-
 						{/*Data*/}
 						<Typography
 							variant="h6"
@@ -257,6 +239,24 @@ const Sidebar = () => {
 								title="Friends"
 								to="/friends"
 								icon={<PeopleOutlinedIcon/>}
+								selected={selected}
+								setSelected={setSelected}
+							/>
+						</motion.div>
+						<motion.div whileHover={{ scale: 1.1 }}>
+							<SidebarItem
+								title="CS:GO News"
+								to="/news"
+								icon={<ArticleOutlinedIcon/>}
+								selected={selected}
+								setSelected={setSelected}
+							/>
+						</motion.div>
+						<motion.div whileHover={{ scale: 1.1 }}>
+							<SidebarItem
+								title="4K Wallpapers"
+								to="/wallpapers"
+								icon={<WallpaperIcon/>}
 								selected={selected}
 								setSelected={setSelected}
 							/>
@@ -314,7 +314,7 @@ const Sidebar = () => {
 							<SidebarItem
 								title="Calendar"
 								to="/calendar"
-								icon={<CalendarTodayOutlinedIcon/>}
+								icon={<CalendarMonthIcon/>}
 								selected={selected}
 								setSelected={setSelected}
 							/>

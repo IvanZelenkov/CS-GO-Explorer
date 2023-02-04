@@ -6,9 +6,10 @@ import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import SteamIdForm from "./scenes/steam-id-form";
 import Sidebar from './scenes/global/Sidebar';
 import Topbar from "./scenes/global/Topbar";
-import News from './scenes/news';
 import Profile from './scenes/profile';
 import Friends from './scenes/friends';
+import News from './scenes/news';
+import Wallpapers from "./scenes/wallpapers";
 import WeaponStats from "./scenes/weapon-stats";
 import MapStats from "./scenes/map-stats";
 import Bar from './scenes/bar';
@@ -51,9 +52,10 @@ function App() {
 								<Topbar userDenied={userDenied}/>
 								<AnimatePresence mode='wait'>
 									<Routes location={location} key={location.pathname}>
-										<Route exact path="/news" element={<News/>}/>
 										<Route exact path="/profile" element={<Profile/>}/>
 										<Route exact path="/friends" element={<Friends/>}/>
+										<Route exact path="/news" element={<News/>}/>
+										<Route exact path="/wallpapers" element={<Wallpapers/>}/>
 										<Route exact path="/weapon-stats" element={<WeaponStats/>}>
 											<Route exact path="bar" element={<Bar/>}/>
 											<Route exact path="pie" element={<Pie/>}/>

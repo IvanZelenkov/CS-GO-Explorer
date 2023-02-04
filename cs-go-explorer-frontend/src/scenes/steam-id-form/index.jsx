@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { Box, TextField, Button, CircularProgress } from "@mui/material";
+import { Box, TextField, Button } from "@mui/material";
 import { motion } from "framer-motion";
 import { SiValve, SiCounterstrike } from "react-icons/si";
 import axios from "axios";
+import loading from "react-useanimations/lib/loading";
+import UseAnimations from "react-useanimations";
 
 const SteamIdForm = ({ userAccepted, userDenied}) => {
 	const [infoLoaded, setInfoLoaded] = useState(true);
@@ -59,7 +61,7 @@ const SteamIdForm = ({ userAccepted, userDenied}) => {
 			<motion.div exit={{ opacity: 0 }}>
 				<Box margin="1.5vh">
 					<Box sx={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
-						<CircularProgress color="success"/>
+						<UseAnimations animation={loading} size={50} fillColor={"#7da10e"} strokeColor={"#7da10e"}/>
 					</Box>
 				</Box>
 			</motion.div>

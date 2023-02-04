@@ -5,13 +5,13 @@ const Header = ({ title, subtitle }) => {
 	return (
 		<Box marginBottom="2.5vh">
 			<Typography
-				variant="h2"
+				fontSize="2.5vh"
 				color="custom.steamColorD"
 				fontWeight="bold"
 			>
 				{title}
 			</Typography>
-			<Typography variant="h5" color="custom.steamColorF" fontWeight="bold">
+			<Typography fontSize="1.5vh" color="custom.steamColorF" fontWeight="bold">
 				{subtitle}
 			</Typography>
 		</Box>

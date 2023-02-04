@@ -21,17 +21,17 @@ const Topbar = ({ userDenied }) => {
 	}
 
 	return (
-		<Box display="flex" justifyContent="space-between" padding={2}>
+		<Box display="flex" justifyContent="space-between" padding="2vh">
 			{/* SEARCH BAR */}
 			<Box
 				display="flex"
 				backgroundColor="custom.steamColorB"
 				borderRadius="3px"
 			>
-				<InputBase sx={{ marginLeft: 2, flex: 1 }} placeholder="Search"/>
-				<IconButton type="button" sx={{ padding: 1, color: "custom.steamColorD" }}>
-					<SearchIcon/>
-				</IconButton>
+				{/*<InputBase sx={{ marginLeft: 2, flex: 1 }} placeholder="Search"/>*/}
+				{/*<IconButton type="button" sx={{ padding: 1, color: "custom.steamColorD" }}>*/}
+				{/*	<SearchIcon/>*/}
+				{/*</IconButton>*/}
 			</Box>
 
 			{/* ICONS */}
