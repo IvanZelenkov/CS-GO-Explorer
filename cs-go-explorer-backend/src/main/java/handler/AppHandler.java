@@ -1,5 +1,6 @@
 package handler;
 
+import services.S3;
 import services.database.DynamoDB;
 import services.api.steam.SteamApi;
 
@@ -14,6 +15,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.s3.S3Client;
 
 /**
  * The AppHandler handles incoming requests and represents the logic of the CS:GO Explorer application.
@@ -40,6 +42,10 @@ public class AppHandler implements RequestHandler<Map<String, Object>, Object> {
         if (event.containsKey("httpMethod")) {
             if (event.get("resource").equals("/GetAllTableItems")) {
                 return DynamoDB.scanTable(dynamoDbClient, event);
+            } else if (event.get("resource").equals("/GetCsGoWallpapers")) {
+                S3Client s3Client = S3.authenticateS3(getAwsBasicCredentials(), Region.of(System.getenv("AWS_REGION")));
+                List<String> s3ObjectKeyList = S3.listBucketObjectsKeys(s3Client, System.getenv("S3_BUCKET_NAME_FOR_WALLPAPERS"));
+                return S3.getImageUrls(s3Client, System.getenv("S3_BUCKET_NAME_FOR_WALLPAPERS"), s3ObjectKeyList, event);
             } else {
                 return SteamApi.steamApiRouter(event, event.get("resource").toString());
             }

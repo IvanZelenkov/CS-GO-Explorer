@@ -1,16 +1,78 @@
 import { Box, ImageList, ImageListItem } from "@mui/material";
 import Header from "../../components/Header";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import UseAnimations from "react-useanimations";
 import loading from "react-useanimations/lib/loading";
-import DownloadIcon from '@mui/icons-material/Download';
+import { MdOutlineDownloading }  from 'react-icons/md';
+import axios from "axios";
 
 const Wallpapers = () => {
-	const [infoLoaded, setInfoLoaded] = useState(true);
-	const [hover, setHover] = useState(false);
+	const [infoLoaded, setInfoLoaded] = useState(false);
+	const [wallpapers, setWallpapers] = useState([]);
 
-	if (infoLoaded === false) {
+	const Image = ({ imageUrl, index }) => {
+		const [hover, setHover] = useState(false);
+		return (
+			<ImageListItem key={index} style={{ marginRight: "0.5vw" }}>
+				<img
+					src={`${imageUrl}?w=164&h=164&fit=crop&auto=format`}
+					alt=""
+					loading="lazy"
+					className="wallpaper"
+					onMouseOver={() => setHover(true)}
+					onMouseLeave={() => setHover(false)}
+				/>
+				{hover ?
+					<MdOutlineDownloading
+						className="download-icon"
+						onMouseOver={() => setHover(true)}
+						onClick={e => downloadImage(e, imageUrl)}
+					/> :
+					""
+				}
+			</ImageListItem>
+		);
+	}
+
+	const getWallpapers = async () => {
+		try {
+			const response = await axios.get(
+				"https://" +
+				process.env.REACT_APP_REST_API_ID +
+				".execute-api.us-east-1.amazonaws.com/ProductionStage/GetCsGoWallpapers"
+			);
+			setWallpapers(JSON.parse(response.data.body));
+			setInfoLoaded(true);
+		} catch (error) {
+			console.log(error);
+		}
+	}
+
+	useEffect(() => {
+		getWallpapers();
+	}, []);
+
+	const downloadImage = (e, imageUrl) => {
+		console.log(e.target.href);
+		fetch(e.target.href, {
+			method: "GET",
+			headers: {}
+		}).then(response => {
+				response.arrayBuffer().then(function(buffer) {
+					const url = window.URL.createObjectURL(new Blob([buffer]));
+					const link = document.createElement("a");
+					link.href = url;
+					link.setAttribute("download", "image.png"); //or any other extension
+					document.body.appendChild(link);
+					link.click();
+				});
+		}).catch(error => {
+			console.log(error);
+		});
+	};
+
+	if (infoLoaded === false || wallpapers.length === 0) {
 		return (
 			<motion.div exit={{ opacity: 0 }}>
 				<Box margin="1.5vh">
@@ -29,160 +91,9 @@ const Wallpapers = () => {
 				<Box display="flex" flexDirection="column">
 					<Header title="4k Wallpapers" subtitle="Explore and download 4k wallpapers"/>
 					<ImageList sx={{ width: "100%", height: "79vh" }} cols={5} gap={40}>
-						<ImageListItem
-							key={0}
-							onMouseOver={() => setHover(true)}
-							onMouseLeave={() => setHover(false)}
-							style={{ marginRight: "0.5vw" }}
-						>
-							<img
-								className={"wallpaper"}
-								src={`https://wallpaperaccess.com/full/659198.jpg?w=164&h=164&fit=crop&auto=format`}
-								srcSet={`https://wallpaperaccess.com/full/659198.jpg?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-								alt=""
-								loading="lazy"
-							/>
-							{hover
-								? <DownloadIcon
-									style={{
-										position: "absolute",
-										left: '50%',
-										top: '50%',
-										transform: 'translate(-50%, -50%)',
-										cursor: "pointer",
-										fontSize: "5vh"
-
-									}}
-								/>
-								: ""
-							}
-						</ImageListItem>
-						<ImageListItem key={0} style={{ marginRight: "0.5vw" }}>
-							<img
-								className={"wallpaper"}
-								src={`https://wallpaperaccess.com/full/659201.png?w=164&h=164&fit=crop&auto=format`}
-								srcSet={`https://wallpaperaccess.com/full/659198.jpg?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-								alt=""
-								loading="lazy"
-							/>
-						</ImageListItem>
-						<ImageListItem key={0} style={{ marginRight: "0.5vw" }}>
-							<img
-								className={"wallpaper"}
-								src={`https://wallpaperaccess.com/full/147188.png?w=164&h=164&fit=crop&auto=format`}
-								srcSet={`https://wallpaperaccess.com/full/659198.jpg?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-								alt=""
-								loading="lazy"
-							/>
-						</ImageListItem>
-						<ImageListItem key={0} style={{ marginRight: "0.5vw" }}>
-							<img
-								className={"wallpaper"}
-								src={`https://wallpaperaccess.com/full/659225.jpg?w=164&h=164&fit=crop&auto=format`}
-								srcSet={`https://wallpaperaccess.com/full/659198.jpg?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-								alt=""
-								loading="lazy"
-							/>
-						</ImageListItem>
-						<ImageListItem key={0} style={{ marginRight: "0.5vw" }}>
-							<img
-								className={"wallpaper"}
-								src={`https://wallpaperaccess.com/full/634033.png?w=164&h=164&fit=crop&auto=format`}
-								srcSet={`https://wallpaperaccess.com/full/659198.jpg?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-								alt=""
-								loading="lazy"
-							/>
-						</ImageListItem>
-						<ImageListItem key={0} style={{ marginRight: "0.5vw" }}>
-							<img
-								className={"wallpaper"}
-								src={`https://wallpaperaccess.com/full/147198.jpg?w=164&h=164&fit=crop&auto=format`}
-								srcSet={`https://wallpaperaccess.com/full/659198.jpg?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-								alt=""
-								loading="lazy"
-							/>
-						</ImageListItem>
-						<ImageListItem key={0} style={{ marginRight: "0.5vw" }}>
-							<img
-								className={"wallpaper"}
-								src={`https://wallpaperaccess.com/full/659253.png?w=164&h=164&fit=crop&auto=format`}
-								srcSet={`https://wallpaperaccess.com/full/659198.jpg?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-								alt=""
-								loading="lazy"
-							/>
-						</ImageListItem>
-						<ImageListItem key={0} style={{ marginRight: "0.5vw" }}>
-							<img
-								className={"wallpaper"}
-								src={`https://wallpaperaccess.com/full/659261.jpg?w=164&h=164&fit=crop&auto=format`}
-								srcSet={`https://wallpaperaccess.com/full/659198.jpg?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-								alt=""
-								loading="lazy"
-							/>
-						</ImageListItem>
-						<ImageListItem key={0} style={{ marginRight: "0.5vw" }}>
-							<img
-								className={"wallpaper"}
-								src={`https://wallpaperaccess.com/full/659379.jpg?w=164&h=164&fit=crop&auto=format`}
-								srcSet={`https://wallpaperaccess.com/full/659198.jpg?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-								alt=""
-								loading="lazy"
-							/>
-						</ImageListItem>
-						<ImageListItem key={0} style={{ marginRight: "0.5vw" }}>
-							<img
-								className={"wallpaper"}
-								src={`https://wallpaperaccess.com/full/659398.png?w=164&h=164&fit=crop&auto=format`}
-								srcSet={`https://wallpaperaccess.com/full/659198.jpg?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-								alt=""
-								loading="lazy"
-							/>
-						</ImageListItem>
-						<ImageListItem key={0} style={{ marginRight: "0.5vw" }}>
-							<img
-								className={"wallpaper"}
-								src={`https://wallpaperaccess.com/full/260122.jpg?w=164&h=164&fit=crop&auto=format`}
-								srcSet={`https://wallpaperaccess.com/full/659198.jpg?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-								alt=""
-								loading="lazy"
-							/>
-						</ImageListItem>
-						<ImageListItem key={0} style={{ marginRight: "0.5vw" }}>
-							<img
-								className={"wallpaper"}
-								src={`https://wallpaperaccess.com/full/659385.jpg?w=164&h=164&fit=crop&auto=format`}
-								srcSet={`https://wallpaperaccess.com/full/659198.jpg?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-								alt=""
-								loading="lazy"
-							/>
-						</ImageListItem>
-						<ImageListItem key={0} style={{ marginRight: "0.5vw" }}>
-							<img
-								className={"wallpaper"}
-								src={`https://wallpaperaccess.com/full/659318.png?w=164&h=164&fit=crop&auto=format`}
-								srcSet={`https://wallpaperaccess.com/full/659198.jpg?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-								alt=""
-								loading="lazy"
-							/>
-						</ImageListItem>
-						<ImageListItem key={0} style={{ marginRight: "0.5vw" }}>
-							<img
-								className={"wallpaper"}
-								src={`https://wallpaperaccess.com/full/659270.jpg?w=164&h=164&fit=crop&auto=format`}
-								srcSet={`https://wallpaperaccess.com/full/659198.jpg?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-								alt=""
-								loading="lazy"
-							/>
-						</ImageListItem>
-						<ImageListItem key={0} style={{ marginRight: "0.5vw" }}>
-							<img
-								className={"wallpaper"}
-								src={`https://wallpaperaccess.com/full/659378.jpg?w=164&h=164&fit=crop&auto=format`}
-								srcSet={`https://wallpaperaccess.com/full/659198.jpg?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-								alt=""
-								loading="lazy"
-							/>
-						</ImageListItem>
+						{wallpapers?.map((imageUrl, index) => (
+							<Image imageUrl={imageUrl} index={index}/>
+						))}
 					</ImageList>
 				</Box>
 			</Box>

@@ -154,7 +154,7 @@ public class SNS {
         AppHandler.multipleMessages(messages, "PlainText");
 
         S3Client s3Client = S3.authenticateS3(AppHandler.getAwsBasicCredentials(), Region.of(System.getenv("AWS_REGION")));
-        String putObjectResponse = S3.putObject(s3Client, System.getenv("S3_BUCKET_NAME"), type, message);
-        System.out.println("Successfully put object to the S3 bucket " + System.getenv("S3_BUCKET_NAME") + ": " + putObjectResponse);
+        String putObjectResponse = S3.putObject(s3Client, System.getenv("S3_BUCKET_NAME_FOR_BOT"), type, message);
+        System.out.println("Successfully put object to the S3 bucket " + System.getenv("S3_BUCKET_NAME_FOR_BOT") + ": " + putObjectResponse);
     }
 }

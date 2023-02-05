@@ -60,7 +60,8 @@ public class AppLauncher {
         final String roleName = "CsGoExplorerRole"; // IAM
         final String permissionsPolicyName = "CsGoExplorerRoleFullAccess"; // IAM
         final String restApiName = "cs-go-explorer-rest-api"; // API Gateway
-        final String s3BucketName = "cs-go-explorer-s3-bucket"; // S3
+        final String firstS3BucketName = "cs-go-explorer-bot-s3-bucket"; // S3
+        final String secondS3BucketName = "cs-go-explorer-wallpapers-s3-bucket"; // S3
         final String snsTopicName = "cs-go-explorer-sns-topic"; // SNS
         final String lambdaFunctionName = "cs-go-explorer-lambda-function"; // Lambda
         final String botName = "CsGoExplorerBot"; // Lex
@@ -109,9 +110,13 @@ public class AppLauncher {
         // Authenticate and create an S3 client
         S3Client s3Client = S3.authenticateS3(awsBasicCredentials, appRegion);
 
-        // Create S3 bucket
-        String bucketName = S3.createBucket(s3Client, s3BucketName);
-        System.out.println("S3 bucket " + bucketName + " has been created.");
+        // Create S3 bucket that is needed for the bot functionality
+        String botBucketName = S3.createBucket(s3Client, firstS3BucketName);
+        System.out.println("S3 bucket " + botBucketName + " has been created.");
+
+        // Create S3 bucket for storing wallpapers
+        String wallpaperBucketName = S3.createBucket(s3Client, secondS3BucketName);
+        System.out.println("S3 bucket " + wallpaperBucketName + " has been created.");
 
         // Close S3 client
         s3Client.close();
@@ -166,7 +171,8 @@ public class AppLauncher {
             put("DYNAMO_DB_TABLE_NAME", tableName);
             put("SNS_TOPIC_ARN", topicArn);
 //            put("USER_EMAIL", userEmail);
-            put("S3_BUCKET_NAME", s3BucketName);
+            put("S3_BUCKET_NAME_FOR_BOT", firstS3BucketName);
+            put("S3_BUCKET_NAME_FOR_WALLPAPERS", secondS3BucketName);
             put("APP_URL", "https://main." + appDefaultDomain);
             put("STEAM_API_KEY", steamApiKey);
             put("CS_GO_APP_ID", "730");
@@ -197,6 +203,9 @@ public class AppLauncher {
 
         // Create 'GetNewsForApp' resource
         String getNewsForAppParentId = ApiGateway.createAndConfigureRestApiResource(apiGatewayClient, restApiId, roleArn, lambdaArn, awsAppDeploymentRegion, getAllTableItemsResourceParentId, "GetNewsForApp", true, "GET", "NONE");
+
+        // Create 'GetCsGoWallpapers' resource
+        String getCsGoWallpapersParentId = ApiGateway.createAndConfigureRestApiResource(apiGatewayClient, restApiId, roleArn, lambdaArn, awsAppDeploymentRegion, getAllTableItemsResourceParentId, "GetCsGoWallpapers", true, "GET", "NONE");
 
         // Create a deployment stage
         String stageName = "ProductionStage";

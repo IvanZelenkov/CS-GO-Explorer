@@ -310,9 +310,8 @@ public class DynamoDB {
      */
     public static ApiGatewayProxyResponse scanTable(DynamoDbClient dynamoDbClient, Map<String, Object> event) {
         // Handles CORS preflight request
-        if (event.get("httpMethod").equals("OPTIONS")) {
+        if (event.get("httpMethod").equals("OPTIONS"))
             return ApiGateway.generateResponseForOptionsRequest();
-        }
 
         ScanRequest scanRequest = ScanRequest.builder()
                 .tableName("CsGoExplorerTable")
