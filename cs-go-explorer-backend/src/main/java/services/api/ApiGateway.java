@@ -88,15 +88,15 @@ public class ApiGateway {
      * @return Parent ID.
      */
     public static String createAndConfigureRestApiResource(ApiGatewayClient apiGatewayClient,
-                                                         String restApiId,
-                                                         String roleArn,
-                                                         String lambdaArn,
-                                                         String awsAppDeploymentRegion,
-                                                         String parentId,
-                                                         String resourceName,
-                                                         boolean isPreflightRequest,
-                                                         String methodName,
-                                                         String authorizationType) {
+                                                           String restApiId,
+                                                           String roleArn,
+                                                           String lambdaArn,
+                                                           String awsAppDeploymentRegion,
+                                                           String parentId,
+                                                           String resourceName,
+                                                           boolean isPreflightRequest,
+                                                           String methodName,
+                                                           String authorizationType) {
         // Create a resource
         Map<String, String> createResourceResponse = ApiGateway.createResource(apiGatewayClient, restApiId, parentId, resourceName);
 
@@ -148,9 +148,9 @@ public class ApiGateway {
      * @return Resource ID and parent ID.
      */
     private static HashMap<String, String> createResource(ApiGatewayClient apiGatewayClient,
-                                        String restApiId,
-                                        String parentId,
-                                        String pathPart) {
+                                                          String restApiId,
+                                                          String parentId,
+                                                          String pathPart) {
         try {
             GetResourcesRequest getResourcesRequest = GetResourcesRequest
                     .builder()
@@ -251,7 +251,8 @@ public class ApiGateway {
                                                   IntegrationType integrationType,
                                                   String integrationHttpMethod) {
         try {
-            PutIntegrationRequest putIntegrationRequest = PutIntegrationRequest
+            PutIntegrationRequest putIntegrationRequest;
+            putIntegrationRequest = PutIntegrationRequest
                     .builder()
                     .restApiId(restApiId)
                     .resourceId(resourceId)
@@ -497,8 +498,8 @@ public class ApiGateway {
         // Response headers
         JSONObject responseHeaders = new JSONObject();
         responseHeaders.put("Access-Control-Allow-Headers", "Content-Type");
-//        responseHeaders.put("Access-Control-Allow-Origin", System.getenv("APP_URL"));
-        responseHeaders.put("Access-Control-Allow-Origin", "http://localhost:3000");
+        responseHeaders.put("Access-Control-Allow-Origin", System.getenv("APP_URL"));
+//        responseHeaders.put("Access-Control-Allow-Origin", "http://localhost:3000");
         responseHeaders.put("Access-Control-Allow-Methods", "OPTIONS");
         responseHeaders.put("Access-Control-Allow-Credentials", "true");
 
@@ -523,8 +524,8 @@ public class ApiGateway {
         // Response headers
         JSONObject responseHeaders = new JSONObject();
         responseHeaders.put("Access-Control-Allow-Headers", "Content-Type");
-//        responseHeaders.put("Access-Control-Allow-Origin", System.getenv("APP_URL"));
-        responseHeaders.put("Access-Control-Allow-Origin", "http://localhost:3000");
+        responseHeaders.put("Access-Control-Allow-Origin", System.getenv("APP_URL"));
+//        responseHeaders.put("Access-Control-Allow-Origin", "http://localhost:3000");
         responseHeaders.put("Access-Control-Allow-Methods", "OPTIONS, POST, GET");
         responseHeaders.put("Access-Control-Allow-Credentials", "true");
 

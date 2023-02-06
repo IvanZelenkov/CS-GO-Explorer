@@ -39,32 +39,20 @@ html, body, #root, .app, .content {
 }
 
 .news-image {
-	border-radius: 1vh;
+	border-top-left-radius: 1vh;
+	border-top-right-radius: 1vh;
 	cursor: pointer;
 	filter: brightness(100%);
 	transition: filter 1s ease;
 }
 
-.wallpaper {
-	cursor: pointer;
-	filter: brightness(100%);
-	transition: filter 1s ease;
-}
-
-.news-image:hover, .wallpaper:hover {
+.news-image:hover {
 	filter: brightness(50%);
 }
 
-.download-icon {
-	position: absolute;
-	left: 50%;
-	top: 50%;
-	transform: translate(-50%, -50%);
+.wallpapers-icons {
 	cursor: pointer;
-	font-size: 5vh;
-	color: white;
-}
-
-.download-icon:hover + .wallpaper {
-	background-color: #444;
+	font-size: 1.8vh;
+	margin-top: 0.2vh;
+	margin-bottom: 0.3vh;
 }

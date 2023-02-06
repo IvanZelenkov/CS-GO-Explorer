@@ -1,4 +1,4 @@
-# [CS:GO Explorer](https://main.d1ra5kuot5idbc.amplifyapp.com)
+# [CS:GO Explorer](https://main.d3rozav77ycvsf.amplifyapp.com)
 
 You can use your own Steam ID if you play CS:GO to test the app, or use the following: **76561198070318593**
 

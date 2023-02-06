@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
-import { Box, ImageList, ImageListItem, Typography } from "@mui/material";
+import { Box, ImageList, ImageListItem, Typography, useTheme } from "@mui/material";
 import Header from "../../components/Header";
 import { motion } from "framer-motion";
 import axios from "axios";
 import loading from "react-useanimations/lib/loading";
 import UseAnimations from "react-useanimations";
+import { tokens } from "../../theme";
 
 const News = () => {
+	const theme = useTheme();
+	const colors = tokens(theme.palette.mode);
 	const [infoLoaded, setInfoLoaded] = useState(false);
 	const [news, setNews] = useState([]);
 	const [reformattedNews, setReformattedNews] = useState([]);
@@ -67,7 +70,15 @@ const News = () => {
 					<Header title="CS:GO News" subtitle="Explore latest news"/>
 					<ImageList sx={{ width: "100%", height: "80vh" }} cols={5} gap={40}>
 						{reformattedNews?.map((item) => (
-							<ImageListItem key={item.gid} style={{ marginRight: "0.5vw" }}>
+							<ImageListItem
+								key={item.gid}
+								style={{
+									marginRight: "0.5vw",
+									textAlign: "center",
+									border: `0.2vh solid ${colors.steamColors[6]}`,
+									borderRadius: "1vh",
+								}}
+							>
 								<img
 									className={"news-image"}
 									src={`${item.imgSource}?w=164&h=164&fit=crop&auto=format`}
@@ -76,9 +87,11 @@ const News = () => {
 									loading="lazy"
 									onClick={() => window.open(item.hyperLinkHref, "_blank")}
 								/>
-								<Typography sx={{ marginTop: "1vh" }}>
-									{item.title}
-								</Typography>
+								<Box>
+									<Typography sx={{ margin: "1vh", fontSize: "1vh" }}>
+										{item.title}
+									</Typography>
+								</Box>
 							</ImageListItem>
 						))}
 					</ImageList>

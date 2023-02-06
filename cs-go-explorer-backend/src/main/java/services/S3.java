@@ -11,12 +11,9 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
 import services.api.ApiGatewayProxyResponse;
-import services.api.ApiGateway;
+import software.amazon.awssdk.services.s3.waiters.S3Waiter;
 
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Amazon S3 provides storage for the Internet, and is designed to make web-scale computing easier for developers.
@@ -72,6 +69,38 @@ public class S3 {
             System.exit(1);
         }
         return "";
+    }
+
+    /**
+     * Creates an S3 bucket.
+     * @param s3Client Service client for accessing Amazon S3.
+     * @param bucketName The name of the bucket to create.
+     */
+    public static void putBucketCorsConfiguration(S3Client s3Client, String bucketName) {
+        try {
+            CORSRule corsRule = CORSRule
+                    .builder()
+                    .allowedHeaders("*")
+                    .allowedMethods("GET")
+                    .allowedOrigins("*")
+                    .build();
+
+            CORSConfiguration corsConfiguration = CORSConfiguration
+                    .builder()
+                    .corsRules(corsRule)
+                    .build();
+
+            PutBucketCorsRequest putBucketPolicyRequest = PutBucketCorsRequest
+                    .builder()
+                    .bucket(bucketName)
+                    .corsConfiguration(corsConfiguration)
+                    .build();
+
+            s3Client.putBucketCors(putBucketPolicyRequest);
+        } catch (S3Exception error) {
+            System.err.println(error.getMessage());
+            System.exit(1);
+        }
     }
 
     /**
@@ -142,7 +171,10 @@ public class S3 {
         try {
             JSONArray jsonArray = new JSONArray();
             for (String s3ObjectKey : s3ObjectKeyList) {
-                String imageUrl = s3Client.utilities().getUrl(builder -> builder.bucket(bucketName).key(s3ObjectKey)).toExternalForm();
+                String imageUrl = s3Client
+                        .utilities()
+                        .getUrl(builder -> builder.bucket(bucketName).key(s3ObjectKey))
+                        .toExternalForm();
                 jsonArray.add(imageUrl);
             }
             return ApiGateway.generateResponseForPostOrGetRequest(jsonArray.toString());

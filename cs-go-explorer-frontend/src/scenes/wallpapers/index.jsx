@@ -1,36 +1,64 @@
-import { Box, ImageList, ImageListItem } from "@mui/material";
+import { Box, ImageList, ImageListItem, useTheme } from "@mui/material";
 import Header from "../../components/Header";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import UseAnimations from "react-useanimations";
 import loading from "react-useanimations/lib/loading";
-import { MdOutlineDownloading }  from 'react-icons/md';
+import download from "react-useanimations/lib/download";
+import { RxEnterFullScreen } from 'react-icons/rx';
 import axios from "axios";
+import { tokens } from "../../theme";
+import { saveAs } from "file-saver";
 
 const Wallpapers = () => {
+	const theme = useTheme();
+	const colors = tokens(theme.palette.mode);
 	const [infoLoaded, setInfoLoaded] = useState(false);
 	const [wallpapers, setWallpapers] = useState([]);
 
 	const Image = ({ imageUrl, index }) => {
-		const [hover, setHover] = useState(false);
 		return (
 			<ImageListItem key={index} style={{ marginRight: "0.5vw" }}>
 				<img
+					id={imageUrl}
 					src={`${imageUrl}?w=164&h=164&fit=crop&auto=format`}
 					alt=""
 					loading="lazy"
 					className="wallpaper"
-					onMouseOver={() => setHover(true)}
-					onMouseLeave={() => setHover(false)}
 				/>
-				{hover ?
-					<MdOutlineDownloading
-						className="download-icon"
-						onMouseOver={() => setHover(true)}
-						onClick={e => downloadImage(e, imageUrl)}
-					/> :
-					""
-				}
+				<Box sx={{
+					display: "flex",
+					flexDirection: "row",
+					borderLeft: `0.2vh solid ${colors.steamColors[5]}`,
+					borderBottom: `0.2vh solid ${colors.steamColors[5]}`,
+					borderRight: `0.2vh solid ${colors.steamColors[5]}`,
+				}}>
+					<Box sx={{
+						display: "flex",
+						justifyContent: "center",
+						width: "100%",
+						borderRight: `0.1vh solid ${colors.steamColors[5]}`
+					}}>
+						<RxEnterFullScreen
+							className="wallpapers-icons"
+							onClick={() => document.getElementById(imageUrl)?.requestFullscreen()}
+						/>
+					</Box>
+					<Box sx={{
+						display: "flex",
+						justifyContent: "center",
+						width: "100%",
+						borderLeft: `0.1vh solid ${colors.steamColors[5]}`
+					}}>
+						<UseAnimations
+							animation={download}
+							fillColor={colors.steamColors[6]}
+							strokeColor="white"
+							className="wallpapers-icons"
+							onClick={() => saveImage(imageUrl)}
+						/>
+					</Box>
+				</Box>
 			</ImageListItem>
 		);
 	}
@@ -49,28 +77,18 @@ const Wallpapers = () => {
 		}
 	}
 
+	const saveImage = (imageUrl) => {
+		const imageExtension = imageUrl.toString().match("\\.\\w{3,4}($|\\?)");
+		(async () => {
+			let name = 'cs-go-wallpaper' + Math.floor(Math.random() * 900000) + 100000 + imageExtension[0];
+			let blob = await fetch(imageUrl).then((response) => response.blob());
+			saveAs(blob, name);
+		})();
+	}
+
 	useEffect(() => {
 		getWallpapers();
 	}, []);
-
-	const downloadImage = (e, imageUrl) => {
-		console.log(e.target.href);
-		fetch(e.target.href, {
-			method: "GET",
-			headers: {}
-		}).then(response => {
-				response.arrayBuffer().then(function(buffer) {
-					const url = window.URL.createObjectURL(new Blob([buffer]));
-					const link = document.createElement("a");
-					link.href = url;
-					link.setAttribute("download", "image.png"); //or any other extension
-					document.body.appendChild(link);
-					link.click();
-				});
-		}).catch(error => {
-			console.log(error);
-		});
-	};
 
 	if (infoLoaded === false || wallpapers.length === 0) {
 		return (
@@ -92,7 +110,7 @@ const Wallpapers = () => {
 					<Header title="4k Wallpapers" subtitle="Explore and download 4k wallpapers"/>
 					<ImageList sx={{ width: "100%", height: "79vh" }} cols={5} gap={40}>
 						{wallpapers?.map((imageUrl, index) => (
-							<Image imageUrl={imageUrl} index={index}/>
+							<Image imageUrl={imageUrl} key={index}/>
 						))}
 					</ImageList>
 				</Box>

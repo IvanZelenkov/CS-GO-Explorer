@@ -60,8 +60,8 @@ public class AppLauncher {
         final String roleName = "CsGoExplorerRole"; // IAM
         final String permissionsPolicyName = "CsGoExplorerRoleFullAccess"; // IAM
         final String restApiName = "cs-go-explorer-rest-api"; // API Gateway
-        final String firstS3BucketName = "cs-go-explorer-bot-s3-bucket"; // S3
-        final String secondS3BucketName = "cs-go-explorer-wallpapers-s3-bucket"; // S3
+        final String s3BucketNameForBot = "cs-go-explorer-bot-s3-bucket"; // S3
+        final String s3BucketNameForWallpapers = "cs-go-explorer-wallpapers-s3-bucket"; // S3
         final String snsTopicName = "cs-go-explorer-sns-topic"; // SNS
         final String lambdaFunctionName = "cs-go-explorer-lambda-function"; // Lambda
         final String botName = "CsGoExplorerBot"; // Lex
@@ -111,12 +111,16 @@ public class AppLauncher {
         S3Client s3Client = S3.authenticateS3(awsBasicCredentials, appRegion);
 
         // Create S3 bucket that is needed for the bot functionality
-        String botBucketName = S3.createBucket(s3Client, firstS3BucketName);
+        String botBucketName = S3.createBucket(s3Client, s3BucketNameForBot);
         System.out.println("S3 bucket " + botBucketName + " has been created.");
 
         // Create S3 bucket for storing wallpapers
-        String wallpaperBucketName = S3.createBucket(s3Client, secondS3BucketName);
+        String wallpaperBucketName = S3.createBucket(s3Client, s3BucketNameForWallpapers);
         System.out.println("S3 bucket " + wallpaperBucketName + " has been created.");
+
+        // Create and attach CORS configuration to the S3 bucket
+        S3.putBucketCorsConfiguration(s3Client, s3BucketNameForWallpapers);
+        System.out.println("S3 bucket CORS configuration has been created and attached.");
 
         // Close S3 client
         s3Client.close();
@@ -171,8 +175,8 @@ public class AppLauncher {
             put("DYNAMO_DB_TABLE_NAME", tableName);
             put("SNS_TOPIC_ARN", topicArn);
 //            put("USER_EMAIL", userEmail);
-            put("S3_BUCKET_NAME_FOR_BOT", firstS3BucketName);
-            put("S3_BUCKET_NAME_FOR_WALLPAPERS", secondS3BucketName);
+            put("S3_BUCKET_NAME_FOR_BOT", s3BucketNameForBot);
+            put("S3_BUCKET_NAME_FOR_WALLPAPERS", s3BucketNameForWallpapers);
             put("APP_URL", "https://main." + appDefaultDomain);
             put("STEAM_API_KEY", steamApiKey);
             put("CS_GO_APP_ID", "730");
