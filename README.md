@@ -2,7 +2,7 @@
 
 You can use your own Steam ID if you play CS:GO to test the app, or use the following: **76561198070318593**
 
-![CsGoExplorerSolutionArchitecture](https://user-images.githubusercontent.com/64171964/213900837-b70a0ad7-b636-4745-a5fd-112b2f8c3605.png)
+![CsGoExplorerSolutionArchitecture](https://user-images.githubusercontent.com/64171964/217742391-8b16d6c6-c6cc-43d6-ac66-ce62ee0d14eb.png)
 ![cs-go](https://user-images.githubusercontent.com/64171964/213327049-be01da54-973c-4335-b1da-2cb96f8de9bb.jpeg)
 
 ### Description
