@@ -7,7 +7,7 @@ import states from 'us-state-converter';
 import { motion } from "framer-motion";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
-import SidebarBackgroundImage from "../../images/backgrounds/sidebar_and_tables_background.jpg";
+import SidebarBackgroundImage from "../../images/backgrounds/sidebar_and_tables_background.png";
 import UseAnimations from 'react-useanimations';
 import loading from 'react-useanimations/lib/loading';
 
