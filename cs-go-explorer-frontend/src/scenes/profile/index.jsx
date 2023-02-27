@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Box, Link as ProfileLink, Typography, useTheme } from "@mui/material";
+import { Box, Stack, Divider, Typography, Link as ProfileLink, useTheme } from "@mui/material";
 import { motion } from "framer-motion";
 import axios from "axios";
 import { tokens } from "../../theme";
@@ -8,14 +8,14 @@ import UseAnimations from "react-useanimations";
 
 const StatHeader = ({ title, textColor }) => {
 	return (
-		<Typography
-			variant="h4"
-			color={textColor}
-			fontWeight="bold"
-			fontStyle="italic"
-			letterSpacing="0.1vw"
-			margin="10px 0 0 0"
-		>
+		<Typography sx={{
+			fontSize: "1.3vh",
+			margin: "10px 0 0 0",
+			padding: "0.5vh",
+			letterSpacing: "0.1vw",
+			color: textColor,
+			fontWeight: "bold"
+		}}>
 			{title}
 		</Typography>
 	);
@@ -25,20 +25,29 @@ const Profile = () => {
 	const theme = useTheme();
 	const colors = tokens(theme.palette.mode);
 	const [infoLoaded, setInfoLoaded] = useState(false);
-	const [profile, setProfile] = useState({});
-	const [userStats, setUserStats] = useState({});
-	const generalStatsKeys = ["total_kills", "total_deaths", "total_time_played", "total_planted_bombs", "total_defused_bombs",
+	const [profileData, setProfileData] = useState({});
+	const [userStats, setUserStats] = useState([]);
+	const generalStatsKeys = [
+		"total_kills", "total_deaths", "total_time_played", "total_planted_bombs", "total_defused_bombs",
 		"total_wins", "total_damage_done", "total_money_earned", "total_weapons_donated", "total_broken_windows",
 		"total_kills_enemy_blinded", "total_kills_knife_fight", "total_kills_against_zoomed_sniper", "total_dominations",
 		"total_domination_overkills", "total_revenges", "total_rounds_played", "last_match_t_wins", "last_match_ct_wins",
 		"last_match_wins", "last_match_max_players", "last_match_kills", "last_match_deaths", "last_match_mvps",
 		"last_match_favweapon_id", "last_match_favweapon_shots", "last_match_favweapon_hits", "last_match_favweapon_kills",
 		"last_match_damage", "last_match_money_spent", "last_match_dominations", "last_match_revenges", "total_mvps",
-		"total_matches_won", "total_matches_played", "last_match_contribution_score", "last_match_rounds"];
+		"total_matches_won", "total_matches_played", "last_match_contribution_score", "last_match_rounds"
+	];
+	const weaponIdsInOrder = [
+		"deagle", "elite", "fiveseven", "glock", "N/A", "N/A", "ak47", "aug", "awp", "famas", "g3sg1", "N/A",
+		"galilar", "m249", "N/A", "m4a1", "mac10", "N/A", "p90", "N/A", "N/A", "N/A", "N/A", "ump45", "xm1014",
+		"bizon", "mag7", "negev", "sawedoff", "tec9", "taser", "hkp2000", "mp7", "mp9", "nova", "p250", "N/A",
+		"scar20", "sg556", "ssg08", "knife", "knife", "N/A", "hegrenade", "N/A", "molotov", "N/A", "N/A",
+		"N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "knife", "m4a1", "N/A", "N/A"
+	]
 
 	const getUserData = async () => {
 		try {
-			const profileResponse =  await axios.get("https://" +
+			const profileDataResponse = await axios.get("https://" +
 				process.env.REACT_APP_REST_API_ID +
 				".execute-api.us-east-1.amazonaws.com/ProductionStage/GetPlayerSummaries?steamid="
 				+ JSON.parse(localStorage.getItem("steam_id"))
@@ -48,7 +57,7 @@ const Profile = () => {
 				".execute-api.us-east-1.amazonaws.com/ProductionStage/GetUserStatsForGame?steamid="
 				+ JSON.parse(localStorage.getItem("steam_id"))
 			);
-			setProfile(JSON.parse(profileResponse.data.body));
+			setProfileData(JSON.parse(profileDataResponse.data.body));
 			setUserStats(reformatGeneralStatsJson(JSON.parse(userStatsResponse.data.body)));
 		} catch (error) {
 			console.log(error);
@@ -62,10 +71,8 @@ const Profile = () => {
 	const reformatGeneralStatsJson = (overallStats) => {
 		if (overallStats.hasOwnProperty('playerstats')) {
 			let reformattedGeneralStats = {};
-			for (let i = 0; i < generalStatsKeys.length; i++) {
+			for (let i = 0; i < generalStatsKeys.length; i++)
 				reformattedGeneralStats[generalStatsKeys[i]] = "";
-				reformattedGeneralStats["value"] = "";
-			}
 
 			for (let i = 0; i < overallStats.playerstats.stats.length; i++) {
 				let dataItem = overallStats.playerstats.stats[i];
@@ -81,7 +88,7 @@ const Profile = () => {
 		}
 	}
 
-	if (infoLoaded === false || profile === {} || userStats === {}) {
+	if (infoLoaded === false || profileData === {} || userStats === []) {
 		return (
 			<motion.div exit={{ opacity: 0 }}>
 				<Box margin="1.5vh">
@@ -95,26 +102,9 @@ const Profile = () => {
 	return (
 		<motion.div exit={{ opacity: 0 }}>
 			<Box margin="1.5vh">
-				<Box>
-					<Box display="flex" justifyContent="center" alignItems="center">
-						<Box>
-							{infoLoaded && <ProfileLink
-								href={profile.response.players[0].profileurl}
-								target="_blank"
-								underline="none"
-							>
-								<Box
-									component="img"
-									alt="profile-user"
-									width="100px"
-									height="100px"
-									src={profile.response.players[0].avatarfull}
-									style={{ cursor: "pointer", borderRadius: "10%" }}
-								/>
-							</ProfileLink>}
-						</Box>
-					</Box>
-					<Box textAlign="center">
+				<Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+					{/* LAST MATCH STATS */}
+					<Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
 						<Typography
 							variant="h2"
 							color="primary.main"
@@ -122,101 +112,369 @@ const Profile = () => {
 							letterSpacing="0.1vw"
 							margin="10px 0 0 0"
 						>
-							{infoLoaded && profile.response.players[0].personaname}
+							LAST MATCH STATS
+						</Typography>
+						<Stack spacing={2} className="card-stack">
+							{/* ROW #1 */}
+							<Box sx={{ display: "flex", flexDirection: "row" }}>
+								<Box className="player-stat-card-left">
+									<StatHeader
+										title={"ROUNDS"}
+										textColor={"red"}
+									/>
+									<StatHeader
+										title={infoLoaded && userStats.last_match_rounds}
+										textColor={"primary.main"}
+									/>
+								</Box>
+								<Box className="player-stat-card-left">
+									<StatHeader
+										title={"WINS"}
+										textColor={"red"}
+									/>
+									<StatHeader
+										title={infoLoaded && userStats.last_match_wins}
+										textColor={"primary.main"}
+									/>
+								</Box>
+								<Box className="player-stat-card-left">
+									<StatHeader
+										title={"MAX PLAYERS"}
+										textColor={"red"}
+									/>
+									<StatHeader
+										title={infoLoaded && userStats.last_match_max_players}
+										textColor={"primary.main"}
+									/>
+								</Box>
+							</Box>
+							{/* ROW #2 */}
+							<Box sx={{ display: "flex", flexDirection: "row" }}>
+								<Box className="player-stat-card-left">
+									<StatHeader
+										title={"SCORE"}
+										textColor={"red"}
+									/>
+									<StatHeader
+										title={infoLoaded && userStats.last_match_contribution_score}
+										textColor={"primary.main"}
+									/>
+								</Box>
+								<Box className="player-stat-card-left">
+									<StatHeader
+										title={"KILLS"}
+										textColor={"red"}
+									/>
+									<StatHeader
+										title={infoLoaded && userStats.last_match_kills}
+										textColor={"primary.main"}
+									/>
+								</Box>
+								<Box className="player-stat-card-left">
+									<StatHeader
+										title={"DEATHS"}
+										textColor={"red"}
+									/>
+									<StatHeader
+										title={infoLoaded && userStats.last_match_deaths}
+										textColor={"primary.main"}
+									/>
+								</Box>
+							</Box>
+							{/* ROW #3 */}
+							<Box sx={{ display: "flex", flexDirection: "row" }}>
+								<Box className="player-stat-card-left">
+									<StatHeader
+										title={"MVPs"}
+										textColor={"red"}
+									/>
+									<StatHeader
+										title={infoLoaded && userStats.last_match_mvps}
+										textColor={"primary.main"}
+									/>
+								</Box>
+								<Box className="player-stat-card-left">
+									<StatHeader
+										title={"ADR"}
+										textColor={"red"}
+									/>
+									<StatHeader
+										title={infoLoaded && (userStats.last_match_damage / userStats.last_match_rounds).toFixed(2)}
+										textColor={"primary.main"}
+									/>
+								</Box>
+								<Box className="player-stat-card-left">
+									<StatHeader
+										title={"MONEY SPENT"}
+										textColor={"red"}
+									/>
+									<StatHeader
+										title={infoLoaded && "$" + userStats.last_match_money_spent}
+										textColor={"primary.main"}
+									/>
+								</Box>
+							</Box>
+						</Stack>
+					</Box>
+
+					{/* AVATAR AND LAST MATCH FAVORITE WEAPON IMAGE */}
+					<Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+						<Box>
+							{infoLoaded && <ProfileLink
+								href={profileData.response.players[0].profileurl}
+								target="_blank"
+								underline="none"
+							>
+								<Box
+									component="img"
+									alt="profile-user"
+									width="15vh"
+									height="15vh"
+									src={profileData.response.players[0].avatarfull}
+									style={{ cursor: "pointer", borderRadius: "10%" }}
+								/>
+							</ProfileLink>}
+						</Box>
+						<Typography
+							variant="h2"
+							color="primary.main"
+							fontWeight="bold"
+							letterSpacing="0.1vw"
+							margin="10px 0 0 0"
+						>
+							{infoLoaded && profileData.response.players[0].personaname}
 						</Typography>
 						<Typography variant="h5" color="custom.steamColorE" fontWeight="bold" letterSpacing="0.1vw">
-							Steam ID: {infoLoaded && profile.response.players[0].steamid}
+							Steam ID: {infoLoaded && profileData.response.players[0].steamid}
 						</Typography>
+						<Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", marginTop: "auto" }}>
+							<Typography variant="h5" color="primary.main" fontWeight="bold" letterSpacing="0.3vw" textAlign="center">
+								LAST MATCH
+							</Typography>
+							<Typography variant="h5" color="primary.main" fontWeight="bold" letterSpacing="0.3vw" textAlign="center">
+								FAVORITE WEAPON
+							</Typography>
+							<Box
+								component="img"
+								alt="profile-user"
+								src={require("../../images/weapons/" + weaponIdsInOrder[userStats.last_match_favweapon_id - 1] + ".webp")}
+								style={{ width: "25vh" }}
+							/>
+						</Box>
 					</Box>
-					<Box display="flex" flexDirection="column" justifyContent="space-between" margin="10vh">
-						{/*ROW #1*/}
-						<Box display="flex" flexDirection="row" justifyContent="space-between" margin="10vh">
-							<Box textAlign="center">
-								<StatHeader
-									title={"LAST MATCH ROUNDS"}
-									textColor={"red"}
-								/>
-								<StatHeader
-									// title={infoLoaded && userStats.total_time_played}
-									title={infoLoaded && userStats.last_match_rounds}
-									textColor={"primary.main"}
-								/>
+
+					{/* TOTAL STATS */}
+					<Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+						<Typography
+							variant="h2"
+							color="primary.main"
+							fontWeight="bold"
+							letterSpacing="0.1vw"
+							margin="10px 0 0 0"
+						>
+							TOTAL STATS
+						</Typography>
+						<Stack spacing={2} className="card-stack">
+							{/* ROW #1 */}
+							<Box sx={{ display: "flex", flexDirection: "row" }}>
+								<Box className="player-stat-card-right">
+									<StatHeader
+										title={"MATCHES"}
+										textColor={"red"}
+									/>
+									<StatHeader
+										title={infoLoaded && userStats.total_matches_played}
+										textColor={"primary.main"}
+									/>
+								</Box>
+								<Box className="player-stat-card-right">
+									<StatHeader
+										title={"MATCHES WON"}
+										textColor={"red"}
+									/>
+									<StatHeader
+										title={infoLoaded && userStats.total_matches_won}
+										textColor={"primary.main"}
+									/>
+								</Box>
+								<Box className="player-stat-card-right">
+									<StatHeader
+										title={"ROUNDS"}
+										textColor={"red"}
+									/>
+									<StatHeader
+										title={infoLoaded && userStats.total_rounds_played}
+										textColor={"primary.main"}
+									/>
+								</Box>
 							</Box>
-							<Box textAlign="center">
-								<StatHeader
-									title={"LAST MATCH T WINS"}
-									textColor={"red"}
-								/>
-								<StatHeader
-									title={infoLoaded && userStats.last_match_t_wins}
-									textColor={"primary.main"}
-								/>
+							{/* ROW #2 */}
+							<Box sx={{ display: "flex", flexDirection: "row" }}>
+								<Box className="player-stat-card-right">
+									<StatHeader
+										title={"ROUNDS WON"}
+										textColor={"red"}
+									/>
+									<StatHeader
+										title={infoLoaded && userStats.total_wins}
+										textColor={"primary.main"}
+									/>
+								</Box>
+								<Box className="player-stat-card-right">
+									<StatHeader
+										title={"WEAPONS DONATED"}
+										textColor={"red"}
+									/>
+									<StatHeader
+										title={infoLoaded && userStats.total_weapons_donated}
+										textColor={"primary.main"}
+									/>
+								</Box>
+								<Box className="player-stat-card-right">
+									<StatHeader
+										title={"BOMBS PLANTED"}
+										textColor={"red"}
+									/>
+									<StatHeader
+										title={infoLoaded && userStats.total_planted_bombs}
+										textColor={"primary.main"}
+									/>
+								</Box>
 							</Box>
-							<Box textAlign="center">
-								<StatHeader
-									title={"LAST MATCH CT WINS"}
-									textColor={"red"}
-								/>
-								<StatHeader
-									title={infoLoaded && userStats.last_match_ct_wins}
-									textColor={"primary.main"}
-								/>
+							{/* ROW #3 */}
+							<Box sx={{ display: "flex", flexDirection: "row" }}>
+								<Box className="player-stat-card-right">
+									<StatHeader
+										title={"MVPs"}
+										textColor={"red"}
+									/>
+									<StatHeader
+										title={infoLoaded && userStats.total_mvps}
+										textColor={"primary.main"}
+									/>
+								</Box>
+								<Box className="player-stat-card-right">
+									<StatHeader
+										title={"MONEY EARNED"}
+										textColor={"red"}
+									/>
+									<StatHeader
+										title={infoLoaded && userStats.total_money_earned}
+										textColor={"primary.main"}
+									/>
+								</Box>
+								<Box className="player-stat-card-right">
+									<StatHeader
+										title={"MVPs"}
+										textColor={"red"}
+									/>
+									<StatHeader
+										title={infoLoaded && userStats.total_mvps}
+										textColor={"primary.main"}
+									/>
+								</Box>
 							</Box>
-							<Box textAlign="center">
-								<StatHeader
-									title={"LAST MATCH MAX PLAYERS"}
-									textColor={"red"}
-								/>
-								<StatHeader
-									title={infoLoaded && userStats.last_match_max_players}
-									textColor={"primary.main"}
-								/>
+							{/* ROW #3 */}
+							<Box sx={{ display: "flex", flexDirection: "row" }}>
+								<Box className="player-stat-card-right">
+									<StatHeader
+										title={"KNIFE FIGHT KILLS"}
+										textColor={"red"}
+									/>
+									<StatHeader
+										title={infoLoaded && userStats.total_kills_knife_fight}
+										textColor={"primary.main"}
+									/>
+								</Box>
+								<Box className="player-stat-card-right">
+									<StatHeader
+										title={"ENEMY BLINDED KILLS"}
+										textColor={"red"}
+									/>
+									<StatHeader
+										title={infoLoaded && userStats.total_kills_enemy_blinded}
+										textColor={"primary.main"}
+									/>
+								</Box>
+								<Box className="player-stat-card-right">
+									<StatHeader
+										title={"KILLS AGAINST ZOOMED SNIPER"}
+										textColor={"red"}
+									/>
+									<StatHeader
+										title={infoLoaded && userStats.total_kills_against_zoomed_sniper}
+										textColor={"primary.main"}
+									/>
+								</Box>
 							</Box>
-						</Box>
-						{/*ROW #2*/}
-						<Box display="flex" flexDirection="row" justifyContent="space-between" margin="10vh">
-							<Box textAlign="center">
-								<StatHeader
-									title={"LAST MATCH KILLS"}
-									textColor={"red"}
-								/>
-								<StatHeader
-									title={infoLoaded && userStats.last_match_kills}
-									textColor={"primary.main"}
-								/>
+							{/* ROW #4 */}
+							<Box sx={{ display: "flex", flexDirection: "row" }}>
+								<Box className="player-stat-card-right">
+									<StatHeader
+										title={"KILLS"}
+										textColor={"red"}
+									/>
+									<StatHeader
+										title={infoLoaded && userStats.total_kills}
+										textColor={"primary.main"}
+									/>
+								</Box>
+								<Box className="player-stat-card-right">
+									<StatHeader
+										title={"DOMINATIONS"}
+										textColor={"red"}
+									/>
+									<StatHeader
+										title={infoLoaded && userStats.total_dominations}
+										textColor={"primary.main"}
+									/>
+								</Box>
+								<Box className="player-stat-card-right">
+									<StatHeader
+										title={"DOMINATION OVERKILLS"}
+										textColor={"red"}
+									/>
+									<StatHeader
+										title={infoLoaded && userStats.total_domination_overkills}
+										textColor={"primary.main"}
+									/>
+								</Box>
 							</Box>
-							<Box textAlign="center">
-								<StatHeader
-									title={"LAST MATCH DEATHS"}
-									textColor={"red"}
-								/>
-								<StatHeader
-									title={infoLoaded && userStats.last_match_deaths}
-									textColor={"primary.main"}
-								/>
-							</Box>
-							<Box textAlign="center">
-								<StatHeader
-									title={"LAST MATCH DAMAGE"}
-									textColor={"red"}
-								/>
-								<StatHeader
-									// title={infoLoaded && userStats.total_time_played}
-									title={infoLoaded && userStats.last_match_damage}
-									textColor={"primary.main"}
-								/>
-							</Box>
-							<Box textAlign="center">
-								<StatHeader
-									title={"LAST MATCH MVPs"}
-									textColor={"red"}
-								/>
-								<StatHeader
-									title={infoLoaded && userStats.last_match_mvps}
-									textColor={"primary.main"}
-								/>
-							</Box>
-						</Box>
+						</Stack>
+					</Box>
+				</Box>
+
+				{/* LAST MATCH FAVORITE WEAPON STATS*/}
+				<Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+					<Box className="player-stat-card-bottom">
+						<StatHeader
+							title={"SHOTS"}
+							textColor={"red"}
+						/>
+						<StatHeader
+							title={infoLoaded && userStats.last_match_favweapon_shots}
+							textColor={"primary.main"}
+						/>
+					</Box>
+					<Box className="player-stat-card-bottom">
+						<StatHeader
+							title={"HITS"}
+							textColor={"red"}
+						/>
+						<StatHeader
+							title={infoLoaded && userStats.last_match_favweapon_hits}
+							textColor={"primary.main"}
+						/>
+					</Box>
+					<Box className="player-stat-card-bottom">
+						<StatHeader
+							title={"KILLS"}
+							textColor={"red"}
+						/>
+						<StatHeader
+							title={infoLoaded && userStats.last_match_favweapon_kills}
+							textColor={"primary.main"}
+						/>
 					</Box>
 				</Box>
 			</Box>

@@ -6,9 +6,11 @@ You can use your own Steam ID if you play CS:GO to test the app, or use the foll
 ![cs-go](https://user-images.githubusercontent.com/64171964/213327049-be01da54-973c-4335-b1da-2cb96f8de9bb.jpeg)
 
 ### Description
-A CS:GO Explorer app designed to help Counter-Strike players keep track of their stats and view their friends' Steam accounts.
-You can see a lot of different information about your friends, including the Steam ID, which you can copy to see their stats and compare with yours.
-The statistics will appear in a form of tables, bar charts, and pie charts. This will provide you with a better understanding of your or your friends' stats.
+A CS:GO Explorer app designed to help you keep track of stats in detail, and view your friends' Steam accounts. 
+You can see a lot of different information about your friends, including the Steam ID, which you can
+copy to see their stats and compare with yours. The statistics will appear in a form of tables, bar charts, 
+and pie charts. Every time you play a match, look at the latest stats on the Profile page. Given information 
+will help you define where the skills should be improved.
 
 ### Communication between services
 Communication between the frontend and backend of the application is carried out through the API gateway. AWS Lambda acts as a serverless part of the application

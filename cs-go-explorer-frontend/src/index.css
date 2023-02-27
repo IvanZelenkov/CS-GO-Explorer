@@ -56,3 +56,146 @@ html, body, #root, .app, .content {
 	margin-top: 0.2vh;
 	margin-bottom: 0.3vh;
 }
+
+/* Player stats card */
+@property --rotate {
+	syntax: "<angle>";
+	initial-value: 132deg;
+	inherits: false;
+}
+
+.card-stack {
+	display: flex;
+	align-items: center;
+	height: 58vh;
+	overflow: hidden;
+	overflow-y: auto;
+}
+
+:root {
+	--card-height: 14vh;
+	--card-width: 11vh;
+}
+
+.player-stat-card-left {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: var(--card-width);
+	height: var(--card-height);
+	position: relative;
+	border-radius: 10px;
+	background: #171a21;
+	text-align: center;
+	margin: 2vh
+}
+
+.player-stat-card-right {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: var(--card-width);
+	height: var(--card-height);
+	position: relative;
+	border-radius: 10px;
+	background: #171a21;
+	text-align: center;
+	margin: 2vh
+}
+
+.player-stat-card-bottom {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: var(--card-width);
+	height: var(--card-height);
+	position: relative;
+	border-radius: 10px;
+	background: #171a21;
+	text-align: center;
+	margin: 2vh
+}
+
+.player-stat-card-left::before {
+	content: "";
+	width: 104%;
+	height: 102%;
+	border-radius: 10px;
+	background-image: linear-gradient(var(--rotate), #ffb947, #ff3939 43%, #ff0000);
+	position: absolute;
+	z-index: -1;
+	animation: spin 2.5s linear infinite;
+}
+
+.player-stat-card-left::after {
+	content: "";
+	position: absolute;
+	z-index: -1;
+	margin: 0 auto;
+	transform: scale(0.8);
+	filter: blur(calc(var(--card-height) / 6));
+	background-image: linear-gradient(var(--rotate), #ffa204, #ff2d12 43%, #ae0000);
+	opacity: 1;
+	transition: opacity .5s;
+	animation: spin 2.5s linear infinite;
+}
+
+.player-stat-card-right::before {
+	content: "";
+	width: 104%;
+	height: 102%;
+	border-radius: 10px;
+	background-image: linear-gradient(var(--rotate), #5ddcff, #3c67e3 43%, #4e00c2);
+	position: absolute;
+	z-index: -1;
+	animation: spin 2.5s linear infinite;
+}
+
+.player-stat-card-right::after {
+	content: "";
+	position: absolute;
+	z-index: -1;
+	margin: 0 auto;
+	transform: scale(0.8);
+	filter: blur(calc(var(--card-height) / 6));
+	background-image: linear-gradient(var(--rotate), #5ddcff, #3c67e3 43%, #4e00c2);
+	opacity: 1;
+	transition: opacity .5s;
+	animation: spin 2.5s linear infinite;
+}
+
+.player-stat-card-bottom::before {
+	content: "";
+	width: 104%;
+	height: 102%;
+	border-radius: 10px;
+	background-image: linear-gradient(var(--rotate), #ffd859, #ffffff 43%, #ffb300);
+	position: absolute;
+	z-index: -1;
+	animation: spin 2.5s linear infinite;
+}
+
+.player-stat-card-bottom::after {
+	content: "";
+	position: absolute;
+	z-index: -1;
+	margin: 0 auto;
+	transform: scale(0.8);
+	filter: blur(calc(var(--card-height) / 6));
+	background-image: linear-gradient(var(--rotate), #ffc400, #ffffff 43%, #ffc400);
+	opacity: 1;
+	transition: opacity .5s;
+	animation: spin 2.5s linear infinite;
+}
+
+@keyframes spin {
+	0% {
+		--rotate: 0deg;
+	}
+	100% {
+		--rotate: 360deg;
+	}
+}

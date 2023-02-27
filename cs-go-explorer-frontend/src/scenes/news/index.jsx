@@ -36,7 +36,6 @@ const News = () => {
 
 	const getHtmlTags = (newsItems) => {
 		newsItems.map((item) => {
-			console.log(item)
 			let imgSource = item.contents.match(/<img [^>]*src="[^"]*"[^>]*>/gm);
 			if (imgSource != null) {
 				imgSource = imgSource.map(src => src.replace(/.*src="([^"]*)".*/, '$1'));
@@ -65,37 +64,35 @@ const News = () => {
 	}
 	return (
 		<motion.div exit={{ opacity: 0 }}>
-			<Box margin="1.5vh">
-				<Box display="flex" flexDirection="column">
-					<Header title="CS:GO News" subtitle="Explore latest news"/>
-					<ImageList sx={{ width: "100%", height: "80vh" }} cols={5} gap={40}>
-						{reformattedNews?.map((item) => (
-							<ImageListItem
-								key={item.gid}
-								style={{
-									marginRight: "0.5vw",
-									textAlign: "center",
-									border: `0.2vh solid ${colors.steamColors[6]}`,
-									borderRadius: "1vh",
-								}}
-							>
-								<img
-									className={"news-image"}
-									src={`${item.imgSource}?w=164&h=164&fit=crop&auto=format`}
-									srcSet={`${item.imgSource}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-									alt=""
-									loading="lazy"
-									onClick={() => window.open(item.hyperLinkHref, "_blank")}
-								/>
-								<Box>
-									<Typography sx={{ margin: "1vh", fontSize: "1vh" }}>
-										{item.title}
-									</Typography>
-								</Box>
-							</ImageListItem>
-						))}
-					</ImageList>
-				</Box>
+			<Box margin="1.5vh" display="flex" flexDirection="column">
+				<Header title="CS:GO News" subtitle="Explore latest news"/>
+				<ImageList sx={{ width: "100%", height: "80vh" }} cols={5} gap={40}>
+					{reformattedNews?.map((item) => (
+						<ImageListItem
+							key={item.gid}
+							style={{
+								marginRight: "0.5vw",
+								textAlign: "center",
+								border: `0.2vh solid ${colors.steamColors[6]}`,
+								borderRadius: "1vh",
+							}}
+						>
+							<img
+								className={"news-image"}
+								src={`${item.imgSource}?w=164&h=164&fit=crop&auto=format`}
+								srcSet={`${item.imgSource}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
+								alt=""
+								loading="lazy"
+								onClick={() => window.open(item.hyperLinkHref, "_blank")}
+							/>
+							<Box>
+								<Typography sx={{ margin: "1vh", fontSize: "1vh" }}>
+									{item.title}
+								</Typography>
+							</Box>
+						</ImageListItem>
+					))}
+				</ImageList>
 			</Box>
 		</motion.div>
 	);
