@@ -43,7 +43,6 @@ const SteamIdForm = ({ userAccepted, userDenied}) => {
 				".execute-api.us-east-1.amazonaws.com/ProductionStage/GetUserStatsForGame?steamid="
 				+ inputSteamId
 			).then(response => {
-				console.log("RESPONSE: " + response)
 				checkIfCsGoStatsExist(JSON.parse(response.data.body), inputSteamId);
 			}).catch(() => {
 				setInvalidSteamIdMessage("This Steam ID does not exist.")
@@ -75,7 +74,7 @@ const SteamIdForm = ({ userAccepted, userDenied}) => {
 
 	return (
 		<motion.div exit={{ opacity: 0 }}>
-			<video autoPlay loop muted={muted} style={{
+			<video preload={"auto"} autoPlay loop muted={muted} style={{
 				position: "fixed",
 				right: "0",
 				bottom: "0",

@@ -105,7 +105,7 @@ const Profile = () => {
 	}
 	return (
 		<motion.div exit={{ opacity: 0 }}>
-			<video autoPlay loop muted={muted} style={{
+			<video preload={"auto"} autoPlay loop muted={muted} style={{
 				position: "fixed",
 				right: "0",
 				bottom: "0",
