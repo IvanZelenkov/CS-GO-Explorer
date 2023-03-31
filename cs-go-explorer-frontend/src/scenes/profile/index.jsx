@@ -113,7 +113,7 @@ const Profile = () => {
 				minHeight: "100%",
 				zIndex: -2
 			}}>
-				<source src={require("../../assets/videos/cs-go-profile-background-video.mkv")} type="video/mp4"/>
+				<source src={require("../../assets/videos/cs-go-profile-background-video.mp4")} type="video/mp4"/>
 			</video>
 			<Box margin="1.5vh">
 				<Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>

@@ -2,68 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="62dc8e59-0974-4ead-be4b-12f940d625fa" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/backgrounds/calendar_events_background.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/backgrounds/sidebar_and_tables_background.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/maps/assault.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/maps/aztec.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/maps/baggage.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/maps/bank.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/maps/cbble.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/maps/dust2.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/maps/inferno.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/maps/italy.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/maps/lake.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/maps/monastery.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/maps/nuke.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/maps/office.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/maps/safehouse.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/maps/shoots.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/maps/stmarc.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/maps/sugarcane.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/maps/train.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/maps/vertigo.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/weapons/ak47.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/weapons/aug.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/weapons/awp.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/weapons/bizon.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/weapons/deagle.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/weapons/elite.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/weapons/famas.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/weapons/fiveseven.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/weapons/g3sg1.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/weapons/galilar.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/weapons/glock.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/weapons/hegrenade.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/weapons/hkp2000.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/weapons/knife.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/weapons/m249.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/weapons/m4a1.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/weapons/mac10.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/weapons/mag7.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/weapons/molotov.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/weapons/mp7.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/weapons/mp9.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/weapons/negev.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/weapons/nova.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/weapons/p250.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/weapons/p90.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/weapons/sawedoff.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/weapons/scar20.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/weapons/sg556.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/weapons/ssg08.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/weapons/taser.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/weapons/tec9.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/weapons/ump45.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/images/weapons/xm1014.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/index.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/calendar/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/calendar/index.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/friends/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/friends/index.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/global/Sidebar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/global/Sidebar.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/map-stats/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/map-stats/index.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.$CsGoExplorerSolutionArchitecture.png.bkp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/profile/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/profile/index.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/steam-id-form/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/steam-id-form/index.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/wallpapers/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/wallpapers/index.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/weapon-stats/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/weapon-stats/index.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -85,6 +26,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="ts.external.directory.path" value="$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external" />
     <property name="vue.rearranger.settings.migration" value="true" />
@@ -110,6 +52,10 @@
       <workItem from="1680248269931" duration="727000" />
       <workItem from="1680249294524" duration="5000" />
       <workItem from="1680249305694" duration="75000" />
+      <workItem from="1680249385857" duration="56000" />
+      <workItem from="1680249467674" duration="7000" />
+      <workItem from="1680281543343" duration="85000" />
+      <workItem from="1680281894388" duration="51000" />
     </task>
     <servers />
   </component>
