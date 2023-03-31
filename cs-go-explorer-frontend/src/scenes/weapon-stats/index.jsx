@@ -10,7 +10,7 @@ import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutlined";
 import axios from "axios";
 import Header from "../../components/Header";
-import SidebarBackgroundImage from "../../images/backgrounds/sidebar_and_tables_background.png";
+import SidebarBackgroundImage from "../../assets/images/backgrounds/sidebar_and_tables_background.png";
 import loading from "react-useanimations/lib/loading";
 import UseAnimations from "react-useanimations";
 
@@ -153,6 +153,8 @@ const WeaponStats = () => {
 			headerAlign: "center",
 			align: "center",
 			renderCell: ({ value }) => {
+				if (!value)
+					return "";
 				return (
 					<Box display="flex" justifyContent="center" alignItems="center">
 						<Box
@@ -160,7 +162,7 @@ const WeaponStats = () => {
 							alt={value}
 							width="9vw"
 							height="12vh"
-							src={require("../../images/weapons/" + value + ".webp")}
+							src={require("../../assets/images/weapons/" + value + ".webp")}
 							style={{ justifyContent: "center", alignItems: "center", fontSize: "1.2vh" }}
 						/>
 					</Box>
@@ -174,11 +176,14 @@ const WeaponStats = () => {
 			headerAlign: "center",
 			align: "center",
 			renderCell: ({ value }) => {
-				return (
-					<Box display="flex" justifyContent="center" alignItems="center" sx={{ fontSize: "1.2vh" }}>
-						{value}
-					</Box>
-				);
+				if (!value)
+					return "";
+				else
+					return (
+						<Box display="flex" justifyContent="center" alignItems="center" sx={{ fontSize: "1.2vh" }}>
+							{value}
+						</Box>
+					);
 			}
 		},
 		{
@@ -188,11 +193,14 @@ const WeaponStats = () => {
 			headerAlign: "center",
 			align: "center",
 			renderCell: ({ value }) => {
-				return (
-					<Box display="flex" justifyContent="center" alignItems="center" sx={{ fontSize: "1.2vh" }}>
-						{value}
-					</Box>
-				);
+				if (!value)
+					return "";
+				else
+					return (
+						<Box display="flex" justifyContent="center" alignItems="center" sx={{ fontSize: "1.2vh" }}>
+							{value}
+						</Box>
+					);
 			}
 		},
 		{
@@ -202,11 +210,14 @@ const WeaponStats = () => {
 			headerAlign: "center",
 			align: "center",
 			renderCell: ({ value }) => {
-				return (
-					<Box display="flex" justifyContent="center" alignItems="center" sx={{ fontSize: "1.2vh" }}>
-						{value}
-					</Box>
-				);
+				if (!value)
+					return "";
+				else
+					return (
+						<Box display="flex" justifyContent="center" alignItems="center" sx={{ fontSize: "1.2vh" }}>
+							{value}
+						</Box>
+					);
 			}
 		},
 		{
@@ -216,7 +227,7 @@ const WeaponStats = () => {
 			headerAlign: "center",
 			align: "center",
 			renderCell: ({ row }) => {
-				if (row.totalHits.length === 0 || row.totalShots.length === 0) {
+				if (!row.totalHits || !row.totalShots) {
 					return "";
 				}
 				else {
@@ -235,7 +246,7 @@ const WeaponStats = () => {
 			headerAlign: "center",
 			align: "center",
 			renderCell: ({ row }) => {
-				if (row.totalHits.length === 0 || row.totalShots.length === 0) {
+				if (!row.totalHits || !row.totalShots) {
 					return "";
 				}
 				else {

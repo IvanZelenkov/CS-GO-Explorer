@@ -9,7 +9,7 @@ import listPlugin from "@fullcalendar/list";
 import { motion } from "framer-motion";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
-import SidebarBackgroundImage from "../../images/backgrounds/calendar_events_background.jpg";
+import SidebarBackgroundImage from "../../assets/images/backgrounds/calendar_events_background.jpg";
 import UseAnimations from "react-useanimations";
 import loading from "react-useanimations/lib/loading";
 

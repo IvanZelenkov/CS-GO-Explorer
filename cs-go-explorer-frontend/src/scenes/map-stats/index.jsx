@@ -9,7 +9,7 @@ import Refresh from "@mui/icons-material/Refresh";
 import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 import axios from "axios";
 import Header from "../../components/Header";
-import SidebarBackgroundImage from "../../images/backgrounds/sidebar_and_tables_background.png";
+import SidebarBackgroundImage from "../../assets/images/backgrounds/sidebar_and_tables_background.png";
 import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutlined";
 import UseAnimations from 'react-useanimations';
 import loading from 'react-useanimations/lib/loading';
@@ -112,7 +112,7 @@ const MapStats = () => {
 		for (let i = 0; i < maps.length; i++) {
 			let totalRounds = reformattedUserStats.stats[i].totalRounds;
 
-			if (totalRounds.length !== 0) {
+			if (totalRounds.length !== 0 && reformattedUserStats.stats[i].totalRoundWins <= totalRounds ) {
 				mapStats.push({
 					id: mapKeys[i],
 					value: totalRounds,
@@ -137,6 +137,9 @@ const MapStats = () => {
 			headerAlign: "center",
 			align: "center",
 			renderCell: ({ value }) => {
+				if (!value) {
+					return "";
+				}
 				return (
 					<Box display="flex" justifyContent="center" alignItems="center">
 						<Box
@@ -144,7 +147,7 @@ const MapStats = () => {
 							alt={value}
 							width="17vw"
 							height="17vh"
-							src={require("../../images/maps/" + value + ".webp")}
+							src={require("../../assets/images/maps/" + value + ".webp")}
 							style={{ justifyContent: "center", alignItems: "center", fontSize: "1.2vh", borderRadius: "10px" }}
 						/>
 					</Box>
@@ -157,10 +160,12 @@ const MapStats = () => {
 			flex: 1,
 			headerAlign: "center",
 			align: "center",
-			renderCell: ({ value }) => {
+			renderCell: ({ row }) => {
+				if (!row.totalRoundWins || row.totalRoundWins > row.totalRounds)
+					return "";
 				return (
 					<Box display="flex" justifyContent="center" alignItems="center" sx={{ fontSize: "1.2vh" }}>
-						{value}
+						{row.totalRoundWins}
 					</Box>
 				);
 			}
@@ -171,10 +176,12 @@ const MapStats = () => {
 			flex: 1,
 			headerAlign: "center",
 			align: "center",
-			renderCell: ({ value }) => {
+			renderCell: ({ row }) => {
+				if (!row.totalRounds || row.totalRoundWins > row.totalRounds)
+					return "";
 				return (
 					<Box display="flex" justifyContent="center" alignItems="center" sx={{ fontSize: "1.2vh" }}>
-						{value}
+						{row.totalRounds}
 					</Box>
 				);
 			}
@@ -186,7 +193,7 @@ const MapStats = () => {
 			headerAlign: "center",
 			align: "center",
 			renderCell: ({ row }) => {
-				if (row.totalRounds.length === 0 || row.totalRoundWins.length === 0) {
+				if (!row.totalRoundWins || !row.totalRounds || row.totalRoundWins > row.totalRounds) {
 					return "";
 				} else {
 					return (

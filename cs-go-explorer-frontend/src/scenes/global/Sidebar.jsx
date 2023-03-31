@@ -18,7 +18,7 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import { tokens } from "../../theme";
 import SidebarItem from "../../components/SidebarItem";
-import SidebarBackgroundImage from "../../images/backgrounds/sidebar_and_tables_background.png";
+import SidebarBackgroundImage from "../../assets/images/backgrounds/sidebar_and_tables_background.png";
 
 const Sidebar = () => {
 	const theme = useTheme();

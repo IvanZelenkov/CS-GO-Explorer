@@ -30,12 +30,12 @@ html, body, #root, .app, .content {
 	background: #555;
 }
 
-.input {
-	height: 5vh;
-}
+/*.input {*/
+/*	height: 5vh;*/
+/*}*/
 
 .button {
-	height: 5vh;
+	height: 3.3rem;
 }
 
 .news-image {

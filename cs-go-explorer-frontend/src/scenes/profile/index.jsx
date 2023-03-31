@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { Box, Stack, Divider, Typography, Link as ProfileLink, useTheme } from "@mui/material";
+import {Box, Stack, Divider, Typography, Link as ProfileLink, useTheme, IconButton} from "@mui/material";
 import { motion } from "framer-motion";
 import axios from "axios";
 import { tokens } from "../../theme";
 import loading from "react-useanimations/lib/loading";
 import UseAnimations from "react-useanimations";
+import {VolumeOff as VolumeOffIcon, VolumeUp as VolumeUpIcon} from "@mui/icons-material";
 
 const StatHeader = ({ title, textColor }) => {
 	return (
@@ -25,6 +26,7 @@ const Profile = () => {
 	const theme = useTheme();
 	const colors = tokens(theme.palette.mode);
 	const [infoLoaded, setInfoLoaded] = useState(false);
+	const [muted, setMuted] = useState(true);
 	const [profileData, setProfileData] = useState({});
 	const [userStats, setUserStats] = useState([]);
 	const generalStatsKeys = [
@@ -43,7 +45,9 @@ const Profile = () => {
 		"bizon", "mag7", "negev", "sawedoff", "tec9", "taser", "hkp2000", "mp7", "mp9", "nova", "p250", "N/A",
 		"scar20", "sg556", "ssg08", "knife", "knife", "N/A", "hegrenade", "N/A", "molotov", "N/A", "N/A",
 		"N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "knife", "m4a1", "N/A", "N/A"
-	]
+	];
+
+	const handleToggleMute = () => setMuted(current => !current);
 
 	const getUserData = async () => {
 		try {
@@ -101,6 +105,16 @@ const Profile = () => {
 	}
 	return (
 		<motion.div exit={{ opacity: 0 }}>
+			<video autoPlay loop muted={muted} style={{
+				position: "fixed",
+				right: "0",
+				bottom: "0",
+				minWidth: "100%",
+				minHeight: "100%",
+				zIndex: -2
+			}}>
+				<source src={require("../../assets/videos/cs-go-profile-background-video.mkv")} type="video/mp4"/>
+			</video>
 			<Box margin="1.5vh">
 				<Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
 					{/* LAST MATCH STATS */}
@@ -257,7 +271,7 @@ const Profile = () => {
 							<Box
 								component="img"
 								alt="profile-user"
-								src={require("../../images/weapons/" + weaponIdsInOrder[userStats.last_match_favweapon_id - 1] + ".webp")}
+								src={require("../../assets/images/weapons/" + weaponIdsInOrder[userStats.last_match_favweapon_id - 1] + ".webp")}
 								style={{ width: "25vh" }}
 							/>
 						</Box>
@@ -322,11 +336,11 @@ const Profile = () => {
 								</Box>
 								<Box className="player-stat-card-right">
 									<StatHeader
-										title={"WEAPONS DONATED"}
+										title={"TOTAL TIME PLAYED"}
 										textColor={"red"}
 									/>
 									<StatHeader
-										title={infoLoaded && userStats.total_weapons_donated}
+										title={infoLoaded && Math.floor(userStats.total_time_played / 3600) + " hrs"}
 										textColor={"primary.main"}
 									/>
 								</Box>
@@ -359,17 +373,17 @@ const Profile = () => {
 										textColor={"red"}
 									/>
 									<StatHeader
-										title={infoLoaded && userStats.total_money_earned}
+										title={infoLoaded && "$" + userStats.total_money_earned}
 										textColor={"primary.main"}
 									/>
 								</Box>
 								<Box className="player-stat-card-right">
 									<StatHeader
-										title={"MVPs"}
+										title={"KILLS"}
 										textColor={"red"}
 									/>
 									<StatHeader
-										title={infoLoaded && userStats.total_mvps}
+										title={infoLoaded && userStats.total_kills}
 										textColor={"primary.main"}
 									/>
 								</Box>
@@ -411,16 +425,6 @@ const Profile = () => {
 							<Box sx={{ display: "flex", flexDirection: "row" }}>
 								<Box className="player-stat-card-right">
 									<StatHeader
-										title={"KILLS"}
-										textColor={"red"}
-									/>
-									<StatHeader
-										title={infoLoaded && userStats.total_kills}
-										textColor={"primary.main"}
-									/>
-								</Box>
-								<Box className="player-stat-card-right">
-									<StatHeader
 										title={"DOMINATIONS"}
 										textColor={"red"}
 									/>
@@ -439,42 +443,75 @@ const Profile = () => {
 										textColor={"primary.main"}
 									/>
 								</Box>
+								<Box className="player-stat-card-right">
+									<StatHeader
+										title={"WEAPONS DONATED"}
+										textColor={"red"}
+									/>
+									<StatHeader
+										title={infoLoaded && userStats.total_weapons_donated}
+										textColor={"primary.main"}
+									/>
+								</Box>
 							</Box>
 						</Stack>
 					</Box>
 				</Box>
 
 				{/* LAST MATCH FAVORITE WEAPON STATS*/}
-				<Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-					<Box className="player-stat-card-bottom">
-						<StatHeader
-							title={"SHOTS"}
-							textColor={"red"}
-						/>
-						<StatHeader
-							title={infoLoaded && userStats.last_match_favweapon_shots}
-							textColor={"primary.main"}
-						/>
+				<Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+					<Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
+						<Box className="player-stat-card-bottom">
+							<StatHeader
+								title={"SHOTS"}
+								textColor={"red"}
+							/>
+							<StatHeader
+								title={infoLoaded && userStats.last_match_favweapon_shots}
+								textColor={"primary.main"}
+							/>
+						</Box>
+						<Box className="player-stat-card-bottom">
+							<StatHeader
+								title={"HITS"}
+								textColor={"red"}
+							/>
+							<StatHeader
+								title={infoLoaded && userStats.last_match_favweapon_hits}
+								textColor={"primary.main"}
+							/>
+						</Box>
+						<Box className="player-stat-card-bottom">
+							<StatHeader
+								title={"KILLS"}
+								textColor={"red"}
+							/>
+							<StatHeader
+								title={infoLoaded && userStats.last_match_favweapon_kills}
+								textColor={"primary.main"}
+							/>
+						</Box>
 					</Box>
-					<Box className="player-stat-card-bottom">
-						<StatHeader
-							title={"HITS"}
-							textColor={"red"}
-						/>
-						<StatHeader
-							title={infoLoaded && userStats.last_match_favweapon_hits}
-							textColor={"primary.main"}
-						/>
-					</Box>
-					<Box className="player-stat-card-bottom">
-						<StatHeader
-							title={"KILLS"}
-							textColor={"red"}
-						/>
-						<StatHeader
-							title={infoLoaded && userStats.last_match_favweapon_kills}
-							textColor={"primary.main"}
-						/>
+					<Box sx={{ display: "flex", justifyContent: "center" }}>
+						<IconButton onClick={handleToggleMute}>
+							{muted === true ? (
+								<VolumeOffIcon sx={{
+									color: "white",
+									":hover": {
+										color: "#7da10e"
+									},
+									fontSize: "5vh"
+								}}/>
+							) : (
+								<VolumeUpIcon sx={{
+									color: "white",
+									":hover": {
+										color: "#7da10e"
+									},
+									fontSize: "5vh"
+								}}/>
+							)}
+						</IconButton>
 					</Box>
 				</Box>
 			</Box>

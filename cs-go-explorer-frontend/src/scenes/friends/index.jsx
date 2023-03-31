@@ -7,7 +7,7 @@ import states from 'us-state-converter';
 import { motion } from "framer-motion";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
-import SidebarBackgroundImage from "../../images/backgrounds/sidebar_and_tables_background.png";
+import SidebarBackgroundImage from "../../assets/images/backgrounds/sidebar_and_tables_background.png";
 import UseAnimations from 'react-useanimations';
 import loading from 'react-useanimations/lib/loading';
 
@@ -96,24 +96,27 @@ const Friends = () => {
 			align: "center",
 			// cellClassName: "name-column--cell",
 			renderCell: ({ row }) => {
-				return (
-					<Box display="flex" justifyContent="center" alignItems="center">
-						<ProfileLink
-							href={row.profileurl}
-							target="_blank"
-							underline="none"
-						>
-							<Box
-								component="img"
-								alt="profile-user"
-								width="3vw"
-								height="5.5vh"
-								src={row.avatarfull}
-								style={{ cursor: "pointer", borderRadius: "10%" }}
-							/>
-						</ProfileLink>
-					</Box>
-				);
+				if (!row.profileurl || !row.avatarfull)
+					return "";
+				else
+					return (
+						<Box display="flex" justifyContent="center" alignItems="center">
+							<ProfileLink
+								href={row.profileurl}
+								target="_blank"
+								underline="none"
+							>
+								<Box
+									component="img"
+									alt="profile-user"
+									width="3vw"
+									height="5.5vh"
+									src={row.avatarfull}
+									style={{ cursor: "pointer", borderRadius: "10%" }}
+								/>
+							</ProfileLink>
+						</Box>
+					);
 			}
 		},
 		{
@@ -123,7 +126,7 @@ const Friends = () => {
 			headerAlign: "center",
 			align: "center",
 			renderCell: ({ row }) => {
-				if (row.personaname === undefined)
+				if (!row.personaname)
 					return "";
 				else
 					return (
@@ -140,7 +143,7 @@ const Friends = () => {
 			headerAlign: "center",
 			align: "center",
 			renderCell: ({ row }) => {
-				if (row.steamid === undefined)
+				if (!row.steamid)
 					return "";
 				else
 					return (
@@ -158,11 +161,14 @@ const Friends = () => {
 			align: "center",
 			// type: "number",
 			renderCell: ({ row }) => {
-				return (
-					<Box sx={{ fontSize: "1.2vh" }}>
-						{definePersonaState(row.personastate, row.communityvisibilitystate)}
-					</Box>
-				);
+				if (!row.personastate || !row.communityvisibilitystate)
+					return "";
+				else
+					return (
+						<Box sx={{ fontSize: "1.2vh" }}>
+							{definePersonaState(row.personastate, row.communityvisibilitystate)}
+						</Box>
+					);
 			}
 		},
 		{
@@ -172,7 +178,7 @@ const Friends = () => {
 			headerAlign: "center",
 			align: "center",
 			renderCell: ({ row }) => {
-				if (row.lastlogoff === undefined || row.personastate === undefined || row.communityvisibilitystate === undefined)
+				if (!row.lastlogoff || !row.personastate || !row.communityvisibilitystate)
 					return "";
 				else
 					return (
@@ -189,7 +195,7 @@ const Friends = () => {
 			headerAlign: "center",
 			align: "center",
 			renderCell: ({ row }) => {
-				if (row.timecreated === undefined)
+				if (!row.timecreated)
 					return "";
 				else
 					return (
@@ -206,14 +212,21 @@ const Friends = () => {
 			headerAlign: "center",
 			align: "center",
 			renderCell: ({ row }) => {
-				if (row.loccountrycode === undefined)
+				if (!row.loccountrycode)
 					return "";
-				else
-					return (
-						<Box sx={{ fontSize: "1.2vh" }}>
-							{regionNames.of(row.loccountrycode)}
-						</Box>
-					);
+				else {
+					try {
+						return (
+							<Box sx={{fontSize: "1.2vh"}}>
+								{regionNames.of(row.loccountrycode)}
+							</Box>
+						);
+					} catch (error) {
+						return (
+							<></>
+						);
+					}
+				}
 			}
 		},
 		{
@@ -223,7 +236,7 @@ const Friends = () => {
 			headerAlign: "center",
 			align: "center",
 			renderCell: ({ row }) => {
-				if (row.locstatecode === undefined)
+				if (!row.locstatecode)
 					return "";
 				else {
 					const stateObject = states(row.locstatecode);
