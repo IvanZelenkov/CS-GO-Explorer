@@ -9,7 +9,7 @@ import Refresh from "@mui/icons-material/Refresh";
 import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 import axios from "axios";
 import Header from "../../components/Header";
-import SidebarBackgroundImage from "../../assets/images/backgrounds/sidebar_and_tables_background.png";
+import SidebarBackgroundImage from "../../assets/images/backgrounds/sidebar_and_tables_background.jpg";
 import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutlined";
 import UseAnimations from 'react-useanimations';
 import loading from 'react-useanimations/lib/loading';

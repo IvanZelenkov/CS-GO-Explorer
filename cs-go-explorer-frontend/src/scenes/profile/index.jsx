@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import {Box, Stack, Divider, Typography, Link as ProfileLink, useTheme, IconButton} from "@mui/material";
+import { Box, Stack, Divider, Typography, Link as ProfileLink, useTheme, IconButton, Grid } from "@mui/material";
 import { motion } from "framer-motion";
 import axios from "axios";
 import { tokens } from "../../theme";
@@ -45,6 +45,33 @@ const Profile = () => {
 		"bizon", "mag7", "negev", "sawedoff", "tec9", "taser", "hkp2000", "mp7", "mp9", "nova", "p250", "N/A",
 		"scar20", "sg556", "ssg08", "knife", "knife", "N/A", "hegrenade", "N/A", "molotov", "N/A", "N/A",
 		"N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "knife", "m4a1", "N/A", "N/A"
+	];
+	const leftCards = [
+		{ title: "ROUNDS", userStatsType: "last_match_rounds" },
+		{ title: "WINS", userStatsType: "last_match_wins" },
+		{ title: "MAX PLAYERS", userStatsType: "last_match_max_players" },
+		{ title: "SCORE", userStatsType: "last_match_contribution_score" },
+		{ title: "KILLS", userStatsType: "last_match_kills" },
+		{ title: "DEATHS", userStatsType: "last_match_deaths" },
+		{ title: "MVPs", userStatsType: "last_match_mvps" },
+		{ title: "ADR" },
+		{ title: "MONEY SPENT" }
+	];
+	const rightCards = [
+		{ title: "MATCHES", userStatsType: "total_matches_played" },
+		{ title: "MATCHES WON", userStatsType: "total_matches_won" },
+		{ title: "ROUNDS", userStatsType: "total_rounds_played" },
+		{ title: "ROUNDS WON", userStatsType: "total_wins" },
+		{ title: "AVERAGE PLAYTIME" },
+		{ title: "KILLS", userStatsType: "total_kills" },
+		{ title: "KNIFE FIGHT KILLS", userStatsType: "total_kills_knife_fight" },
+		{ title: "ENEMY BLINDED KILLS", userStatsType: "total_kills_enemy_blinded" },
+		{ title: "KILLS AGAINST ZOOMED SNIPER", userStatsType: "total_kills_against_zoomed_sniper" }
+	];
+	const bottomCards = [
+		{ title: "SHOTS", userStatsType: "last_match_favweapon_shots" },
+		{ title: "HITS", userStatsType: "last_match_favweapon_hits" },
+		{ title: "KILLS", userStatsType: "last_match_favweapon_kills" }
 	];
 
 	const handleToggleMute = () => setMuted(current => !current);
@@ -116,119 +143,76 @@ const Profile = () => {
 				<source src={require("../../assets/videos/cs-go-profile-background-video.mp4")} type="video/mp4"/>
 			</video>
 			<Box margin="1.5vh">
-				<Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+				<Box sx={{ display: "flex", flexDirection: "row" }}>
 					{/* LAST MATCH STATS */}
-					<Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-						<Typography
-							variant="h2"
-							color="primary.main"
-							fontWeight="bold"
-							letterSpacing="0.1vw"
-							margin="10px 0 0 0"
-						>
-							LAST MATCH STATS
-						</Typography>
-						<Stack spacing={2} className="card-stack">
-							{/* ROW #1 */}
-							<Box sx={{ display: "flex", flexDirection: "row" }}>
-								<Box className="player-stat-card-left">
-									<StatHeader
-										title={"ROUNDS"}
-										textColor={"red"}
-									/>
-									<StatHeader
-										title={infoLoaded && userStats.last_match_rounds}
-										textColor={"primary.main"}
-									/>
-								</Box>
-								<Box className="player-stat-card-left">
-									<StatHeader
-										title={"WINS"}
-										textColor={"red"}
-									/>
-									<StatHeader
-										title={infoLoaded && userStats.last_match_wins}
-										textColor={"primary.main"}
-									/>
-								</Box>
-								<Box className="player-stat-card-left">
-									<StatHeader
-										title={"MAX PLAYERS"}
-										textColor={"red"}
-									/>
-									<StatHeader
-										title={infoLoaded && userStats.last_match_max_players}
-										textColor={"primary.main"}
-									/>
-								</Box>
-							</Box>
-							{/* ROW #2 */}
-							<Box sx={{ display: "flex", flexDirection: "row" }}>
-								<Box className="player-stat-card-left">
-									<StatHeader
-										title={"SCORE"}
-										textColor={"red"}
-									/>
-									<StatHeader
-										title={infoLoaded && userStats.last_match_contribution_score}
-										textColor={"primary.main"}
-									/>
-								</Box>
-								<Box className="player-stat-card-left">
-									<StatHeader
-										title={"KILLS"}
-										textColor={"red"}
-									/>
-									<StatHeader
-										title={infoLoaded && userStats.last_match_kills}
-										textColor={"primary.main"}
-									/>
-								</Box>
-								<Box className="player-stat-card-left">
-									<StatHeader
-										title={"DEATHS"}
-										textColor={"red"}
-									/>
-									<StatHeader
-										title={infoLoaded && userStats.last_match_deaths}
-										textColor={"primary.main"}
-									/>
-								</Box>
-							</Box>
-							{/* ROW #3 */}
-							<Box sx={{ display: "flex", flexDirection: "row" }}>
-								<Box className="player-stat-card-left">
-									<StatHeader
-										title={"MVPs"}
-										textColor={"red"}
-									/>
-									<StatHeader
-										title={infoLoaded && userStats.last_match_mvps}
-										textColor={"primary.main"}
-									/>
-								</Box>
-								<Box className="player-stat-card-left">
-									<StatHeader
-										title={"ADR"}
-										textColor={"red"}
-									/>
-									<StatHeader
-										title={infoLoaded && (userStats.last_match_damage / userStats.last_match_rounds).toFixed(2)}
-										textColor={"primary.main"}
-									/>
-								</Box>
-								<Box className="player-stat-card-left">
-									<StatHeader
-										title={"MONEY SPENT"}
-										textColor={"red"}
-									/>
-									<StatHeader
-										title={infoLoaded && "$" + userStats.last_match_money_spent}
-										textColor={"primary.main"}
-									/>
-								</Box>
-							</Box>
-						</Stack>
+					<Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+						<Box sx={{
+							display: "flex",
+							alignItems: "center",
+							justifyContent: "center",
+							backgroundColor: "#1b2838",
+							padding: "1.2vh",
+							borderRadius: "10px"
+						}}>
+							<Typography
+								fontSize="2vh"
+								color="custom.steamColorE"
+								fontWeight="bold"
+								letterSpacing="0.1vw"
+								fontStyle="italic"
+							>
+								LAST MATCH STATS
+							</Typography>
+						</Box>
+						<Grid container className="card-grid">
+							{leftCards.map(card => {
+								if (card.title === "ADR")
+									return (
+										<Grid item xs={12} sm={12} md={12} lg={12} xl={4} className="profile-grid-item">
+											<Box className="player-stat-card-left">
+												<StatHeader
+													title={"ADR"}
+													textColor={"red"}
+												/>
+												<StatHeader
+													title={infoLoaded && (userStats.last_match_damage / userStats.last_match_rounds).toFixed(2)}
+													textColor={"primary.main"}
+												/>
+											</Box>
+										</Grid>
+									);
+								else if (card.title === "MONEY SPENT")
+									return (
+										<Grid item xs={12} sm={12} md={12} lg={12} xl={4} className="profile-grid-item">
+											<Box className="player-stat-card-left">
+												<StatHeader
+													title={"MONEY SPENT"}
+													textColor={"red"}
+												/>
+												<StatHeader
+													title={infoLoaded && "$" + userStats.last_match_money_spent}
+													textColor={"primary.main"}
+												/>
+											</Box>
+										</Grid>
+									);
+								else
+									return (
+										<Grid item xs={12} sm={12} md={12} lg={12} xl={4} className="profile-grid-item">
+											<Box className="player-stat-card-left">
+												<StatHeader
+													title={card.title}
+													textColor={"red"}
+												/>
+												<StatHeader
+													title={infoLoaded && userStats[card.userStatsType]}
+													textColor={"primary.main"}
+												/>
+											</Box>
+										</Grid>
+									);
+							})}
+						</Grid>
 					</Box>
 
 					{/* AVATAR AND LAST MATCH FAVORITE WEAPON IMAGE */}
@@ -250,11 +234,10 @@ const Profile = () => {
 							</ProfileLink>}
 						</Box>
 						<Typography
-							variant="h2"
+							fontSize="2.5vh"
 							color="primary.main"
 							fontWeight="bold"
 							letterSpacing="0.1vw"
-							margin="10px 0 0 0"
 						>
 							{infoLoaded && profileData.response.players[0].personaname}
 						</Typography>
@@ -262,253 +245,129 @@ const Profile = () => {
 							Steam ID: {infoLoaded && profileData.response.players[0].steamid}
 						</Typography>
 						<Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", marginTop: "auto" }}>
-							<Typography variant="h5" color="primary.main" fontWeight="bold" letterSpacing="0.3vw" textAlign="center">
-								LAST MATCH
-							</Typography>
-							<Typography variant="h5" color="primary.main" fontWeight="bold" letterSpacing="0.3vw" textAlign="center">
-								FAVORITE WEAPON
-							</Typography>
 							<Box
 								component="img"
 								alt="profile-user"
 								src={require("../../assets/images/weapons/" + weaponIdsInOrder[userStats.last_match_favweapon_id - 1] + ".webp")}
-								style={{ width: "25vh" }}
+								style={{ width: "15vw" }}
 							/>
+							<Box sx={{
+								display: "flex",
+								flexDirection: "column",
+								alignItems: "center",
+								justifyContent: "center",
+								backgroundColor: "#1b2838",
+								padding: "1.2vh",
+								borderRadius: "10px"
+							}}>
+								<Typography
+									fontSize="1.5vh"
+									color="gold"
+									fontWeight="bold"
+									letterSpacing="0.3vw"
+									textAlign="center"
+									fontStyle="italic"
+								>
+									LAST MATCH FAVORITE WEAPON
+								</Typography>
+							</Box>
 						</Box>
 					</Box>
 
 					{/* TOTAL STATS */}
-					<Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-						<Typography
-							variant="h2"
-							color="primary.main"
-							fontWeight="bold"
-							letterSpacing="0.1vw"
-							margin="10px 0 0 0"
-						>
-							TOTAL STATS
-						</Typography>
-						<Stack spacing={2} className="card-stack">
-							{/* ROW #1 */}
-							<Box sx={{ display: "flex", flexDirection: "row" }}>
-								<Box className="player-stat-card-right">
-									<StatHeader
-										title={"MATCHES"}
-										textColor={"red"}
-									/>
-									<StatHeader
-										title={infoLoaded && userStats.total_matches_played}
-										textColor={"primary.main"}
-									/>
-								</Box>
-								<Box className="player-stat-card-right">
-									<StatHeader
-										title={"MATCHES WON"}
-										textColor={"red"}
-									/>
-									<StatHeader
-										title={infoLoaded && userStats.total_matches_won}
-										textColor={"primary.main"}
-									/>
-								</Box>
-								<Box className="player-stat-card-right">
-									<StatHeader
-										title={"ROUNDS"}
-										textColor={"red"}
-									/>
-									<StatHeader
-										title={infoLoaded && userStats.total_rounds_played}
-										textColor={"primary.main"}
-									/>
-								</Box>
-							</Box>
-							{/* ROW #2 */}
-							<Box sx={{ display: "flex", flexDirection: "row" }}>
-								<Box className="player-stat-card-right">
-									<StatHeader
-										title={"ROUNDS WON"}
-										textColor={"red"}
-									/>
-									<StatHeader
-										title={infoLoaded && userStats.total_wins}
-										textColor={"primary.main"}
-									/>
-								</Box>
-								<Box className="player-stat-card-right">
-									<StatHeader
-										title={"TOTAL TIME PLAYED"}
-										textColor={"red"}
-									/>
-									<StatHeader
-										title={infoLoaded && Math.floor(userStats.total_time_played / 3600) + " hrs"}
-										textColor={"primary.main"}
-									/>
-								</Box>
-								<Box className="player-stat-card-right">
-									<StatHeader
-										title={"BOMBS PLANTED"}
-										textColor={"red"}
-									/>
-									<StatHeader
-										title={infoLoaded && userStats.total_planted_bombs}
-										textColor={"primary.main"}
-									/>
-								</Box>
-							</Box>
-							{/* ROW #3 */}
-							<Box sx={{ display: "flex", flexDirection: "row" }}>
-								<Box className="player-stat-card-right">
-									<StatHeader
-										title={"MVPs"}
-										textColor={"red"}
-									/>
-									<StatHeader
-										title={infoLoaded && userStats.total_mvps}
-										textColor={"primary.main"}
-									/>
-								</Box>
-								<Box className="player-stat-card-right">
-									<StatHeader
-										title={"MONEY EARNED"}
-										textColor={"red"}
-									/>
-									<StatHeader
-										title={infoLoaded && "$" + userStats.total_money_earned}
-										textColor={"primary.main"}
-									/>
-								</Box>
-								<Box className="player-stat-card-right">
-									<StatHeader
-										title={"KILLS"}
-										textColor={"red"}
-									/>
-									<StatHeader
-										title={infoLoaded && userStats.total_kills}
-										textColor={"primary.main"}
-									/>
-								</Box>
-							</Box>
-							{/* ROW #3 */}
-							<Box sx={{ display: "flex", flexDirection: "row" }}>
-								<Box className="player-stat-card-right">
-									<StatHeader
-										title={"KNIFE FIGHT KILLS"}
-										textColor={"red"}
-									/>
-									<StatHeader
-										title={infoLoaded && userStats.total_kills_knife_fight}
-										textColor={"primary.main"}
-									/>
-								</Box>
-								<Box className="player-stat-card-right">
-									<StatHeader
-										title={"ENEMY BLINDED KILLS"}
-										textColor={"red"}
-									/>
-									<StatHeader
-										title={infoLoaded && userStats.total_kills_enemy_blinded}
-										textColor={"primary.main"}
-									/>
-								</Box>
-								<Box className="player-stat-card-right">
-									<StatHeader
-										title={"KILLS AGAINST ZOOMED SNIPER"}
-										textColor={"red"}
-									/>
-									<StatHeader
-										title={infoLoaded && userStats.total_kills_against_zoomed_sniper}
-										textColor={"primary.main"}
-									/>
-								</Box>
-							</Box>
-							{/* ROW #4 */}
-							<Box sx={{ display: "flex", flexDirection: "row" }}>
-								<Box className="player-stat-card-right">
-									<StatHeader
-										title={"DOMINATIONS"}
-										textColor={"red"}
-									/>
-									<StatHeader
-										title={infoLoaded && userStats.total_dominations}
-										textColor={"primary.main"}
-									/>
-								</Box>
-								<Box className="player-stat-card-right">
-									<StatHeader
-										title={"DOMINATION OVERKILLS"}
-										textColor={"red"}
-									/>
-									<StatHeader
-										title={infoLoaded && userStats.total_domination_overkills}
-										textColor={"primary.main"}
-									/>
-								</Box>
-								<Box className="player-stat-card-right">
-									<StatHeader
-										title={"WEAPONS DONATED"}
-										textColor={"red"}
-									/>
-									<StatHeader
-										title={infoLoaded && userStats.total_weapons_donated}
-										textColor={"primary.main"}
-									/>
-								</Box>
-							</Box>
-						</Stack>
+					<Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+						<Box sx={{
+							display: "flex",
+							alignItems: "center",
+							justifyContent: "center",
+							backgroundColor: "#1b2838",
+							padding: "1.2vh",
+							borderRadius: "10px"
+						}}>
+							<Typography
+								fontSize="2vh"
+								color="custom.steamColorE"
+								fontWeight="bold"
+								letterSpacing="0.1vw"
+								fontStyle="italic"
+							>
+								TOTAL STATS
+							</Typography>
+						</Box>
+						<Grid container className="card-grid">
+							{rightCards.map(card => {
+								if (card.title === "AVERAGE PLAYTIME")
+									return (
+										<Grid item xs={12} sm={12} md={12} lg={12} xl={4} className="profile-grid-item">
+											<Box className="player-stat-card-right">
+												<StatHeader
+													title={"AVERAGE PLAYTIME"}
+													textColor={"red"}
+												/>
+												<StatHeader
+													title={infoLoaded && Math.floor(userStats.total_time_played / 3600) + " hrs"}
+													textColor={"primary.main"}
+												/>
+											</Box>
+										</Grid>
+									);
+								else
+									return (
+										<Grid item xs={12} sm={12} md={12} lg={12} xl={4} className="profile-grid-item">
+											<Box className="player-stat-card-right">
+												<StatHeader
+													title={card.title}
+													textColor={"red"}
+												/>
+												<StatHeader
+													title={infoLoaded && userStats[card.userStatsType]}
+													textColor={"primary.main"}
+												/>
+											</Box>
+										</Grid>
+									);
+							})}
+						</Grid>
 					</Box>
 				</Box>
 
-				{/* LAST MATCH FAVORITE WEAPON STATS*/}
-				<Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-					<Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
-						<Box className="player-stat-card-bottom">
-							<StatHeader
-								title={"SHOTS"}
-								textColor={"red"}
-							/>
-							<StatHeader
-								title={infoLoaded && userStats.last_match_favweapon_shots}
-								textColor={"primary.main"}
-							/>
-						</Box>
-						<Box className="player-stat-card-bottom">
-							<StatHeader
-								title={"HITS"}
-								textColor={"red"}
-							/>
-							<StatHeader
-								title={infoLoaded && userStats.last_match_favweapon_hits}
-								textColor={"primary.main"}
-							/>
-						</Box>
-						<Box className="player-stat-card-bottom">
-							<StatHeader
-								title={"KILLS"}
-								textColor={"red"}
-							/>
-							<StatHeader
-								title={infoLoaded && userStats.last_match_favweapon_kills}
-								textColor={"primary.main"}
-							/>
-						</Box>
-					</Box>
+				{/* LAST MATCH FAVORITE WEAPON STATS */}
+				<Box sx={{ display: "flex", flexDirection: "column" }}>
+					<Grid
+						container
+						sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+						{bottomCards.map(card => (
+							<Grid item className="profile-grid-item">
+								<Box className="player-stat-card-bottom">
+									<StatHeader
+										title={card.title}
+										textColor={"red"}
+									/>
+									<StatHeader
+										title={infoLoaded && userStats[card.userStatsType]}
+										textColor={"primary.main"}
+									/>
+								</Box>
+							</Grid>
+						))}
+					</Grid>
 					<Box sx={{ display: "flex", justifyContent: "center" }}>
 						<IconButton onClick={handleToggleMute}>
 							{muted === true ? (
 								<VolumeOffIcon sx={{
 									color: "white",
 									":hover": {
-										color: "#7da10e"
+										color: "#66c0f4"
 									},
-									fontSize: "5vh"
+									fontSize: "3vh"
 								}}/>
 							) : (
 								<VolumeUpIcon sx={{
 									color: "white",
 									":hover": {
-										color: "#7da10e"
+										color: "#66c0f4"
 									},
-									fontSize: "5vh"
+									fontSize: "3vh"
 								}}/>
 							)}
 						</IconButton>

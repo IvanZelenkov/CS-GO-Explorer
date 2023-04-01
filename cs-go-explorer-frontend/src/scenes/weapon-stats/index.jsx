@@ -10,7 +10,7 @@ import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutlined";
 import axios from "axios";
 import Header from "../../components/Header";
-import SidebarBackgroundImage from "../../assets/images/backgrounds/sidebar_and_tables_background.png";
+import SidebarBackgroundImage from "../../assets/images/backgrounds/sidebar_and_tables_background.jpg";
 import loading from "react-useanimations/lib/loading";
 import UseAnimations from "react-useanimations";
 

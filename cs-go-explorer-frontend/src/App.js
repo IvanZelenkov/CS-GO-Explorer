@@ -14,7 +14,6 @@ import WeaponStats from "./scenes/weapon-stats";
 import MapStats from "./scenes/map-stats";
 import Bar from './scenes/bar';
 import Pie from './scenes/pie';
-import PlaytimeBooster from './scenes/playtime-booster';
 import Calendar from './scenes/calendar';
 import FAQ from './scenes/faq';
 
@@ -64,7 +63,6 @@ function App() {
 											<Route exact path="bar" element={<Bar/>}/>
 											<Route exact path="pie" element={<Pie/>}/>
 										</Route>
-										<Route exact path="/playtime-booster" element={<PlaytimeBooster/>}/>
 										<Route exact path="/calendar" element={<Calendar/>}/>
 										<Route exact path="/faq" element={<FAQ/>}/>
 									</Routes>

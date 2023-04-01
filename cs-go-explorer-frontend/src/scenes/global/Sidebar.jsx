@@ -8,7 +8,6 @@ import UseAnimations from 'react-useanimations';
 import loading from 'react-useanimations/lib/loading';
 import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
-import SpeedIcon from '@mui/icons-material/Speed';
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
@@ -18,7 +17,7 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import { tokens } from "../../theme";
 import SidebarItem from "../../components/SidebarItem";
-import SidebarBackgroundImage from "../../assets/images/backgrounds/sidebar_and_tables_background.png";
+import SidebarBackgroundImage from "../../assets/images/backgrounds/sidebar_and_tables_background.jpg";
 
 const Sidebar = () => {
 	const theme = useTheme();
@@ -122,9 +121,9 @@ const Sidebar = () => {
 			sx={{
 				"& .pro-sidebar-inner": {
 					backgroundImage: `url(${SidebarBackgroundImage}) !important`,
-					backgroundSize: 'cover',
-					backgroundRepeat  : 'no-repeat',
-					backgroundPosition: 'center'
+					backgroundSize: "cover",
+					backgroundRepeat  : "no-repeat",
+					backgroundPosition: "23% 75%"
 				},
 				"& .pro-icon-wrapper": {
 					backgroundColor: "transparent !important"
@@ -286,15 +285,6 @@ const Sidebar = () => {
 								title="Maps"
 								to="/map-stats"
 								icon={<MdOutlineMapsHomeWork size={20}/>}
-								selected={selected}
-								setSelected={setSelected}
-							/>
-						</motion.div>
-						<motion.div whileHover={{ scale: 1.1 }}>
-							<SidebarItem
-								title="Playtime Booster"
-								to="/playtime-booster"
-								icon={<SpeedIcon/>}
 								selected={selected}
 								setSelected={setSelected}
 							/>

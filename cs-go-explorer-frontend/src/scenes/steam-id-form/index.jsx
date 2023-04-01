@@ -152,17 +152,17 @@ const SteamIdForm = ({ userAccepted, userDenied}) => {
 						<VolumeOffIcon sx={{
 							color: "white",
 							":hover": {
-								color: "#7da10e"
+								color: "#66c0f4"
 							},
-							fontSize: "5vh"
+							fontSize: "3vh"
 						}}/>
 					) : (
 						<VolumeUpIcon sx={{
 							color: "white",
 							":hover": {
-								color: "#7da10e"
+								color: "#66c0f4"
 							},
-							fontSize: "5vh"
+							fontSize: "3vh"
 						}}/>
 					)}
 				</IconButton>

@@ -64,17 +64,21 @@ html, body, #root, .app, .content {
 	inherits: false;
 }
 
-.card-stack {
-	display: flex;
-	align-items: center;
+.card-grid {
 	height: 58vh;
 	overflow: hidden;
 	overflow-y: auto;
 }
 
 :root {
-	--card-height: 14vh;
+	--card-height: 13vh;
 	--card-width: 11vh;
+}
+
+.profile-grid-item {
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .player-stat-card-left {
@@ -102,7 +106,7 @@ html, body, #root, .app, .content {
 	border-radius: 10px;
 	background: #171a21;
 	text-align: center;
-	margin: 2vh
+	margin: 2vh;
 }
 
 .player-stat-card-bottom {

@@ -38,6 +38,7 @@
     "react-scripts": "5.0.1",
     "react-spinkit": "^3.0.0",
     "react-useanimations": "^2.10.0",
+    "steam-user": "^4.28.1",
     "us-state-converter": "^1.0.6",
     "web-vitals": "^2.1.4",
     "webpack": "^5.75.0",
