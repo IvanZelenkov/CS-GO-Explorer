@@ -13,6 +13,7 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import WallpaperIcon from '@mui/icons-material/Wallpaper';
+import YouTubeIcon from '@mui/icons-material/YouTube';
 import axios from "axios";
 import { motion } from "framer-motion";
 import { tokens } from "../../theme";
@@ -214,7 +215,7 @@ const Sidebar = () => {
 
 					{/* MENU ITEMS */}
 					<Box paddingLeft={isCollapsed ? undefined : "10%"}>
-						{/*Data*/}
+						{/*General*/}
 						<Typography
 							variant="h6"
 							color="custom.steamColorE"
@@ -222,7 +223,7 @@ const Sidebar = () => {
 							fontSize="1.3vh"
 							margin="15px 0 5px 15px"
 						>
-							Data
+							General
 						</Typography>
 						<motion.div whileHover={{ scale: 1.1 }}>
 							<SidebarItem
@@ -244,9 +245,18 @@ const Sidebar = () => {
 						</motion.div>
 						<motion.div whileHover={{ scale: 1.1 }}>
 							<SidebarItem
-								title="CS:GO News"
+								title="News"
 								to="/news"
 								icon={<ArticleOutlinedIcon/>}
+								selected={selected}
+								setSelected={setSelected}
+							/>
+						</motion.div>
+						<motion.div whileHover={{ scale: 1.1 }}>
+							<SidebarItem
+								title="Videos"
+								to="/video-platform"
+								icon={<YouTubeIcon size={20}/>}
 								selected={selected}
 								setSelected={setSelected}
 							/>

@@ -12,10 +12,11 @@ import News from './scenes/news';
 import Wallpapers from "./scenes/wallpapers";
 import WeaponStats from "./scenes/weapon-stats";
 import MapStats from "./scenes/map-stats";
-import Bar from './scenes/bar';
-import Pie from './scenes/pie';
-import Calendar from './scenes/calendar';
-import FAQ from './scenes/faq';
+import VideoPlatform from "./scenes/video-platform";
+import Bar from "./scenes/bar";
+import Pie from "./scenes/pie";
+import Calendar from "./scenes/calendar";
+import FAQ from "./scenes/faq";
 
 function App() {
 	const [theme, colorMode] = useMode();
@@ -63,6 +64,7 @@ function App() {
 											<Route exact path="bar" element={<Bar/>}/>
 											<Route exact path="pie" element={<Pie/>}/>
 										</Route>
+										<Route exact path="/video-platform" element={<VideoPlatform/>}/>
 										<Route exact path="/calendar" element={<Calendar/>}/>
 										<Route exact path="/faq" element={<FAQ/>}/>
 									</Routes>

@@ -2,9 +2,18 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="62dc8e59-0974-4ead-be4b-12f940d625fa" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.$CsGoExplorerSolutionArchitecture.png.bkp" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/CS-GO-Explorer.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/profile/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/profile/index.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cs-go-explorer-backend/target/cs-go-explorer-backend-1.0.0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-backend/target/cs-go-explorer-backend-1.0.0.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cs-go-explorer-backend/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-backend/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cs-go-explorer-backend/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/createdFiles.lst" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cs-go-explorer-backend/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cs-go-explorer-backend/target/original-cs-go-explorer-backend-1.0.0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-backend/target/original-cs-go-explorer-backend-1.0.0.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/global/Sidebar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/global/Sidebar.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/theme.js" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/theme.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -13,6 +22,14 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -33,6 +50,7 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/cs-go-explorer-frontend/src" />
       <recent name="$PROJECT_DIR$/cs-go-explorer-frontend/src/assets/videos" />
       <recent name="$PROJECT_DIR$/cs-go-explorer-frontend" />
       <recent name="$PROJECT_DIR$/cs-go-explorer-frontend/src/assets/images" />
@@ -56,6 +74,8 @@
       <workItem from="1680249467674" duration="7000" />
       <workItem from="1680281543343" duration="85000" />
       <workItem from="1680281894388" duration="51000" />
+      <workItem from="1681431194061" duration="14928000" />
+      <workItem from="1681450285866" duration="587000" />
     </task>
     <servers />
   </component>

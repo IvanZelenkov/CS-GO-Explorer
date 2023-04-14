@@ -182,3 +182,39 @@ export const useMode = () => {
 	const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
 	return [theme, colorMode];
 };
+
+export const muiPaginationCSS = {
+	"& .MuiPaginationItem-root": {
+		color: "#62ff21",
+		marginRight: "2vw",
+		'&:hover, &:focus': {
+			backgroundColor: "#62ff21",
+			color: "#000000"
+		}
+	},
+	"& .Mui-selected": {
+		color: "#000000",
+		backgroundColor: "#62ff21",
+		"&:hover &:focus": {
+			backgroundColor: "#000000",
+			color: "#ffffff",
+			filter: "brightness(0.75)"
+		}
+	},
+	"& .MuiPaginationItem-page:not(.Mui-selected)": {
+		backgroundColor: "#000000",
+		"&:hover": {
+			color: "#000000",
+			backgroundColor: "#ffffff"
+		}
+	},
+	'& .Mui-selected:not(:focus)': {
+		color: "#000000",
+		backgroundColor: "#62ff21",
+		"&:hover": {
+			backgroundColor: "#419a16",
+			filter: "brightness(0.75)"
+		}
+	},
+	marginTop: "1.5vh"
+}
