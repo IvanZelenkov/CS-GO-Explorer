@@ -3,13 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="62dc8e59-0974-4ead-be4b-12f940d625fa" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-backend/src/main/java/services/api/ApiGateway.java" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-backend/src/main/java/services/api/ApiGateway.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-backend/target/classes/services/api/ApiGateway.class" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-backend/target/classes/services/api/ApiGateway.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cs-go-explorer-backend/target/cs-go-explorer-backend-1.0.0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-backend/target/cs-go-explorer-backend-1.0.0.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cs-go-explorer-backend/target/original-cs-go-explorer-backend-1.0.0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-backend/target/original-cs-go-explorer-backend-1.0.0.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/bar/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/bar/index.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/pie/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/pie/index.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/steam-id-form/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/steam-id-form/index.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/profile/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/profile/index.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,7 +74,8 @@
       <workItem from="1681525041815" duration="13567000" />
       <workItem from="1681540040961" duration="7000" />
       <workItem from="1681575062727" duration="13895000" />
-      <workItem from="1681593316667" duration="1946000" />
+      <workItem from="1681593316667" duration="2277000" />
+      <workItem from="1681596582513" duration="818000" />
     </task>
     <servers />
   </component>

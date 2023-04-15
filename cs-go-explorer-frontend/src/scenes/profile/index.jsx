@@ -231,18 +231,26 @@ const Profile = () => {
 								/>
 							</ProfileLink>}
 						</Box>
-						<Typography
-							fontSize="2.2vh"
-							color="primary.main"
-							fontWeight="bold"
-							letterSpacing="0.1vw"
-							fontFamily="Montserrat"
-						>
-							{infoLoaded && profileData.response.players[0].personaname}
-						</Typography>
-						<Typography variant="h5" color="custom.steamColorE" fontWeight="bold" letterSpacing="0.1vw" fontFamily="Montserrat">
-							Steam ID: {infoLoaded && profileData.response.players[0].steamid}
-						</Typography>
+						<Box sx={{ textAlign: "center" }}>
+							<Typography
+								fontSize="2vh"
+								color="primary.main"
+								fontWeight="bold"
+								letterSpacing="0.1vw"
+								fontFamily="Montserrat"
+							>
+								{infoLoaded && profileData.response.players[0].personaname}
+							</Typography>
+							<Typography
+								color="custom.steamColorE"
+								fontWeight="bold"
+								letterSpacing="0.1vw"
+								fontFamily="Montserrat"
+								fontSize="1.2vh"
+							>
+								Steam ID: {infoLoaded && profileData.response.players[0].steamid}
+							</Typography>
+						</Box>
 						<Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", marginTop: "auto" }}>
 							<Box
 								component="img"
