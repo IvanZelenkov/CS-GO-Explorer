@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Box, IconButton, useTheme } from "@mui/material";
+import { Box, IconButton, Tooltip, useTheme } from "@mui/material";
 import InputBase from "@mui/material/InputBase";
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
 import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
@@ -37,43 +37,55 @@ const Topbar = ({ userDenied }) => {
 			{/* ICONS */}
 			<Box display="flex">
 				<motion.div whileHover={{ scale: 1.2 }}>
-					<IconButton onClick={signOut}>
-						<LogoutIcon sx={{
-							color: "custom.steamColorD",
-							":hover": {
-								color: "custom.steamColorF"
-							}
-						}}/>
-					</IconButton>
+					<Tooltip title="Logout" placement="bottom">
+						<IconButton onClick={signOut}>
+							<LogoutIcon sx={{
+								fontSize: "1.8vh",
+								color: "custom.steamColorD",
+								":hover": {
+									color: "custom.steamColorF"
+								}
+							}}/>
+						</IconButton>
+					</Tooltip>
 				</motion.div>
 				<motion.div whileHover={{ scale: 1.2 }}>
 					<IconButton onClick={colorMode.toggleColorMode}>
 						{theme.palette.mode === "dark" ? (
-							<DarkModeOutlinedIcon sx={{
-								color: "custom.steamColorD",
-								":hover": {
-									color: "custom.steamColorF"
-								}
-							}}/>
+							<Tooltip title="Dark Theme" placement="bottom">
+								<DarkModeOutlinedIcon sx={{
+									fontSize: "1.8vh",
+									color: "custom.steamColorD",
+									":hover": {
+										color: "custom.steamColorF"
+									}
+								}}/>
+							</Tooltip>
 						) : (
-							<LightModeOutlinedIcon sx={{
-								color: "custom.steamColorD",
-								":hover": {
-									color: "custom.steamColorF"
-								}
-							}}/>
+							<Tooltip title="Light Theme" placement="bottom">
+								<LightModeOutlinedIcon sx={{
+									fontSize: "1.8vh",
+									color: "custom.steamColorD",
+									":hover": {
+										color: "custom.steamColorF"
+									}
+								}}/>
+							</Tooltip>
 						)}
 					</IconButton>
 				</motion.div>
 				<motion.div whileHover={{ scale: 1.2 }}>
-					<IconButton onClick={() => navigate("/profile")}>
-						<PersonOutlinedIcon sx={{
-							color: "custom.steamColorD",
-							":hover": {
-								color: "custom.steamColorF"
-							}
-						}}/>
-					</IconButton>
+					<Tooltip title="View Profile" placement="bottom">
+						<IconButton onClick={() => navigate("/profile")}>
+							<PersonOutlinedIcon sx={{
+								fontSize: "1.8vh",
+								color: "custom.steamColorD",
+								":hover": {
+									color: "custom.steamColorF"
+								}
+							}}/>
+						</IconButton>
+					</Tooltip>
 				</motion.div>
 			</Box>
 		</Box>

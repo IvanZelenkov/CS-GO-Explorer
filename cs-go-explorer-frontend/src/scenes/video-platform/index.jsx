@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import { Box, Grid, Card, CardContent, Typography, Pagination } from "@mui/material";
+import { Box, Grid, Card, CardContent, Typography, Pagination, useTheme } from "@mui/material";
 import YouTube from "react-youtube";
-import { muiPaginationCSS } from "../../theme";
+import { motion } from "framer-motion";
+import Header from "../../components/Header";
+import {muiPaginationCSS, tokens} from "../../theme";
 
 const videos = [
 	{ title: "Counter-Strike 2: Leveling Up The World", id: 'ExZtISgOxEQ' },
@@ -19,6 +21,8 @@ const videos = [
 ];
 
 const VideoPlatform = () => {
+	const theme = useTheme();
+	const colors = tokens(theme.palette.mode);
 	const [page, setPage] = useState(1);
 	const videosPerPage = 6;
 	const totalVideos = Math.ceil(videos.flat().length / videosPerPage);
@@ -28,7 +32,7 @@ const VideoPlatform = () => {
 	};
 
 	const opts = {
-		height: "360px",
+		height: "300px",
 		width: "100%",
 		playerVars: {
 			autoplay: 0,
@@ -36,48 +40,62 @@ const VideoPlatform = () => {
 	};
 
 	return (
-		<Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-			<Grid container spacing={3} sx={{
+		<motion.div exit={{ opacity: 0 }}>
+			<Box sx={{
 				display: "flex",
-				justifyContent: "center",
-				alignItems: "center",
-				height: "80vh",
-				overflowY: "auto"
+				flexDirection: "column",
+				margin: "1.5vh"
 			}}>
-				{videos?.slice((page - 1) * videosPerPage, page * videosPerPage).map((video) => (
-					<Grid key={video.id} item xs={12} sm={6} md={4} lg={3} sx={{ margin: "2vh" }}>
-						<Card>
-							<YouTube videoId={video.id} opts={opts}/>
-							<Box sx={{
-								display: "flex",
-								justifyContent: "center",
-								alignItems: "center"
-							}}>
-								<CardContent sx={{ width: "70%" }}>
-									<Typography
-										variant="h6"
-										align="center"
-										sx={{
-											fontFamily: "Montserrat",
-											fontWeight: "600",
-											color: "gold"
-										}}
-									>
-										{video.title}
-									</Typography>
-								</CardContent>
-							</Box>
-						</Card>
-					</Grid>
-				))}
-			</Grid>
-			<Pagination
-				count={totalVideos}
-				page={page}
-				onChange={handleChange}
-				sx={muiPaginationCSS}
-			/>
-		</Box>
+			<Header title="CS:GO Videos" subtitle="Explore latest videos"/>
+			<Box sx={{
+				display: "flex",
+				flexDirection: "column",
+				justifyContent: "space-between",
+				alignItems: "center"
+			}}>
+				<Grid container spacing={3} sx={{
+					display: "flex",
+					justifyContent: "center",
+					alignItems: "center",
+					height: "75vh",
+					overflowY: "auto"
+				}}>
+					{videos?.slice((page - 1) * videosPerPage, page * videosPerPage).map((video) => (
+						<Grid key={video.id} xs={12} sm={6} md={4} lg={3} sx={{ margin: "2vh" }}>
+							<Card>
+								<YouTube videoId={video.id} opts={opts}/>
+								<Box sx={{
+									display: "flex",
+									justifyContent: "center",
+									alignItems: "center",
+								}}>
+									<CardContent sx={{ width: "70%" }}>
+										<Typography
+											align="center"
+											sx={{
+												fontSize: "1.1vh",
+												fontFamily: "Montserrat",
+												fontWeight: "600",
+												color: "#00FF00FF"
+											}}
+										>
+											{video.title}
+										</Typography>
+									</CardContent>
+								</Box>
+							</Card>
+						</Grid>
+					))}
+				</Grid>
+				<Pagination
+					count={totalVideos}
+					page={page}
+					onChange={handleChange}
+					sx={muiPaginationCSS}
+				/>
+			</Box>
+			</Box>
+		</motion.div>
 	);
 };
 

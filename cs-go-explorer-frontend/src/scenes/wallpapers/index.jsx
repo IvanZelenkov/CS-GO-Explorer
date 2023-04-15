@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Box, ImageList, ImageListItem, useTheme } from "@mui/material";
+import {Box, ImageList, ImageListItem, useTheme} from "@mui/material";
 import Header from "../../components/Header";
 import { motion } from "framer-motion";
 import UseAnimations from "react-useanimations";
@@ -7,7 +7,7 @@ import loading from "react-useanimations/lib/loading";
 import download from "react-useanimations/lib/download";
 import { RxEnterFullScreen } from 'react-icons/rx';
 import axios from "axios";
-import { tokens } from "../../theme";
+import { tokens} from "../../theme";
 import { saveAs } from "file-saver";
 
 const Wallpapers = () => {
@@ -22,7 +22,7 @@ const Wallpapers = () => {
 				<img
 					id={imageUrl}
 					src={`${imageUrl}?w=164&h=164&fit=crop&auto=format`}
-					alt=""
+					alt="cs-go-image"
 					loading="lazy"
 					className="wallpaper"
 				/>

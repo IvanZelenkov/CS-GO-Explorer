@@ -33,7 +33,7 @@ export const tokens = (mode) => ({
 				3: "#2a475e",
 				4: "#FFFFFF",
 				5: "#66c0f4",
-				6: "#7da10e",
+				6: "#00FF00FF",
 				7: "#ccba7c"
 			}
 		}
@@ -66,7 +66,7 @@ export const tokens = (mode) => ({
 				3: "#2a475e",
 				4: "#FFFFFF",
 				5: "#66c0f4",
-				6: "#7da10e",
+				6: "#00FF00FF",
 				7: "#ccba7c"
 			}
 		})
@@ -185,16 +185,16 @@ export const useMode = () => {
 
 export const muiPaginationCSS = {
 	"& .MuiPaginationItem-root": {
-		color: "#62ff21",
+		color: "#00FF00FF",
 		marginRight: "2vw",
 		'&:hover, &:focus': {
-			backgroundColor: "#62ff21",
+			backgroundColor: "#00FF00FF",
 			color: "#000000"
 		}
 	},
 	"& .Mui-selected": {
 		color: "#000000",
-		backgroundColor: "#62ff21",
+		backgroundColor: "#00FF00FF",
 		"&:hover &:focus": {
 			backgroundColor: "#000000",
 			color: "#ffffff",
@@ -210,7 +210,7 @@ export const muiPaginationCSS = {
 	},
 	'& .Mui-selected:not(:focus)': {
 		color: "#000000",
-		backgroundColor: "#62ff21",
+		backgroundColor: "#00FF00FF",
 		"&:hover": {
 			backgroundColor: "#419a16",
 			filter: "brightness(0.75)"

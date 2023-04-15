@@ -2,17 +2,25 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="62dc8e59-0974-4ead-be4b-12f940d625fa" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/CS-GO-Explorer.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cs-go-explorer-backend/src/main/java/services/api/ApiGateway.java" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-backend/src/main/java/services/api/ApiGateway.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cs-go-explorer-backend/target/classes/services/api/ApiGateway.class" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-backend/target/classes/services/api/ApiGateway.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cs-go-explorer-backend/target/cs-go-explorer-backend-1.0.0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-backend/target/cs-go-explorer-backend-1.0.0.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-backend/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-backend/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-backend/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/createdFiles.lst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-backend/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/cs-go-explorer-backend/target/original-cs-go-explorer-backend-1.0.0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-backend/target/original-cs-go-explorer-backend-1.0.0.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/components/Header.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/components/Header.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/components/SidebarItem.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/components/SidebarItem.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/components/StatBox.jsx" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/friends/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/friends/index.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/global/Sidebar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/global/Sidebar.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/global/Topbar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/global/Topbar.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/map-stats/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/map-stats/index.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/news/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/news/index.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/profile/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/profile/index.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/steam-id-form/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/steam-id-form/index.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/video-platform/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/video-platform/index.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/wallpapers/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/wallpapers/index.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/weapon-stats/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/weapon-stats/index.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/theme.js" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/theme.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -75,7 +83,10 @@
       <workItem from="1680281543343" duration="85000" />
       <workItem from="1680281894388" duration="51000" />
       <workItem from="1681431194061" duration="14928000" />
-      <workItem from="1681450285866" duration="587000" />
+      <workItem from="1681450285866" duration="961000" />
+      <workItem from="1681505997662" duration="279000" />
+      <workItem from="1681506472889" duration="67000" />
+      <workItem from="1681525041815" duration="13358000" />
     </task>
     <servers />
   </component>

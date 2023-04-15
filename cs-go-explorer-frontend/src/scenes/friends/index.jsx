@@ -7,9 +7,9 @@ import states from 'us-state-converter';
 import { motion } from "framer-motion";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
-import SidebarBackgroundImage from "../../assets/images/backgrounds/sidebar_and_tables_background.jpg";
 import UseAnimations from 'react-useanimations';
 import loading from 'react-useanimations/lib/loading';
+import Loader from "../../components/Loader";
 
 const Friends = () => {
 	const theme = useTheme();
@@ -246,18 +246,8 @@ const Friends = () => {
 		}
 	];
 
-	if (infoLoaded === false || friendsList === undefined) {
-		return (
-			<motion.div exit={{ opacity: 0 }}>
-				<Box margin="1.5vh">
-					<Header title="Friends" subtitle="Explore information about friends"/>
-					<Box sx={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
-						<UseAnimations animation={loading} size={50} fillColor={"#7da10e"} strokeColor={"#7da10e"}/>
-					</Box>
-				</Box>
-			</motion.div>
-		);
-	}
+	if (infoLoaded === false || friendsList === undefined)
+		return <Loader colors={colors}/>
 	return (
 		<motion.div exit={{ opacity: 0 }}>
 			<Box margin="1.5vh">
@@ -271,7 +261,8 @@ const Friends = () => {
 								color: "custom.steamColorD",
 								fontSize: "1vh",
 								fontWeight: "bold",
-								padding: "0.8vh 1.2vh"
+								padding: "0.8vh 1.2vh",
+								fontFamily: "Montserrat"
 							}}
 							onClick={() => {
 								setInfoLoaded(false);
@@ -298,25 +289,23 @@ const Friends = () => {
 							textTransform: "capitalize"
 						},
 						"& .MuiDataGrid-columnHeaders": {
-							backgroundImage: `url(${SidebarBackgroundImage}) !important`,
-							backgroundSize: 'cover',
-							backgroundRepeat  : 'no-repeat',
-							backgroundPosition: 'center',
+							backgroundColor: colors.steamColors[1],
 							borderBottom: "none",
-							fontSize: "1.2vh"
+							fontSize: "1.2vh",
+							fontFamily: "Montserrat",
+							color: colors.steamColors[6]
 						},
 						"& .MuiDataGrid-virtualScroller": {
 							backgroundColor: colors.primary[400],
+							fontFamily: "Montserrat",
+							color: colors.steamColors[4]
 						},
 						"& .MuiDataGrid-footerContainer": {
-							backgroundImage: `url(${SidebarBackgroundImage}) !important`,
-							backgroundSize: 'cover',
-							backgroundRepeat  : 'no-repeat',
-							backgroundPosition: 'center',
+							backgroundColor: colors.steamColors[1],
 							borderTop: "none"
 						},
 						"& .MuiCheckbox-root": {
-							color: `${colors.steamColors[6]} !important`,
+							color: `${colors.steamColors[6]} !important`
 						},
 					}}
 				>

@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
-import { Box, ImageList, ImageListItem, Typography, useTheme } from "@mui/material";
+import { Box, ImageList, ImageListItem, Pagination, Typography, useTheme } from "@mui/material";
 import Header from "../../components/Header";
 import { motion } from "framer-motion";
 import axios from "axios";
-import loading from "react-useanimations/lib/loading";
-import UseAnimations from "react-useanimations";
-import { tokens } from "../../theme";
+import { muiPaginationCSS, tokens } from "../../theme";
+import Loader from "../../components/Loader";
 
 const News = () => {
 	const theme = useTheme();
@@ -13,6 +12,13 @@ const News = () => {
 	const [infoLoaded, setInfoLoaded] = useState(false);
 	const [news, setNews] = useState([]);
 	const [reformattedNews, setReformattedNews] = useState([]);
+	const [page, setPage] = useState(1);
+	const newsPerPage = 6;
+	const totalNews = Math.ceil(reformattedNews.flat().length / newsPerPage);
+
+	const handleChange = (event, value) => {
+		setPage(value);
+	};
 
 	useEffect(() => {
 		getSteamNews();
@@ -50,49 +56,67 @@ const News = () => {
 		});
 	}
 
-	if (infoLoaded === false || news.length === 0) {
-		return (
-			<motion.div exit={{ opacity: 0 }}>
-				<Box margin="1.5vh">
-					<Header title="CS:GO News" subtitle="Explore latest news"/>
-					<Box sx={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
-						<UseAnimations animation={loading} size={50} fillColor={"#7da10e"} strokeColor={"#7da10e"}/>
-					</Box>
-				</Box>
-			</motion.div>
-		);
-	}
+	if (infoLoaded === false || news.length === 0)
+		return <Loader colors={colors}/>
 	return (
 		<motion.div exit={{ opacity: 0 }}>
-			<Box margin="1.5vh" display="flex" flexDirection="column">
+			<Box sx={{
+				display: "flex",
+				flexDirection: "column",
+				margin: "1.5vh"
+			}}>
 				<Header title="CS:GO News" subtitle="Explore latest news"/>
-				<ImageList sx={{ width: "100%", height: "80vh" }} cols={5} gap={40}>
-					{reformattedNews?.map((item) => (
-						<ImageListItem
-							key={item.gid}
-							style={{
-								marginRight: "0.5vw",
-								textAlign: "center",
-								border: `0.2vh solid ${colors.steamColors[6]}`,
-								borderRadius: "1vh",
-							}}
-						>
-							<img
-								className={"news-image"}
-								src={`${item.imgSource}?w=164&h=164&fit=crop&auto=format`}
-								srcSet={`${item.imgSource}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-								alt=""
-								loading="lazy"
-								onClick={() => window.open(item.hyperLinkHref, "_blank")}
-							/>
-							<Box>
-								<Typography sx={{ margin: "1vh", fontSize: "1vh" }}>
-									{item.title}
-								</Typography>
-							</Box>
-						</ImageListItem>
-					))}
-				</ImageList>
+				<Box sx={{
+					display: "flex",
+					flexDirection: "column",
+					justifyContent: "space-between",
+					alignItems: "center",
+					height: "calc(100vh - 20vh)",
+					overflowY: "auto"
+				}}>
+					<ImageList cols={3} gap={40} sx={{ width: "90%" }}>
+						{reformattedNews?.slice((page - 1) * newsPerPage, page * newsPerPage).map((news) => (
+							<ImageListItem
+								key={news.gid}
+								sx={{
+									marginRight: "0.5vw",
+									textAlign: "center",
+									border: `0.2vh solid ${colors.steamColors[6]}`,
+									borderRadius: "1vh",
+								}}
+							>
+								<img
+									className={"news-image"}
+									src={`${news.imgSource}?w=164&h=164&fit=crop&auto=format`}
+									srcSet={`${news.imgSource}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
+									alt=""
+									loading="lazy"
+									onClick={() => window.open(news.hyperLinkHref, "_blank")}
+								/>
+								<Box sx={{
+									backgroundColor: colors.steamColors[1],
+									borderBottomRightRadius: "1vh",
+									borderBottomLeftRadius: "1vh"
+								}}>
+									<Typography sx={{
+										margin: "1.1vh",
+										fontSize: "1vh",
+										fontFamily: "Montserrat",
+										fontWeight: "600"
+									}}>
+										{news.title}
+									</Typography>
+								</Box>
+							</ImageListItem>
+						))}
+					</ImageList>
+					<Pagination
+						count={totalNews}
+						page={page}
+						onChange={handleChange}
+						sx={muiPaginationCSS}
+					/>
+				</Box>
 			</Box>
 		</motion.div>
 	);

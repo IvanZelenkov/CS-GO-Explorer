@@ -1,13 +1,16 @@
 import { useState } from "react";
-import { Box, TextField, Button, IconButton } from "@mui/material";
+import { Box, TextField, Button, IconButton, useTheme } from "@mui/material";
 import { motion } from "framer-motion";
 import { SiValve, SiCounterstrike } from "react-icons/si";
 import axios from "axios";
 import loading from "react-useanimations/lib/loading";
 import UseAnimations from "react-useanimations";
 import { VolumeUp as VolumeUpIcon, VolumeOff as VolumeOffIcon } from '@mui/icons-material';
+import {tokens} from "../../theme";
 
 const SteamIdForm = ({ userAccepted, userDenied}) => {
+	const theme = useTheme();
+	const colors = tokens(theme.palette.mode);
 	const [infoLoaded, setInfoLoaded] = useState(true);
 	const [inputSteamId, setInputSteamId] = useState("");
 	const [isValid, setIsValid] = useState(false);
@@ -133,7 +136,7 @@ const SteamIdForm = ({ userAccepted, userDenied}) => {
 						</Button>
 						:
 						<Box sx={{ marginLeft: "2vw" }}>
-							<UseAnimations animation={loading} size={50} fillColor={"#7da10e"} strokeColor={"#7da10e"}/>
+							<UseAnimations animation={loading} size={50} fillColor={colors.steamColors[6]} strokeColor={colors.steamColors[6]}/>
 						</Box>
 					}
 				</Box>

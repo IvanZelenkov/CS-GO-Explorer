@@ -1,21 +1,21 @@
 import { useState, useEffect } from "react";
-import { Box, Stack, Divider, Typography, Link as ProfileLink, useTheme, IconButton, Grid } from "@mui/material";
+import { Box, Typography, Link as ProfileLink, useTheme, IconButton, Grid } from "@mui/material";
 import { motion } from "framer-motion";
 import axios from "axios";
 import { tokens } from "../../theme";
-import loading from "react-useanimations/lib/loading";
-import UseAnimations from "react-useanimations";
 import {VolumeOff as VolumeOffIcon, VolumeUp as VolumeUpIcon} from "@mui/icons-material";
+import Loader from "../../components/Loader";
 
 const StatHeader = ({ title, textColor }) => {
 	return (
 		<Typography sx={{
-			fontSize: "1.3vh",
+			fontSize: "1.1vh",
 			margin: "10px 0 0 0",
 			padding: "0.5vh",
 			letterSpacing: "0.1vw",
 			color: textColor,
-			fontWeight: "bold"
+			fontWeight: "bold",
+			fontFamily: "Montserrat"
 		}}>
 			{title}
 		</Typography>
@@ -119,17 +119,8 @@ const Profile = () => {
 		}
 	}
 
-	if (infoLoaded === false || profileData === {} || userStats === []) {
-		return (
-			<motion.div exit={{ opacity: 0 }}>
-				<Box margin="1.5vh">
-					<Box sx={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
-						<UseAnimations animation={loading} size={50} fillColor={"#7da10e"} strokeColor={"#7da10e"}/>
-					</Box>
-				</Box>
-			</motion.div>
-		);
-	}
+	if (infoLoaded === false || profileData === {} || userStats === [])
+		return <Loader colors={colors}/>
 	return (
 		<motion.div exit={{ opacity: 0 }}>
 			<video preload={"auto"} autoPlay loop muted={muted} style={{
@@ -155,11 +146,11 @@ const Profile = () => {
 							borderRadius: "10px"
 						}}>
 							<Typography
-								fontSize="2vh"
+								fontSize="1.5vh"
 								color="custom.steamColorE"
 								fontWeight="bold"
 								letterSpacing="0.1vw"
-								fontStyle="italic"
+								fontFamily="Montserrat"
 							>
 								LAST MATCH STATS
 							</Typography>
@@ -234,14 +225,15 @@ const Profile = () => {
 							</ProfileLink>}
 						</Box>
 						<Typography
-							fontSize="2.5vh"
+							fontSize="2.2vh"
 							color="primary.main"
 							fontWeight="bold"
 							letterSpacing="0.1vw"
+							fontFamily="Montserrat"
 						>
 							{infoLoaded && profileData.response.players[0].personaname}
 						</Typography>
-						<Typography variant="h5" color="custom.steamColorE" fontWeight="bold" letterSpacing="0.1vw">
+						<Typography variant="h5" color="custom.steamColorE" fontWeight="bold" letterSpacing="0.1vw" fontFamily="Montserrat">
 							Steam ID: {infoLoaded && profileData.response.players[0].steamid}
 						</Typography>
 						<Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", marginTop: "auto" }}>
@@ -261,12 +253,12 @@ const Profile = () => {
 								borderRadius: "10px"
 							}}>
 								<Typography
-									fontSize="1.5vh"
+									fontSize="1.3vh"
 									color="gold"
 									fontWeight="bold"
 									letterSpacing="0.3vw"
 									textAlign="center"
-									fontStyle="italic"
+									fontFamily="Montserrat"
 								>
 									LAST MATCH FAVORITE WEAPON
 								</Typography>
@@ -285,11 +277,11 @@ const Profile = () => {
 							borderRadius: "10px"
 						}}>
 							<Typography
-								fontSize="2vh"
+								fontSize="1.5vh"
 								color="custom.steamColorE"
 								fontWeight="bold"
 								letterSpacing="0.1vw"
-								fontStyle="italic"
+								fontFamily="Montserrat"
 							>
 								TOTAL STATS
 							</Typography>

@@ -19,6 +19,7 @@ import { motion } from "framer-motion";
 import { tokens } from "../../theme";
 import SidebarItem from "../../components/SidebarItem";
 import SidebarBackgroundImage from "../../assets/images/backgrounds/sidebar_and_tables_background.jpg";
+import Loader from "../../components/Loader";
 
 const Sidebar = () => {
 	const theme = useTheme();
@@ -106,17 +107,9 @@ const Sidebar = () => {
 		}
 	}
 
-	if (infoLoaded === false || profile.length === 0) {
-		return (
-			<motion.div exit={{ opacity: 0 }}>
-				<Box margin="1.5vh">
-					<Box sx={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
-						<UseAnimations animation={loading} size={50} fillColor={"#7da10e"} strokeColor={"#7da10e"}/>
-					</Box>
-				</Box>
-			</motion.div>
-		);
-	}
+
+	if (infoLoaded === false || profile.length === 0)
+		return <Loader colors={colors}/>
 	return (
 		<Box
 			sx={{
@@ -139,19 +132,80 @@ const Sidebar = () => {
 					color: `${colors.steamColors[5]} !important`
 				},
 				".pro-sidebar": {
-					height: "100%"
-				}
+					height: "100%",
+					boxShadow: "15px 0px 50px rgb(0, 255, 0)",
+				},
+				"@media screen and (max-width: 600px)": {
+					"& .pro-sidebar": {
+						position: "fixed",
+						top: "0",
+						left: "0",
+						width: "100%",
+						height: "100%",
+						zIndex: "99",
+						background: "white",
+						transform: "translateX(-100%)",
+						transition: "transform 0.3s ease-in-out",
+					},
+					"& .pro-sidebar.collapsed": {
+						transform: "translateX(-100%)",
+					},
+					"& .pro-sidebar.collapsed + .overlay": {
+						display: "block",
+						position: "fixed",
+						top: "0",
+						left: "0",
+						width: "100%",
+						height: "100%",
+						zIndex: "98",
+						background: "rgba(0, 0, 0, 0.5)",
+						transition: "opacity 0.3s ease-in-out",
+					},
+					"& .pro-sidebar .pro-sidebar-inner": {
+						height: "calc(100% - 56px)",
+						overflowY: "auto",
+						overflowX: "hidden",
+					},
+					"& .pro-sidebar.collapsed .pro-sidebar-inner": {
+						height: "100%",
+					},
+					"& .pro-sidebar .pro-sidebar-inner::-webkit-scrollbar": {
+						width: "5px",
+					},
+					"& .pro-sidebar .pro-sidebar-inner::-webkit-scrollbar-thumb": {
+						background: `${colors.steamColors[0]} !important`,
+					},
+					"& .pro-sidebar .pro-sidebar-inner::-webkit-scrollbar-track": {
+						background: "transparent",
+					},
+					"& .pro-sidebar .pro-menu-item": {
+						color: `${colors.steamColors[0]} !important`,
+						padding: "10px",
+						borderRadius: "5px",
+					}
+				},
+				zIndex: "0"
 			}}
 		>
 			<ProSidebar collapsed={isCollapsed} width="100%">
 				<Menu iconShape="square">
-					<Box style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+					<Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
 						{!isCollapsed && <MenuItem>
 							<Box style={{ cursor: "auto" }}>
-								<Typography variant="h3" color="custom.steamColorD" letterSpacing="0.1vw" fontWeight="bold">
+								<Typography
+									color="custom.steamColorD"
+									letterSpacing="0.1vw"
+									fontWeight="bold"
+									fontSize="1.7vh"
+									fontFamily="Montserrat"
+								>
 									Status: {infoLoaded && definePersonaState()}
 								</Typography>
-								<Typography variant="h5" color="custom.steamColorD">
+								<Typography
+									color="custom.steamColorD"
+									fontSize="1.4vh"
+									fontFamily="Montserrat"
+								>
 									{infoLoaded && formatLastTimeOnlineData()}
 								</Typography>
 							</Box>
@@ -198,15 +252,22 @@ const Sidebar = () => {
 							</Box>
 							<Box textAlign="center">
 								<Typography
-									variant="h2"
+									fontSize="2vh"
 									color="primary.main"
 									fontWeight="bold"
 									letterSpacing="0.1vw"
 									margin="10px 0 0 0"
+									fontFamily="Montserrat"
 								>
 									{infoLoaded && profile.response.players[0].personaname}
 								</Typography>
-								<Typography variant="h5" color="custom.steamColorE" fontWeight="bold" letterSpacing="0.1vw">
+								<Typography
+									fontSize="1.2vh"
+									color="custom.steamColorE"
+									fontWeight="bold"
+									letterSpacing="0.1vw"
+									fontFamily="Montserrat"
+								>
 									Steam ID: {infoLoaded && profile.response.players[0].steamid}
 								</Typography>
 							</Box>
@@ -217,11 +278,11 @@ const Sidebar = () => {
 					<Box paddingLeft={isCollapsed ? undefined : "10%"}>
 						{/*General*/}
 						<Typography
-							variant="h6"
 							color="custom.steamColorE"
 							fontWeight="bold"
-							fontSize="1.3vh"
+							fontSize="1.1vh"
 							margin="15px 0 5px 15px"
+							fontFamily="Montserrat"
 						>
 							General
 						</Typography>
@@ -273,11 +334,11 @@ const Sidebar = () => {
 
 						{/*Statistics*/}
 						<Typography
-							variant="h6"
 							color="custom.steamColorE"
 							fontWeight="bold"
-							fontSize="1.3vh"
+							fontSize="1.1vh"
 							margin="15px 0 5px 15px"
+							fontFamily="Montserrat"
 						>
 							Stats
 						</Typography>
@@ -302,11 +363,11 @@ const Sidebar = () => {
 
 						{/*Guides*/}
 						<Typography
-							variant="h6"
 							color="custom.steamColorE"
 							fontWeight="bold"
-							fontSize="1.3vh"
+							fontSize="1.1vh"
 							margin="15px 0 5px 15px"
+							fontFamily="Montserrat"
 						>
 							Guides
 						</Typography>

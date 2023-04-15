@@ -16,7 +16,13 @@ const SidebarItem = ({ title, to, icon, selected, setSelected }) => {
 			onClick={() => setSelected(title)}
 			icon={icon}
 		>
-			<Typography fontWeight="bold" fontSize="1.3vh">{title}</Typography>
+			<Typography sx={{
+				fontSize: "1.1vh",
+				fontWeight: "bold",
+				fontFamily: "Montserrat"
+			}}>
+				{title}
+			</Typography>
 			<SidebarLink to={to}/>
 		</MenuItem>
 	);

@@ -10,9 +10,7 @@ import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutlined";
 import axios from "axios";
 import Header from "../../components/Header";
-import SidebarBackgroundImage from "../../assets/images/backgrounds/sidebar_and_tables_background.jpg";
-import loading from "react-useanimations/lib/loading";
-import UseAnimations from "react-useanimations";
+import Loader from "../../components/Loader";
 
 function chartReducer(chartState, action) {
 	switch (action.type) {
@@ -261,16 +259,7 @@ const WeaponStats = () => {
 	];
 
 	if (infoLoaded === false || userStats === {}) {
-		return (
-			<motion.div exit={{ opacity: 0 }}>
-				<Box margin="1.5vh">
-					<Header title="Weapon Stats" subtitle="Explore weapon stats"/>
-					<Box sx={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
-						<UseAnimations animation={loading} size={50} fillColor={"#7da10e"} strokeColor={"#7da10e"}/>
-					</Box>
-				</Box>
-			</motion.div>
-		);
+		return <Loader colors={colors}/>
 	} else if (location.pathname === "/weapon-stats") {
 		return (
 			<motion.div exit={{ opacity: 0 }}>
@@ -339,36 +328,34 @@ const WeaponStats = () => {
 						height="70vh"
 						sx={{
 							"& .MuiDataGrid-root": {
-								border: "none"
+								border: "none",
 							},
 							"& .MuiDataGrid-cell": {
-								borderBottom: "none"
+								borderBottom: "none",
 							},
 							"& .name-column--cell": {
 								color: "custom.steamColorE",
 								textTransform: "capitalize"
 							},
 							"& .MuiDataGrid-columnHeaders": {
-								backgroundImage: `url(${SidebarBackgroundImage}) !important`,
-								backgroundSize: 'cover',
-								backgroundRepeat  : 'no-repeat',
-								backgroundPosition: 'center',
+								backgroundColor: colors.steamColors[1],
 								borderBottom: "none",
-								fontSize: "1.2vh"
+								fontSize: "1.2vh",
+								fontFamily: "Montserrat",
+								color: colors.steamColors[6]
 							},
 							"& .MuiDataGrid-virtualScroller": {
-								backgroundColor: colors.primary[400]
+								backgroundColor: colors.primary[400],
+								fontFamily: "Montserrat",
+								color: colors.steamColors[4]
 							},
 							"& .MuiDataGrid-footerContainer": {
-								backgroundImage: `url(${SidebarBackgroundImage}) !important`,
-								backgroundSize: 'cover',
-								backgroundRepeat  : 'no-repeat',
-								backgroundPosition: 'center',
+								backgroundColor: colors.steamColors[1],
 								borderTop: "none"
 							},
 							"& .MuiCheckbox-root": {
 								color: `${colors.steamColors[6]} !important`
-							}
+							},
 						}}
 					>
 						{infoLoaded && <DataGrid
