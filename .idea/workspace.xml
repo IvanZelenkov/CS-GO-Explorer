@@ -7,22 +7,9 @@
       <change beforePath="$PROJECT_DIR$/cs-go-explorer-backend/target/classes/services/api/ApiGateway.class" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-backend/target/classes/services/api/ApiGateway.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cs-go-explorer-backend/target/cs-go-explorer-backend-1.0.0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-backend/target/cs-go-explorer-backend-1.0.0.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cs-go-explorer-backend/target/original-cs-go-explorer-backend-1.0.0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-backend/target/original-cs-go-explorer-backend-1.0.0.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/index.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/bar/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/bar/index.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/calendar/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/calendar/index.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/faq/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/faq/index.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/friends/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/friends/index.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/global/Sidebar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/global/Sidebar.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/global/Topbar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/global/Topbar.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/map-stats/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/map-stats/index.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/news/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/news/index.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/pie/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/pie/index.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/profile/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/profile/index.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/steam-id-form/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/steam-id-form/index.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/video-platform/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/video-platform/index.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/wallpapers/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/wallpapers/index.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/weapon-stats/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/weapon-stats/index.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/theme.js" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/theme.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,6 +46,7 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/cs-go-explorer-frontend/src/assets/images/logo" />
       <recent name="$PROJECT_DIR$/cs-go-explorer-frontend/src" />
       <recent name="$PROJECT_DIR$/cs-go-explorer-frontend/src/assets/videos" />
       <recent name="$PROJECT_DIR$/cs-go-explorer-frontend" />
@@ -89,7 +77,8 @@
       <workItem from="1681506472889" duration="67000" />
       <workItem from="1681525041815" duration="13567000" />
       <workItem from="1681540040961" duration="7000" />
-      <workItem from="1681575062727" duration="13744000" />
+      <workItem from="1681575062727" duration="13895000" />
+      <workItem from="1681593316667" duration="1946000" />
     </task>
     <servers />
   </component>

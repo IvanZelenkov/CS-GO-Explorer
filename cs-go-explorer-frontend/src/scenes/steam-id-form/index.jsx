@@ -92,57 +92,63 @@ const SteamIdForm = ({ userAccepted, userDenied}) => {
 			}}>
 				<Box sx={{
 					display: "flex",
+					flexDirection: "column",
 					justifyContent: "center",
-					marginTop: "10vh",
+					alignItems: "center",
 					position: "absolute",
-					top: "30%",
 					left: "50%",
+					top: "45%",
 					transform: "translate(-50%, -50%)"
 				}}>
-					<SiValve size="20vh"/>
-				</Box>
-				<Box
-					sx={{
-						display: "flex",
-						flexDirection: "row",
-						position: "absolute",
-						left: "50%",
-						top: "50%",
-						transform: "translate(-50%, -50%)"
-					}}>
-					<TextField
-						required
-						id="outlined-basic"
-						label="Steam ID"
-						variant="outlined"
-						onChange={(steamId) => verifySteamID(steamId)}
-						error={invalidSteamIdMessage !== ""}
-						helperText={invalidSteamIdMessage}
-						onKeyDown={handleKeyDown}
-						sx={muiTextFieldCSS("#5ddcff")}
-						inputProps={{ style: { fontFamily: "Montserrat" }}}
-						inputlabelprops={{ style: { fontFamily: "Montserrat" }}}
+					<Box
+						component="img"
+						alt="cs-go-logo"
+						sx={{
+							maxWidth: "70%",
+							height: "auto",
+							marginBottom: "2vh"
+						}}
+						src={require("../../assets/images/logo/cs-go-explorer-logo.png")}
 					/>
-					{infoLoaded === true ?
-						<Button
-							onClick={checkUserStats}
-							variant="contained"
-							sx={{
-								marginLeft: "2vw",
-								padding: "1vh",
-								borderRadius: "5px",
-								height: "3.3rem",
-								boxShadow: "0px 0px 10px #5ddcff"
-							}}
-							disabled={!isValid}
-						>
-							<SiCounterstrike size="3vh"/>
-						</Button>
-						:
-						<Box sx={{ marginLeft: "2vw" }}>
-							<UseAnimations animation={loading} size={50} fillColor={colors.steamColors[6]} strokeColor={colors.steamColors[6]}/>
-						</Box>
-					}
+					<Box
+						sx={{
+							display: "flex",
+							flexDirection: "row"
+						}}>
+						<TextField
+							required
+							id="outlined-basic"
+							label="Steam ID"
+							variant="outlined"
+							onChange={(steamId) => verifySteamID(steamId)}
+							error={invalidSteamIdMessage !== ""}
+							helperText={invalidSteamIdMessage}
+							onKeyDown={handleKeyDown}
+							sx={muiTextFieldCSS("#5ddcff")}
+							inputProps={{ style: { fontFamily: "Montserrat" }}}
+							inputlabelprops={{ style: { fontFamily: "Montserrat" }}}
+						/>
+						{infoLoaded === true ?
+							<Button
+								onClick={checkUserStats}
+								variant="contained"
+								sx={{
+									marginLeft: "2vw",
+									padding: "1vh",
+									borderRadius: "5px",
+									height: "3.3rem",
+									boxShadow: "0px 0px 10px #5ddcff"
+								}}
+								disabled={!isValid}
+							>
+								<SiCounterstrike size="36px"/>
+							</Button>
+							:
+							<Box sx={{ marginLeft: "2vw" }}>
+								<UseAnimations animation={loading} size={50} fillColor={colors.steamColors[6]} strokeColor={colors.steamColors[6]}/>
+							</Box>
+						}
+					</Box>
 				</Box>
 			</Box>
 			<Box sx={{
