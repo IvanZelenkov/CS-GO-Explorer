@@ -7,21 +7,6 @@
       <change beforePath="$PROJECT_DIR$/cs-go-explorer-backend/target/classes/services/api/ApiGateway.class" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-backend/target/classes/services/api/ApiGateway.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cs-go-explorer-backend/target/cs-go-explorer-backend-1.0.0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-backend/target/cs-go-explorer-backend-1.0.0.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cs-go-explorer-backend/target/original-cs-go-explorer-backend-1.0.0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-backend/target/original-cs-go-explorer-backend-1.0.0.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/components/Header.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/components/Header.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/components/SidebarItem.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/components/SidebarItem.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/components/StatBox.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/index.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/friends/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/friends/index.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/global/Sidebar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/global/Sidebar.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/global/Topbar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/global/Topbar.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/map-stats/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/map-stats/index.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/news/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/news/index.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/profile/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/profile/index.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/steam-id-form/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/steam-id-form/index.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/video-platform/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/video-platform/index.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/wallpapers/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/wallpapers/index.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/weapon-stats/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/scenes/weapon-stats/index.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cs-go-explorer-frontend/src/theme.js" beforeDir="false" afterPath="$PROJECT_DIR$/cs-go-explorer-frontend/src/theme.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -86,7 +71,8 @@
       <workItem from="1681450285866" duration="961000" />
       <workItem from="1681505997662" duration="279000" />
       <workItem from="1681506472889" duration="67000" />
-      <workItem from="1681525041815" duration="13358000" />
+      <workItem from="1681525041815" duration="13567000" />
+      <workItem from="1681540040961" duration="7000" />
     </task>
     <servers />
   </component>
