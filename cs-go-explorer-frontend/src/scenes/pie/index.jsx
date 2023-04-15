@@ -16,12 +16,18 @@ const Pie = () => {
 				<Box display="flex" alignItems="center" flexDirection="row">
 					<Button
 						sx={{
-							backgroundColor: "custom.steamColorA",
+							backgroundColor: "custom.steamColorC",
 							color: "custom.steamColorD",
 							fontWeight: "bold",
 							margin: "0 2.5vh 2.5vh 0",
 							width: "2vw",
-							height: "3vh"
+							height: "3vh",
+							border: `0.2vh solid #5ddcff`,
+							borderRadius: "1vh",
+							boxShadow: "0px 0px 10px #5ddcff",
+							":hover": {
+								backgroundColor: "custom.steamColorB"
+							}
 						}}
 						onClick={() => navigation(-1)}
 					>

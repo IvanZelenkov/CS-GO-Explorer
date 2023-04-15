@@ -9,6 +9,7 @@ import { RxEnterFullScreen } from 'react-icons/rx';
 import axios from "axios";
 import { tokens} from "../../theme";
 import { saveAs } from "file-saver";
+import Loader from "../../components/Loader";
 
 const Wallpapers = () => {
 	const theme = useTheme();
@@ -90,20 +91,9 @@ const Wallpapers = () => {
 		getWallpapers();
 	}, []);
 
-	if (infoLoaded === false || wallpapers.length === 0) {
-		return (
-			<motion.div exit={{ opacity: 0 }}>
-				<Box margin="1.5vh">
-					<Header title="4K Wallpapers" subtitle="Explore and download 4k wallpapers"/>
-					<Box sx={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
-						<UseAnimations animation={loading} size={50} fillColor={"#7da10e"} strokeColor={"#7da10e"}/>
-					</Box>
-				</Box>
-			</motion.div>
-		);
-	}
+	if (infoLoaded === false || wallpapers.length === 0)
+		return <Loader colors={colors}/>
 	return (
-		// MOCK DATA
 		<motion.div exit={{ opacity: 0 }}>
 			<Box margin="1.5vh">
 				<Box display="flex" flexDirection="column">

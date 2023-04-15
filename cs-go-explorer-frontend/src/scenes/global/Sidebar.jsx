@@ -133,7 +133,7 @@ const Sidebar = () => {
 				},
 				".pro-sidebar": {
 					height: "100%",
-					boxShadow: "15px 0px 50px rgb(0, 255, 0)",
+					boxShadow: "15px 0px 50px #5ddcff",
 				},
 				"@media screen and (max-width: 600px)": {
 					"& .pro-sidebar": {

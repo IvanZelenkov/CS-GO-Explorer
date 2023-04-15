@@ -36,52 +36,70 @@ const Topbar = ({ userDenied }) => {
 
 			{/* ICONS */}
 			<Box display="flex">
-				<motion.div whileHover={{ scale: 1.2 }}>
+				<motion.div whileHover={{ scale: 1.2 }} style={{ marginRight: "1vh" }}>
 					<Tooltip title="Logout" placement="bottom">
-						<IconButton onClick={signOut}>
+						<IconButton onClick={signOut} sx={{
+							border: `0.2vh solid #5ddcff`,
+							boxShadow: "0px 0px 10px #5ddcff"
+						}}>
 							<LogoutIcon sx={{
 								fontSize: "1.8vh",
 								color: "custom.steamColorD",
+								borderRadius: "1vh",
 								":hover": {
-									color: "custom.steamColorF"
+									color: "#5ddcff"
 								}
 							}}/>
 						</IconButton>
 					</Tooltip>
 				</motion.div>
-				<motion.div whileHover={{ scale: 1.2 }}>
-					<IconButton onClick={colorMode.toggleColorMode}>
-						{theme.palette.mode === "dark" ? (
-							<Tooltip title="Dark Theme" placement="bottom">
+				<motion.div whileHover={{ scale: 1.2 }} style={{ marginRight: "1vh" }}>
+					{theme.palette.mode === "dark" ? (
+						<Tooltip title="Dark Theme" placement="bottom">
+							<IconButton onClick={colorMode.toggleColorMode} sx={{
+								border: `0.2vh solid #5ddcff`,
+								boxShadow: "0px 0px 10px #5ddcff"
+							}}>
 								<DarkModeOutlinedIcon sx={{
 									fontSize: "1.8vh",
 									color: "custom.steamColorD",
+									borderRadius: "1vh",
 									":hover": {
-										color: "custom.steamColorF"
+										color: "#5ddcff"
 									}
 								}}/>
-							</Tooltip>
-						) : (
-							<Tooltip title="Light Theme" placement="bottom">
+							</IconButton>
+						</Tooltip>
+					) : (
+						<Tooltip title="Light Theme" placement="bottom" sx={{ marginRight: "1vh" }}>
+							<IconButton onClick={colorMode.toggleColorMode} sx={{
+								border: `0.2vh solid #5ddcff`,
+								boxShadow: "0px 0px 10px #5ddcff"
+							}}>
 								<LightModeOutlinedIcon sx={{
 									fontSize: "1.8vh",
 									color: "custom.steamColorD",
+									borderRadius: "1vh",
 									":hover": {
-										color: "custom.steamColorF"
+										color: "#5ddcff"
 									}
 								}}/>
-							</Tooltip>
-						)}
-					</IconButton>
+							</IconButton>
+						</Tooltip>
+					)}
 				</motion.div>
-				<motion.div whileHover={{ scale: 1.2 }}>
+				<motion.div whileHover={{ scale: 1.2 }} style={{ marginRight: "1vh" }}>
 					<Tooltip title="View Profile" placement="bottom">
-						<IconButton onClick={() => navigate("/profile")}>
+						<IconButton onClick={() => navigate("/profile")} sx={{
+							border: `0.2vh solid #5ddcff`,
+							boxShadow: "0px 0px 10px #5ddcff"
+						}}>
 							<PersonOutlinedIcon sx={{
 								fontSize: "1.8vh",
 								color: "custom.steamColorD",
+								borderRadius: "1vh",
 								":hover": {
-									color: "custom.steamColorF"
+									color: "#5ddcff"
 								}
 							}}/>
 						</IconButton>

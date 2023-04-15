@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Box, Typography, Link as ProfileLink, useTheme, IconButton, Grid } from "@mui/material";
+import { Box, Typography, Link as ProfileLink, useTheme, IconButton, Grid, Tooltip } from "@mui/material";
 import { motion } from "framer-motion";
 import axios from "axios";
 import { tokens } from "../../theme";
@@ -143,11 +143,13 @@ const Profile = () => {
 							justifyContent: "center",
 							backgroundColor: "#1b2838",
 							padding: "1.2vh",
-							borderRadius: "10px"
+							border: `0.2vh solid #ff2d12`,
+							borderRadius: "1vh",
+							boxShadow: "0px 0px 10px #ff2d12",
 						}}>
 							<Typography
 								fontSize="1.5vh"
-								color="custom.steamColorE"
+								color="#ff2d12"
 								fontWeight="bold"
 								letterSpacing="0.1vw"
 								fontFamily="Montserrat"
@@ -220,7 +222,12 @@ const Profile = () => {
 									width="15vh"
 									height="15vh"
 									src={profileData.response.players[0].avatarfull}
-									style={{ cursor: "pointer", borderRadius: "10%" }}
+									sx={{
+										cursor: "pointer",
+										border: `0.2vh solid #5ddcff`,
+										borderRadius: "1vh",
+										boxShadow: "0px 0px 10px #5ddcff"
+								}}
 								/>
 							</ProfileLink>}
 						</Box>
@@ -250,11 +257,13 @@ const Profile = () => {
 								justifyContent: "center",
 								backgroundColor: "#1b2838",
 								padding: "1.2vh",
-								borderRadius: "10px"
+								border: `0.2vh solid #FFCD00FF`,
+								borderRadius: "1vh",
+								boxShadow: "0px 0px 10px #FFCD00FF",
 							}}>
 								<Typography
 									fontSize="1.3vh"
-									color="gold"
+									color="#FFCD00FF"
 									fontWeight="bold"
 									letterSpacing="0.3vw"
 									textAlign="center"
@@ -274,11 +283,13 @@ const Profile = () => {
 							justifyContent: "center",
 							backgroundColor: "#1b2838",
 							padding: "1.2vh",
-							borderRadius: "10px"
+							border: `0.2vh solid #5ddcff`,
+							borderRadius: "1vh",
+							boxShadow: "0px 0px 10px #5ddcff"
 						}}>
 							<Typography
 								fontSize="1.5vh"
-								color="custom.steamColorE"
+								color="#5ddcff"
 								fontWeight="bold"
 								letterSpacing="0.1vw"
 								fontFamily="Montserrat"
@@ -344,25 +355,37 @@ const Profile = () => {
 						))}
 					</Grid>
 					<Box sx={{ display: "flex", justifyContent: "center" }}>
-						<IconButton onClick={handleToggleMute}>
-							{muted === true ? (
-								<VolumeOffIcon sx={{
-									color: "white",
-									":hover": {
-										color: "#66c0f4"
-									},
-									fontSize: "3vh"
-								}}/>
-							) : (
-								<VolumeUpIcon sx={{
-									color: "white",
-									":hover": {
-										color: "#66c0f4"
-									},
-									fontSize: "3vh"
-								}}/>
-							)}
-						</IconButton>
+						{muted === true ? (
+							<Tooltip title="Dark Theme" placement="bottom">
+								<IconButton onClick={handleToggleMute} sx={{
+									border: `0.2vh solid #5ddcff`,
+									boxShadow: "0px 0px 10px #5ddcff"
+								}}>
+									<VolumeOffIcon sx={{
+										color: colors.steamColors[4],
+										":hover": {
+											color: colors.steamColors[5]
+										},
+										fontSize: "3vh"
+									}}/>
+								</IconButton>
+							</Tooltip>
+						) : (
+							<Tooltip title="Dark Theme" placement="bottom">
+								<IconButton onClick={handleToggleMute} sx={{
+									border: `0.2vh solid #5ddcff`,
+									boxShadow: "0px 0px 10px #5ddcff"
+								}}>
+									<VolumeUpIcon sx={{
+										color: colors.steamColors[4],
+										":hover": {
+											color: colors.steamColors[5]
+										},
+										fontSize: "3vh"
+									}}/>
+								</IconButton>
+							</Tooltip>
+						)}
 					</Box>
 				</Box>
 			</Box>

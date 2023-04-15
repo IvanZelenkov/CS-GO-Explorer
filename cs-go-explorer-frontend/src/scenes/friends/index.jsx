@@ -247,32 +247,65 @@ const Friends = () => {
 	];
 
 	if (infoLoaded === false || friendsList === undefined)
-		return <Loader colors={colors}/>
+		return (
+			<Box margin="1.5vh">
+				<Header title="Friends" subtitle="Explore information about friends"/>
+				<Loader colors={colors}/>
+				{/* REFRESH BUTTON */}
+				<Box display="flex" justifyContent="space-between" alignItems="center">
+					<Button
+						sx={{
+							backgroundColor: "custom.steamColorC",
+							color: "custom.steamColorD",
+							fontSize: "1vh",
+							fontWeight: "bold",
+							fontFamily: "Montserrat",
+							padding: "0.8vh 1.2vh",
+							border: `0.2vh solid #5ddcff`,
+							boxShadow: "0px 0px 10px #5ddcff",
+							":hover": {
+								backgroundColor: "custom.steamColorB"
+							}
+						}}
+						onClick={() => {
+							setInfoLoaded(false);
+							getFriendList();
+						}}
+					>
+						<Refresh sx={{ marginRight: "0.5vh" }}/>
+						Refresh
+					</Button>
+				</Box>
+			</Box>
+		);
 	return (
 		<motion.div exit={{ opacity: 0 }}>
 			<Box margin="1.5vh">
 				<Header title="Friends" subtitle="Explore information about friends"/>
 				{/* REFRESH BUTTON */}
 				<Box display="flex" justifyContent="space-between" alignItems="center">
-					<Box>
-						<Button
-							sx={{
-								backgroundColor: "custom.steamColorA",
-								color: "custom.steamColorD",
-								fontSize: "1vh",
-								fontWeight: "bold",
-								padding: "0.8vh 1.2vh",
-								fontFamily: "Montserrat"
-							}}
-							onClick={() => {
-								setInfoLoaded(false);
-								getFriendList();
-							}}
-						>
-							<Refresh sx={{ marginRight: "0.5vh" }}/>
-							Refresh
-						</Button>
-					</Box>
+					<Button
+						sx={{
+							backgroundColor: "custom.steamColorC",
+							color: "custom.steamColorD",
+							fontSize: "1vh",
+							fontWeight: "bold",
+							fontFamily: "Montserrat",
+							padding: "0.8vh 1.2vh",
+							border: `0.2vh solid #5ddcff`,
+							boxShadow: "0px 0px 10px #5ddcff",
+							":hover": {
+								backgroundColor: "custom.steamColorB"
+							}
+						}}
+						onClick={() => {
+							setInfoLoaded(false);
+							getFriendList();
+						}}
+					>
+						<Refresh sx={{ marginRight: "0.5vh" }}/>
+						Refresh
+					</Button>
 				</Box>
 				<Box
 					margin="2vh 0 0 0"
@@ -289,7 +322,7 @@ const Friends = () => {
 							textTransform: "capitalize"
 						},
 						"& .MuiDataGrid-columnHeaders": {
-							backgroundColor: colors.steamColors[1],
+							backgroundColor: colors.steamColors[3],
 							borderBottom: "none",
 							fontSize: "1.2vh",
 							fontFamily: "Montserrat",
@@ -301,7 +334,7 @@ const Friends = () => {
 							color: colors.steamColors[4]
 						},
 						"& .MuiDataGrid-footerContainer": {
-							backgroundColor: colors.steamColors[1],
+							backgroundColor: colors.steamColors[3],
 							borderTop: "none"
 						},
 						"& .MuiCheckbox-root": {

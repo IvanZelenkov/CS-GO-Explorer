@@ -259,7 +259,79 @@ const WeaponStats = () => {
 	];
 
 	if (infoLoaded === false || userStats === {}) {
-		return <Loader colors={colors}/>
+		return (
+			<Box margin="1.5vh">
+				<Header title="Weapon Stats" subtitle="Explore weapon stats"/>
+				<Loader colors={colors}/>
+				<Box display="flex" justifyContent="space-between" alignItems="center">
+					<Button
+						sx={{
+							backgroundColor: "custom.steamColorC",
+							color: "custom.steamColorD",
+							fontSize: "1vh",
+							fontWeight: "bold",
+							fontFamily: "Montserrat",
+							padding: "0.8vh 1.2vh",
+							border: `0.2vh solid #5ddcff`,
+							boxShadow: "0px 0px 10px #5ddcff",
+							":hover": {
+								backgroundColor: "custom.steamColorB"
+							}
+						}}
+						onClick={() => {
+							setInfoLoaded(false);
+							getUserStats();
+						}}
+					>
+						<Refresh sx={{ marginRight: "0.5vh" }}/>
+						Refresh
+					</Button>
+					<Box display="flex" flexDirection="row">
+						<Button
+							sx={{
+								backgroundColor: "custom.steamColorC",
+								color: "custom.steamColorD",
+								fontSize: "1vh",
+								fontWeight: "bold",
+								fontFamily: "Montserrat",
+								padding: "0.8vh 1.2vh",
+								marginRight: "2vh",
+								border: `0.2vh solid #5ddcff`,
+								boxShadow: "0px 0px 10px #5ddcff",
+								":hover": {
+									backgroundColor: "custom.steamColorB"
+								}
+							}}
+							component={Link}
+							to={location.pathname + "/bar"}
+						>
+							<BarChartOutlinedIcon sx={{ marginRight: "0.5vh" }}/>
+							Kill amount stats
+						</Button>
+						<Button
+							sx={{
+								backgroundColor: "custom.steamColorC",
+								color: "custom.steamColorD",
+								fontSize: "1vh",
+								fontWeight: "bold",
+								fontFamily: "Montserrat",
+								padding: "0.8vh 1.2vh",
+								border: `0.2vh solid #5ddcff`,
+								boxShadow: "0px 0px 10px #5ddcff",
+								":hover": {
+									backgroundColor: "custom.steamColorB"
+								}
+							}}
+							component={Link}
+							to={location.pathname + "/pie"}
+						>
+							<PieChartOutlineOutlinedIcon sx={{ marginRight: "0.5vh" }}/>
+							Weapon shots comparison
+						</Button>
+					</Box>
+				</Box>
+			</Box>
+		)
 	} else if (location.pathname === "/weapon-stats") {
 		return (
 			<motion.div exit={{ opacity: 0 }}>
@@ -268,13 +340,16 @@ const WeaponStats = () => {
 					<Box display="flex" justifyContent="space-between" alignItems="center">
 						<Button
 							sx={{
-								backgroundColor: "custom.steamColorA",
+								backgroundColor: "custom.steamColorC",
 								color: "custom.steamColorD",
 								fontSize: "1vh",
 								fontWeight: "bold",
+								fontFamily: "Montserrat",
 								padding: "0.8vh 1.2vh",
+								border: `0.2vh solid #5ddcff`,
+								boxShadow: "0px 0px 10px #5ddcff",
 								":hover": {
-									backgroundColor: "custom.steamColorF"
+									backgroundColor: "custom.steamColorB"
 								}
 							}}
 							onClick={() => {
@@ -288,14 +363,17 @@ const WeaponStats = () => {
 						<Box display="flex" flexDirection="row">
 							<Button
 								sx={{
-									backgroundColor: "custom.steamColorA",
+									backgroundColor: "custom.steamColorC",
 									color: "custom.steamColorD",
 									fontSize: "1vh",
 									fontWeight: "bold",
+									fontFamily: "Montserrat",
 									padding: "0.8vh 1.2vh",
 									marginRight: "2vh",
+									border: `0.2vh solid #5ddcff`,
+									boxShadow: "0px 0px 10px #5ddcff",
 									":hover": {
-										backgroundColor: "custom.steamColorF"
+										backgroundColor: "custom.steamColorB"
 									}
 								}}
 								component={Link}
@@ -306,13 +384,16 @@ const WeaponStats = () => {
 							</Button>
 							<Button
 								sx={{
-									backgroundColor: "custom.steamColorA",
+									backgroundColor: "custom.steamColorC",
 									color: "custom.steamColorD",
 									fontSize: "1vh",
 									fontWeight: "bold",
+									fontFamily: "Montserrat",
 									padding: "0.8vh 1.2vh",
+									border: `0.2vh solid #5ddcff`,
+									boxShadow: "0px 0px 10px #5ddcff",
 									":hover": {
-										backgroundColor: "custom.steamColorF"
+										backgroundColor: "custom.steamColorB"
 									}
 								}}
 								component={Link}
@@ -338,7 +419,7 @@ const WeaponStats = () => {
 								textTransform: "capitalize"
 							},
 							"& .MuiDataGrid-columnHeaders": {
-								backgroundColor: colors.steamColors[1],
+								backgroundColor: colors.steamColors[3],
 								borderBottom: "none",
 								fontSize: "1.2vh",
 								fontFamily: "Montserrat",
@@ -350,7 +431,7 @@ const WeaponStats = () => {
 								color: colors.steamColors[4]
 							},
 							"& .MuiDataGrid-footerContainer": {
-								backgroundColor: colors.steamColors[1],
+								backgroundColor: colors.steamColors[3],
 								borderTop: "none"
 							},
 							"& .MuiCheckbox-root": {

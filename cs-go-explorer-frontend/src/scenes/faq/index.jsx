@@ -14,12 +14,20 @@ const FAQ = () => {
 				<Header title="FAQ" subtitle="Frequently Asked Questions"/>
 				<Accordion>
 					<AccordionSummary expandIcon={<ExpandMoreIcon/>}>
-						<Typography color="custom.steamColorF" variant="h5">
+						<Typography sx={{
+							color: "custom.steamColorD",
+							fontSize: "1.4vh",
+							fontFamily: "Montserrat"
+						}}>
 							What is the purpose of the CS:GO Explorer application?
 						</Typography>
 					</AccordionSummary>
 					<AccordionDetails>
-						<Typography color="custom.steamColorD" variant="h5">
+						<Typography sx={{
+							color: "custom.steamColorF",
+							fontSize: "1.3vh",
+							fontFamily: "Montserrat"
+						}}>
 							A CS:GO Explorer app designed to help you keep track of stats in detail,
 							and view your friends' Steam accounts. You can see a lot of different
 							information about your friends, including the Steam ID, which you can
@@ -32,12 +40,20 @@ const FAQ = () => {
 				</Accordion>
 				<Accordion>
 					<AccordionSummary expandIcon={<ExpandMoreIcon/>}>
-						<Typography color="custom.steamColorF" variant="h5">
+						<Typography sx={{
+							color: "custom.steamColorD",
+							fontSize: "1.4vh",
+							fontFamily: "Montserrat"
+						}}>
 							What is the purpose of the Calendar feature?
 						</Typography>
 					</AccordionSummary>
 					<AccordionDetails>
-						<Typography color="custom.steamColorD" variant="h5">
+						<Typography sx={{
+							color: "custom.steamColorF",
+							fontSize: "1.3vh",
+							fontFamily: "Montserrat"
+						}}>
 							The calendar can be used to mark important events you plan to attend,
 							such as the day and time you play with teammates or practice, or you
 							can set the time when certain eSports teams play in a tournament.
@@ -46,24 +62,40 @@ const FAQ = () => {
 				</Accordion>
 				<Accordion>
 					<AccordionSummary expandIcon={<ExpandMoreIcon/>}>
-						<Typography color="custom.steamColorF" variant="h5">
+						<Typography sx={{
+							color: "custom.steamColorD",
+							fontSize: "1.4vh",
+							fontFamily: "Montserrat"
+						}}>
 							How often stats are updated?
 						</Typography>
 					</AccordionSummary>
 					<AccordionDetails>
-						<Typography color="custom.steamColorD" variant="h5">
+						<Typography sx={{
+							color: "custom.steamColorF",
+							fontSize: "1.3vh",
+							fontFamily: "Montserrat"
+						}}>
 							Any of your actions in a match is instantly transmitted to the CS:GO Explorer.
 						</Typography>
 					</AccordionDetails>
 				</Accordion>
 				<Accordion>
 					<AccordionSummary expandIcon={<ExpandMoreIcon/>}>
-						<Typography color="custom.steamColorF" variant="h5">
+						<Typography sx={{
+							color: "custom.steamColorD",
+							fontSize: "1.4vh",
+							fontFamily: "Montserrat"
+						}}>
 							How do I provide feedback about CS:GO Explorer?
 						</Typography>
 					</AccordionSummary>
 					<AccordionDetails>
-						<Typography color="custom.steamColorD" variant="h5">
+						<Typography sx={{
+							color: "custom.steamColorF",
+							fontSize: "1.3vh",
+							fontFamily: "Montserrat"
+						}}>
 							Write to itproger.ivan@gmail.com for feedback.
 						</Typography>
 					</AccordionDetails>

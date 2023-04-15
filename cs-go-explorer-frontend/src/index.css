@@ -36,6 +36,7 @@ html, body, #root, .app, .content {
 
 .button {
 	height: 3.3rem;
+	boxShadow: "0px 0px 10px #5ddcff",
 }
 
 .news-image {

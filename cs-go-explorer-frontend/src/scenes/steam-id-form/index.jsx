@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { Box, TextField, Button, IconButton, useTheme } from "@mui/material";
+import {Box, TextField, Button, IconButton, useTheme, Tooltip} from "@mui/material";
 import { motion } from "framer-motion";
 import { SiValve, SiCounterstrike } from "react-icons/si";
 import axios from "axios";
 import loading from "react-useanimations/lib/loading";
 import UseAnimations from "react-useanimations";
 import { VolumeUp as VolumeUpIcon, VolumeOff as VolumeOffIcon } from '@mui/icons-material';
-import {tokens} from "../../theme";
+import { muiTextFieldCSS, tokens } from "../../theme";
 
 const SteamIdForm = ({ userAccepted, userDenied}) => {
 	const theme = useTheme();
@@ -115,22 +115,26 @@ const SteamIdForm = ({ userAccepted, userDenied}) => {
 						id="outlined-basic"
 						label="Steam ID"
 						variant="outlined"
-						sx={{ width: "20vw" }}
 						onChange={(steamId) => verifySteamID(steamId)}
 						error={invalidSteamIdMessage !== ""}
 						helperText={invalidSteamIdMessage}
-						InputProps={{
-							className: "input"
-						}}
 						onKeyDown={handleKeyDown}
+						sx={muiTextFieldCSS("#5ddcff")}
+						inputProps={{ style: { fontFamily: "Montserrat" }}}
+						inputlabelprops={{ style: { fontFamily: "Montserrat" }}}
 					/>
 					{infoLoaded === true ?
 						<Button
 							onClick={checkUserStats}
 							variant="contained"
-							sx={{ marginLeft: "2vw", padding: "1vh" }}
+							sx={{
+								marginLeft: "2vw",
+								padding: "1vh",
+								borderRadius: "5px",
+								height: "3.3rem",
+								boxShadow: "0px 0px 10px #5ddcff"
+							}}
 							disabled={!isValid}
-							className="button"
 						>
 							<SiCounterstrike size="3vh"/>
 						</Button>
@@ -150,25 +154,37 @@ const SteamIdForm = ({ userAccepted, userDenied}) => {
 				left: "50%",
 				transform: "translate(-50%, -50%)",
 			}}>
-				<IconButton onClick={handleToggleMute}>
-					{muted === true ? (
-						<VolumeOffIcon sx={{
-							color: "white",
-							":hover": {
-								color: "#66c0f4"
-							},
-							fontSize: "3vh"
-						}}/>
-					) : (
-						<VolumeUpIcon sx={{
-							color: "white",
-							":hover": {
-								color: "#66c0f4"
-							},
-							fontSize: "3vh"
-						}}/>
-					)}
-				</IconButton>
+				{muted === true ? (
+					<Tooltip title="Dark Theme" placement="bottom">
+						<IconButton onClick={handleToggleMute} sx={{
+							border: `0.2vh solid #5ddcff`,
+							boxShadow: "0px 0px 10px #5ddcff"
+						}}>
+							<VolumeOffIcon sx={{
+								color: colors.steamColors[4],
+								":hover": {
+									color: colors.steamColors[5]
+								},
+								fontSize: "3vh"
+							}}/>
+						</IconButton>
+					</Tooltip>
+				) : (
+					<Tooltip title="Dark Theme" placement="bottom">
+						<IconButton onClick={handleToggleMute} sx={{
+							border: `0.2vh solid #5ddcff`,
+							boxShadow: "0px 0px 10px #5ddcff"
+						}}>
+							<VolumeUpIcon sx={{
+								color: colors.steamColors[4],
+								":hover": {
+									color: colors.steamColors[5]
+								},
+								fontSize: "3vh"
+							}}/>
+						</IconButton>
+					</Tooltip>
+				)}
 			</Box>
 		</motion.div>
 	);

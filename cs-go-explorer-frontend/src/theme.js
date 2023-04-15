@@ -32,8 +32,8 @@ export const tokens = (mode) => ({
 				2: "#1b2838",
 				3: "#2a475e",
 				4: "#FFFFFF",
-				5: "#66c0f4",
-				6: "#00FF00FF",
+				5: "#5ddcff",
+				6: "#5ddcff",
 				7: "#ccba7c"
 			}
 		}
@@ -65,7 +65,7 @@ export const tokens = (mode) => ({
 				2: "#1b2838",
 				3: "#2a475e",
 				4: "#FFFFFF",
-				5: "#66c0f4",
+				5: "#5ddcff",
 				6: "#00FF00FF",
 				7: "#ccba7c"
 			}
@@ -97,7 +97,7 @@ export const themeSettings = (mode) => {
 						steamColorG: colors.steamColors[7]
 					},
 					background: {
-						default: colors.steamColors[3]
+						default: colors.steamColors[1]
 					}
 				}
 				: {
@@ -185,16 +185,16 @@ export const useMode = () => {
 
 export const muiPaginationCSS = {
 	"& .MuiPaginationItem-root": {
-		color: "#00FF00FF",
+		color: "#5ddcff",
 		marginRight: "2vw",
 		'&:hover, &:focus': {
-			backgroundColor: "#00FF00FF",
+			backgroundColor: "#5ddcff",
 			color: "#000000"
 		}
 	},
 	"& .Mui-selected": {
 		color: "#000000",
-		backgroundColor: "#00FF00FF",
+		backgroundColor: "#5ddcff",
 		"&:hover &:focus": {
 			backgroundColor: "#000000",
 			color: "#ffffff",
@@ -210,11 +210,46 @@ export const muiPaginationCSS = {
 	},
 	'& .Mui-selected:not(:focus)': {
 		color: "#000000",
-		backgroundColor: "#00FF00FF",
+		backgroundColor: "#5ddcff",
 		"&:hover": {
-			backgroundColor: "#419a16",
+			backgroundColor: "#489ab5",
 			filter: "brightness(0.75)"
 		}
 	},
 	marginTop: "1.5vh"
+}
+
+export function muiTextFieldCSS(themeColor) {
+	return {
+		"& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
+			borderColor: themeColor
+		},
+		"&:hover .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
+			borderColor: themeColor
+		},
+		"& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+			borderColor: themeColor
+		},
+		"& .MuiOutlinedInput-input": {
+			color: themeColor
+		},
+		"&:hover .MuiOutlinedInput-input": {
+			color: themeColor
+		},
+		"& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-input": {
+			color: themeColor
+		},
+		"& .MuiInputLabel-outlined": {
+			color: themeColor
+		},
+		"&:hover .MuiInputLabel-outlined": {
+			color: themeColor
+		},
+		"& .MuiInputLabel-outlined.Mui-focused": {
+			color: themeColor
+		},
+		boxShadow: "0px 0px 10px #5ddcff",
+		width: "20vw",
+		borderRadius: "5px"
+	}
 }

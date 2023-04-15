@@ -66,7 +66,7 @@ const Calendar = () => {
 	}
 	return (
 		<motion.div exit={{ opacity: 0 }}>
-			<Box margin="1.5vh">
+			<Box margin="1.5vh" zIndex="1">
 				<Header title="Calendar" subtitle="Set the events you are planning in CS:GO"/>
 				<Box display="flex" justifyContent="space-between">
 					{/* CALENDAR SIDEBAR */}
@@ -76,12 +76,15 @@ const Calendar = () => {
 						borderRadius="5px"
 						sx={{
 							backgroundImage: `url(${SidebarBackgroundImage}) !important`,
-							backgroundSize: 'cover',
-							backgroundRepeat  : 'no-repeat',
-							backgroundPosition: 'center',
+							backgroundSize: "cover",
+							backgroundRepeat  : "no-repeat",
+							backgroundPosition: "center",
+							zIndex: "1"
 						}}
 					>
-						<Typography variant="h5">Events</Typography>
+						<Typography sx={{ fontSize: "1.5vh", fontFamily: "Montserrat" }}>
+							Events
+						</Typography>
 						<List>
 							{currentEvents.map((event) => (
 								<ListItem

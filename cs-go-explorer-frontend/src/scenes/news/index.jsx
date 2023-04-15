@@ -72,9 +72,9 @@ const News = () => {
 					justifyContent: "space-between",
 					alignItems: "center",
 					height: "calc(100vh - 20vh)",
-					overflowY: "auto"
+					overflowY: "auto",
 				}}>
-					<ImageList cols={3} gap={40} sx={{ width: "90%" }}>
+					<ImageList cols={3} gap={40} sx={{ width: "90%", padding: "10px" }}>
 						{reformattedNews?.slice((page - 1) * newsPerPage, page * newsPerPage).map((news) => (
 							<ImageListItem
 								key={news.gid}
@@ -83,6 +83,7 @@ const News = () => {
 									textAlign: "center",
 									border: `0.2vh solid ${colors.steamColors[6]}`,
 									borderRadius: "1vh",
+									boxShadow: `0px 0px 10px ${colors.steamColors[5]}`,
 								}}
 							>
 								<img
@@ -102,7 +103,8 @@ const News = () => {
 										margin: "1.1vh",
 										fontSize: "1vh",
 										fontFamily: "Montserrat",
-										fontWeight: "600"
+										fontWeight: "600",
+										color: colors.steamColors[5]
 									}}>
 										{news.title}
 									</Typography>
